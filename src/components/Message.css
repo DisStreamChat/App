@@ -1,0 +1,153 @@
+.profile-pic{
+    max-width: 2.5rem;
+    margin-right: .5rem;
+    margin-left: .3rem;
+    margin-top: .3rem;
+    border-radius: 50%;
+    display: inline-block !important;
+}
+
+.name{
+    display: flex;
+    /* width: 100%; */
+    align-items: center;
+}
+
+.name-header{
+    display: flex;
+    width: 98%;
+    justify-content: space-between;
+}
+
+.message{
+    font-family: "Roboto", sans-serif;
+    width: 640px;
+    padding: .2rem;
+    margin: .1rem;
+    animation: animate-in .7s ease-in-out 0s 1 forwards;
+    border-radius: .5rem;
+    overflow: hidden;
+    transform-origin: top right;
+    color: white;
+    font-size: 1.5rem;
+    max-height: fit-content;
+}
+
+.fade-out{
+    animation: animate-out .7s ease-in-out 0s 1 forwards !important;
+}
+
+.msg-body{
+    padding: .5rem;
+    max-height: 100px;
+    overflow: auto;
+    word-wrap: break-word;
+}
+
+.discord-message{
+    background: var(--discord-color);
+}
+
+.twitch-message{
+    background: var(--twitch-color);
+}
+
+.emote{
+    width: 2rem;
+}
+
+@keyframes animate-in{
+    from{
+        transform: scale(0) translateX(-50%);
+        opacity: 0;
+    }
+    to{
+        transform: scale(1) translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes animate-out{
+    from{
+        transform: scale(1) translateX(0);
+        opacity: 1;
+    }
+    to{
+        transform: scale(0) translateX(-50%);
+        opacity: 0;
+    }
+}
+
+.exit-button{
+    float: right;
+    border: none;
+    outline: none !important;
+    background: none;
+    color: inherit;
+}
+
+.source-button{
+    border: none;
+    outline: none !important;
+    background: none;
+    color: inherit;
+    padding: 0;
+}
+
+.exit-button:active{
+    transform: scale(.9);
+}
+
+.profile{
+    display: flex;
+    align-items: center;
+    margin-right: .5rem;
+}
+
+.my-node-enter {
+    height: 0px;
+}
+.my-node-enter-active {
+    transition: 700ms;
+    height: 173px; 
+}
+.my-node-exit {
+    height: 173px;
+}
+.my-node-exit-active {
+    height: 0;
+    transition: 700ms;
+}
+
+.highlighted-message{
+    background: #ffbf00;
+    box-shadow: 0px 0px 15px 0px #ffbf00;
+    color: #0040ff;
+    font-weight: bold;
+}
+
+.source{
+    padding-left: .5rem;
+    height: 38px;
+    overflow: hidden;
+    transition: .5s;
+}
+
+.source.open{
+    height: fit-content
+}
+
+.source-text{
+    font-size: 1rem;
+}
+
+.sub-badge{
+    position: absolute;
+    top: 32px;
+    left: 32px;
+    transform: scale(.8)
+}
+
+.chat-badge{
+    
+}
