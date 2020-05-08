@@ -29,6 +29,7 @@
     overflow: hidden;
     transform-origin: top right;
     color: white;
+    background: var(--grey);
     font-size: 1.5rem;
     max-height: fit-content;
 }
@@ -102,6 +103,7 @@
     display: flex;
     align-items: center;
     margin-right: .5rem;
+    justify-content: space-around;
 }
 
 .my-node-enter {
@@ -148,6 +150,18 @@
     transform: scale(.8)
 }
 
-.chat-badge{
+/* .chat-badge{
     
+} */
+
+img.twitch{
+    margin-left: .5rem;
+}
+
+img.discord{
+    filter: hue-rotate(-10deg);
+}
+
+.discord-false{
+    margin: 0 !important;
 }

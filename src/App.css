@@ -39,7 +39,7 @@
     --base-color: #1e272e;
     --accent-color: #393e46;
     --sender-text-color: var(--text-color);
-    --grey: rgb(209, 209, 209);
+    /* --grey: rgb(209, 209, 209); */
     --error-color: red;
 }
 
@@ -60,7 +60,6 @@ body{
     flex-direction: column-reverse;
     align-items: flex-end;
     justify-content: flex-end;
-    transition: 10s;
 }
 
 .overlay-container{
@@ -94,7 +93,7 @@ p, h1{
   margin: 0 !important;
 }
 
-a{
+#root a{
   color: white !important;
   text-decoration: underline !important;
 }

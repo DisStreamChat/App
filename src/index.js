@@ -14,6 +14,7 @@ import {AppContext} from "./contexts/AppContext"
 const App = () => {
     const [firebaseInit, setFirebaseInit] = useState(false)
     const [userId, setUserId] = useState("")
+    const [streamerInfo, setStreamerInfo] = useState({})
 
     useEffect(() => {
         (async () => {
@@ -26,7 +27,9 @@ const App = () => {
         <AppContext.Provider
             value={{
                 userId,
-                setUserId
+                setUserId,
+                streamerInfo,
+                setStreamerInfo
             }}
         >
             <Router>
