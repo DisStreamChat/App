@@ -47,8 +47,10 @@ function App() {
 		(async () => {
 			if (userId) {
 				const db = firebase.app.firestore()
-				const streamerInfo = await db.collection("Streamers").doc(userId).get()
-				setStreamerInfo(streamerInfo.data())
+				const unsubscribe = db.collection("Streamers").doc(userId).onSnapshot(snapshot => {
+                    setStreamerInfo(snapshot.data())
+                })
+                return () => unsubscribe();
 			} else if (localStorage.getItem("userId")) {
 				setUserId(localStorage.getItem("userId"))
 			}
@@ -65,7 +67,7 @@ function App() {
 		}
 	}, [streamerInfo, socket])
 
-	const removeMessage = (id) => {
+	const removeMessage = id => {
 		setTimeout(() => {
 			const copy = [...messages].filter((m) => m.uuid !== id)
 			setMessages(copy)

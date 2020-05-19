@@ -115,3 +115,7 @@ dist
 .pnp.*
 
 config.json
+
+build/
+dist/
+react-electron-win32-x64/

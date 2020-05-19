@@ -3,20 +3,19 @@
 :root{
 	--discord-color: #7289da;
 	--twitch-color: #613fa0;
-	--base-color: #d2dae2;
-    /* --base-color: #e6eaea; */
-    --accent-color: #f5f5f5;
+	--base-color: #1e272e;
+    --accent-color: #393e46;
+    --sender-text-color: var(--text-color);
     --text-color: var(--accent-color);
-    --sidebar-color: #2980b9;
-    --sidebar-accent-color: #349bdb;
-    --sidebar-dark-accent: #227093;
-    --sender-text-color: #0a0a0a;
+     --sidebar-color: #2c3e50;
+    --sidebar-accent-color: #32465a;
+    --sidebar-dark-accent: #435f7a;
     --input-padding-x: 1.5rem;
     --input-padding-y: .75rem;
     --sidebar-width: 250px;
     --grey: rgb(51, 51, 51);
     --status-border-size: 3px;
-    --error-color: #cc0000
+    --error-color: red;
 }
 
 .App{
@@ -24,23 +23,11 @@
     align-items: center;
 	justify-content: center;
 	height: 100vh;
-    background: var(--base-color);
+    background: linear-gradient(119.36deg, #17181B 21.35%, #24252A 76.56%);
 }
 
 .app{
-    background: var(--base-color);
-}
-
-.app--dark {
-    --sidebar-color: #2c3e50;
-    --sidebar-accent-color: #32465a;
-    --sidebar-dark-accent: #435f7a;
-    /* --base-color: #222831; */
-    --base-color: #1e272e;
-    --accent-color: #393e46;
-    --sender-text-color: var(--text-color);
-    /* --grey: rgb(209, 209, 209); */
-    --error-color: red;
+    background: linear-gradient(119.36deg, #17181B 21.35%, #24252A 76.56%);
 }
 
 body{
