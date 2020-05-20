@@ -7,7 +7,7 @@
     --accent-color: #393e46;
     --sender-text-color: var(--text-color);
     --text-color: var(--accent-color);
-     --sidebar-color: #2c3e50;
+    --sidebar-color: #2c3e50;
     --sidebar-accent-color: #32465a;
     --sidebar-dark-accent: #435f7a;
     --input-padding-x: 1.5rem;
@@ -53,6 +53,10 @@ body{
     height: calc(100vh - 130px);
     overflow: auto;
     width: fit-content;
+}
+
+.full-body{
+    height: 100vh;
 }
 
 /* width */

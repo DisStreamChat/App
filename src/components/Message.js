@@ -26,13 +26,14 @@ const twitchLogo = "https://cdn.vox-cdn.com/thumbor/hSP3rKWFHC7hbbtpCp_DIKiRSDI=
 const Message = props => {
     const [active, setActive] = useState(true)
     const [showSource, setShowSource] = useState(false)
-    const [subBadge, setSubBadge] = useState("")
     const [displayPlatform, setDisplayPlatform] = useState(true)
+    const [showSourceButton, setShowSourceButton] = useState(false)
 
-    const {streamerInfo} = useContext(AppContext)
+    const { streamerInfo } = useContext(AppContext)
 
     useEffect(() => {
         setDisplayPlatform(streamerInfo.displayPlatform)
+        setShowSourceButton(streamerInfo.showSourceButton)
     }, [streamerInfo])
 
     const deleteMe = useCallback(() => {
@@ -54,30 +55,7 @@ const Message = props => {
                                 return badge[0] !== "subscriber" ? <Tooltip arrow title={badge[1].title} placement="top"><img src={badge[1].image} alt="" className={`chat-badge badge-${i}`}></img></Tooltip>:<></>
                             })}
                         </div>
-                        <span dangerouslySetInnerHTML={{
-                            __html: marked(DOMPurify.sanitize(props.msg.displayName, {
-                                FORBID_ATTR: [
-                                    "style",
-                                    "onerror",
-                                    "onload",
-                                    "width",
-                                    "height"
-                                ],
-                                FORBID_TAGS: [
-                                    "table",
-                                    "script",
-                                    "audio",
-                                    "video",
-                                    "style",
-                                    "iframe",
-                                    "textarea",
-                                    "input",
-                                    "form",
-                                ],
-                            }
-                            ))
-                        }}>
-                        </span>
+                        <span>{props.msg.displayName}</span>
                         {displayPlatform === "medium" && <Tooltip title={props.msg.platform} placement="top" arrow><img width="20" src={props.msg.platform === "discord" ? discordLogo : twitchLogo} alt="platform" className={"chat-badge " + props.msg.platform} /></Tooltip>}
                     </span>
                     <button className="exit-button"><HighlightOffTwoToneIcon onClick={deleteMe}/></button>
@@ -102,11 +80,10 @@ const Message = props => {
                             "input",
                             "form",
                         ],
-                    }
-                    ))
+                    }))
                 }}>
                 </div>
-                <div className={`source ${showSource && "open"}`}>
+                {showSourceButton && <div className={`source ${showSource && "open"}`}>
                     <div className="source-button" onClick={() => setShowSource(s => !s)}>{!showSource ? <SettingsEthernetIcon /> : <CodeIcon/>}</div>
                     <p className="source-text">
                         {(DOMPurify.sanitize(props.msg.body, {
@@ -130,7 +107,7 @@ const Message = props => {
                             ],
                         }))}
                     </p>
-                </div>
+                </div>}
             </div>
         </CSSTransition>
     );

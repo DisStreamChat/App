@@ -38,7 +38,7 @@ function App() {
 	useEffect(() => {
 		if (socket) {
 			socket.on("chatmessage", (msg) => {
-				setMessages((m) => [...m.slice(0, 100), msg])
+                setMessages((m) => [...m.slice(m.length - 100, m.length), msg])
 			})
 		}
 	}, [socket])
@@ -68,17 +68,17 @@ function App() {
 	}, [streamerInfo, socket])
 
 	const removeMessage = id => {
-		setTimeout(() => {
-			const copy = [...messages].filter((m) => m.uuid !== id)
+        setTimeout(async () => {
+            const copy = [...messages].filter((m) => m.uuid !== id)
 			setMessages(copy)
 		}, 800)
 	}
 
 	return (
 		<div className="app app--dark">
-			<Header setMessages={setMessages} />
+			{streamerInfo?.showHeader && <Header setMessages={setMessages} />}
 			<main className="body">
-				<div className="overlay-container">
+				<div className={`overlay-container ${!streamerInfo.showHeader && "full-body"}`}>
 					<div className="overlay">
 						{messages.map((msg) => (
 							<Message delete={removeMessage} key={msg.uuid} msg={msg} />
