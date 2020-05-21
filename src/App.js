@@ -6,6 +6,7 @@ import openSocket from "socket.io-client"
 import Message from "./components/Message"
 import Header from "./components/Header"
 import { AppContext } from "./contexts/AppContext"
+import { useInterval } from 'react-use';
 
 function App() {
 	const [error, setError] = useState("")
@@ -65,15 +66,17 @@ function App() {
 				socket.emit("addme", streamerInfo)
 			}
 		}
-	}, [streamerInfo, socket])
+    }, [streamerInfo, socket])
+    
+    useInterval(() => {
+        setMessages(m => m.filter(msg => !msg.deleted))
+    }, 60000)
 
 	const removeMessage = id => {
-        setTimeout(async () => {
-            const copy = [...messages]
-            const index = copy.findIndex(msg => msg.uuid === id)
-            copy[index].deleted = true
-			setMessages(copy)
-		}, 800)
+        const copy = [...messages]
+        const index = copy.findIndex(msg => msg.uuid === id)
+        copy[index].deleted = true
+		setMessages(copy)
 	}
 
 	return (
@@ -82,7 +85,7 @@ function App() {
 			<main className="body">
 				<div className={`overlay-container ${!streamerInfo.showHeader && "full-body"}`}>
 					<div className="overlay">
-						{messages.filter(msg => !msg.deleted).map(msg => (
+						{messages.map(msg => (
 							<Message delete={removeMessage} key={msg.uuid} msg={msg} />
 						))}
 					</div>

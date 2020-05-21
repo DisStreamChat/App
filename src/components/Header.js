@@ -7,15 +7,15 @@ import Button from '@material-ui/core/Button';
 const Header = props => {
 
     const clearChat = useCallback(() => {
-        props.setMessages([])
+        props.setMessages(m => m.map(msg => {return {...msg, deleted: true}}))
     }, [props])
 
     const clearTwitch = useCallback(() => {
-        props.setMessages(messages => messages.filter(message => message.platform === "discord"))
+        props.setMessages(messages => messages.map(msg => {return {...msg, deleted: msg.platform === "twitch"}}))
     }, [props])
-
+    
     const clearDiscord = useCallback(() => {
-        props.setMessages(messages => messages.filter(message => message.platform === "twitch"))
+        props.setMessages(messages => messages.map(msg => {return {...msg, deleted: msg.platform === "discord"}}))
     }, [props])
 
     const signout = useCallback(async () => {

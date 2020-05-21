@@ -36,9 +36,13 @@ const Message = props => {
         setShowSourceButton(streamerInfo.showSourceButton)
     }, [streamerInfo])
 
+    useEffect(() => {
+        setActive(!props.msg.deleted)
+    }, [props])
+
     const deleteMe = useCallback(() => {
         props.delete(props.msg.uuid)
-        setActive(false)
+        // setActive(false)
     }, [props])
 
     return (
