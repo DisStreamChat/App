@@ -1,5 +1,12 @@
 # DisTwitchChat App
-Chat display for Discord and Twitch integration during livestreams
+This is the Chat app for DisTwitchChat. This app has many features that the [overlay](https://github.com/DisTwitchChat/Overlay) does not have.
+
+# Framework/Tech use
+* electron
+* React
+* Firebase
+
+# Installation
 
 ## Install for Devolopment
 1. Clone this repository.
