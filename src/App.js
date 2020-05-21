@@ -17,7 +17,7 @@ function App() {
 
 	useEffect(() => {
 		if (loaded) {
-			localStorage.setItem("messages", JSON.stringify(messages))
+			localStorage.setItem("messages", JSON.stringify(messages.filter(msg => !msg.deleted)))
 		}
 	}, [messages, loaded])
 
@@ -37,8 +37,8 @@ function App() {
 
 	useEffect(() => {
 		if (socket) {
-			socket.on("chatmessage", (msg) => {
-                setMessages((m) => [...m.slice(m.length - 100, m.length), msg])
+			socket.on("chatmessage", msg => {
+                setMessages((m) => [...m.slice(m.length - 100, m.length), {...msg, deleted: false}])
 			})
 		}
 	}, [socket])
@@ -69,7 +69,9 @@ function App() {
 
 	const removeMessage = id => {
         setTimeout(async () => {
-            const copy = [...messages].filter((m) => m.uuid !== id)
+            const copy = [...messages]
+            const index = copy.findIndex(msg => msg.uuid === id)
+            copy[index].deleted = true
 			setMessages(copy)
 		}, 800)
 	}
@@ -80,7 +82,7 @@ function App() {
 			<main className="body">
 				<div className={`overlay-container ${!streamerInfo.showHeader && "full-body"}`}>
 					<div className="overlay">
-						{messages.map((msg) => (
+						{messages.filter(msg => !msg.deleted).map(msg => (
 							<Message delete={removeMessage} key={msg.uuid} msg={msg} />
 						))}
 					</div>
