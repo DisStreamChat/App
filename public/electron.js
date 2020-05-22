@@ -39,10 +39,12 @@ function createWindow() {
 //     console.log('we did it');
 //     contents.on('will-navigate', (event, url) => {
 //         event.preventDefault();
+//         require('electron').shell.openExternal(url);
 //         console.log('blocked navigate:', url);
 //     });
 //     contents.on('new-window', async (event, url) => {
 //         event.preventDefault();
+//         require('electron').shell.openExternal(url);
 //         console.log('blocked window:', url);
 //     });
 // });
