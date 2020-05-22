@@ -61,11 +61,11 @@
 @keyframes animate-in {
 	from {
 		transform: scale(0) translateX(-50%);
-		opacity: 0;
+        opacity: 0;
 	}
 	to {
 		transform: scale(1) translateX(0);
-		opacity: 1;
+        opacity: 1;
 	}
 }
 
@@ -153,7 +153,7 @@
 }
 
 .chat-badge {
-	margin-left: .35rem;
+	margin-left: .5rem;
 }
 
 .badge-0 {

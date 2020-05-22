@@ -41,13 +41,13 @@ body{
 }
 
 .overlay{
-    height: fit-content;
     width: fit-content;
     display: flex;
     flex-direction: column-reverse;
     align-items: flex-end;
     justify-content: flex-end;
     padding: .25rem 0;
+    transition: 25s;
 }
 
 .overlay-container{
