@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react"
+import React, { useEffect, useState, useContext, useCallback } from "react"
 import firebase from "./firebase"
 import "./App.css"
 
@@ -34,15 +34,36 @@ function App() {
 
 	useEffect(() => {
 		setSocket(openSocket("http://localhost:3200"))
-	}, [])
+    }, [])
+    
+    const removeMessage = useCallback(id => {
+        const copy = [...messages]
+        const index = copy.findIndex(msg => {
+            console.log(msg.id)
+            return msg.id === id
+        })
+        if(index === -1) return
+        copy[index].deleted = true 
+        setMessages(copy)
+    }, [setMessages, messages])
 
 	useEffect(() => {
 		if (socket) {
+            socket.removeListener('chatmessage');
 			socket.on("chatmessage", msg => {
-                setMessages((m) => [...m.slice(m.length - 100, m.length), {...msg, deleted: false}])
-			})
+                setMessages((m) => [...m.slice(m.length - 100, m.length), {...msg, sentAt: new Date().getTime()-1000, deleted: false}])
+            })
+            return () => socket.removeListener('chatmessage');
 		}
-	}, [socket])
+    }, [socket])
+    
+    useEffect(() => {
+        if(socket){
+            socket.removeListener('deletemessage');
+            socket.on("deletemessage", removeMessage)
+            return () => socket.removeListener("deletemessage")
+        }
+    }, [socket, removeMessage])
 
 	useEffect(() => {
 		(async () => {
@@ -71,13 +92,6 @@ function App() {
     useInterval(() => {
         setMessages(m => m.filter(msg => !msg.deleted))
     }, 60000)
-
-	const removeMessage = id => {
-        const copy = [...messages]
-        const index = copy.findIndex(msg => msg.uuid === id)
-        copy[index].deleted = true
-		setMessages(copy)
-	}
 
 	return (
 		<div className="app app--dark">

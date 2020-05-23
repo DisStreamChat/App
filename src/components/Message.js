@@ -9,6 +9,7 @@ import CodeIcon from '@material-ui/icons/Code';
 import "./Message.css"
 import { AppContext } from "../contexts/AppContext";
 import Tooltip from '@material-ui/core/Tooltip';
+import TimeIndicator from "./TimeIndicator";
 
 let renderer = new marked.Renderer();
 renderer.link = function (href, title, text) {
@@ -64,14 +65,12 @@ const Message = props => {
                     </span>
                     <button className="exit-button"><HighlightOffTwoToneIcon onClick={deleteMe}/></button>
                 </div>
-                <div className="msg-body" dangerouslySetInnerHTML={{
+                <div className="msg-body another class" dangerouslySetInnerHTML={{
                     __html: marked(DOMPurify.sanitize(props.msg.body, {
                         FORBID_ATTR: [
                             "style",
                             "onerror",
                             "onload",
-                            "width",
-                            "height"
                         ],
                         FORBID_TAGS: [
                             "table",
@@ -87,7 +86,9 @@ const Message = props => {
                     }))
                 }}>
                 </div>
-                {showSourceButton && <div className={`source ${showSource && "open"}`}>
+                <div className="message-footer">
+                    <div className={`source ${showSource && "open"}`}>{showSourceButton &&
+                    <>
                     <div className="source-button" onClick={() => setShowSource(s => !s)}>{!showSource ? <SettingsEthernetIcon /> : <CodeIcon/>}</div>
                     <p className="source-text">
                         {(DOMPurify.sanitize(props.msg.body, {
@@ -111,7 +112,10 @@ const Message = props => {
                             ],
                         }))}
                     </p>
-                </div>}
+                    </>}
+                </div>
+                    <TimeIndicator time={props.msg.sentAt}/>
+                </div>
             </div>
         </CSSTransition>
     );

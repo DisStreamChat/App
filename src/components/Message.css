@@ -41,7 +41,7 @@
 
 .msg-body {
 	padding: .5rem;
-	max-height: 150px;
+	max-height: 250px;
 	overflow: auto;
 	word-wrap: break-word;
 }
@@ -134,7 +134,8 @@
 	padding-left: .5rem;
 	height: 38px;
 	overflow: hidden;
-	transition: .5s;
+    transition: .5s;
+    width: fit-content;
 }
 
 .source.open {
@@ -142,7 +143,8 @@
 }
 
 .source-text {
-	font-size: 1rem;
+    font-size: 1rem;
+    max-width: 200px;
 }
 
 .sub-badge {
@@ -166,4 +168,15 @@ img.discord {
 
 .discord-false {
 	margin: 0 !important;
+}
+
+.message-footer{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.time-indicator{
+    font-size: 12px;
+    padding: 0 1rem;
 }
