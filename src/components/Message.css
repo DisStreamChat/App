@@ -47,11 +47,11 @@
 }
 
 .discord-message {
-	background: var(--discord-color);
+	background: var(--distwitchchat-blue);
 }
 
 .twitch-message {
-	background: var(--twitch-color);
+	background: var(--distwitchchat-purple);
 }
 
 .emote {

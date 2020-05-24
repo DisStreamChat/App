@@ -42,13 +42,14 @@ const Message = props => {
     }, [props])
 
     const deleteMe = useCallback(() => {
-        props.delete(props.msg.uuid)
+        console.log(props.msg.platform)
+        props.delete(props.msg.uuid, props.msg.platform)
         // setActive(false)
     }, [props])
 
     return (
         <CSSTransition unmountOnExit in={active} timeout={700} classNames="my-node">
-            <div className={`message ${props.msg.messageId} ${displayPlatform==="full" && props.msg.platform+"-message"} ${!active && "fade-out"}`}>
+            <div className={`message ${props.msg.messageId} ${displayPlatform === "full" && props.msg.platform+"-message"} ${!active && "fade-out"}`}>
                 <div className="name msg-header">
                     <span className="name">
                         <div className={`profile ${props.msg.platform}-${displayPlatform}`}>

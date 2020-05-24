@@ -33,6 +33,7 @@
     display: flex;
     align-items: center;
     justify-content: space-around;
+    padding: 0 .5rem !important;
 }
 
 .nav button{
@@ -42,4 +43,13 @@
 
 .nav button:active{
     transform: scale(.95);
+}
+
+.MuiButton-contained{
+    background: var(--distwitchchat-blue) !important;
+    color: white !important;
+}
+
+.MuiButton-containedPrimary {
+    background: var(--distwitchchat-purple) !important;
 }

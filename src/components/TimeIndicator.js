@@ -16,7 +16,8 @@ const TimeIndicator = props => {
 
     return (
         <div className="time-indicator">
-            {deltaTime < 60 ? `${Math.floor(deltaTime)} second${Math.floor(deltaTime) > 1 ? "s" : ""} ago` : 
+            {deltaTime < 10 ? "Just Now" :
+             deltaTime < 60 ? `${Math.floor(deltaTime)} second${Math.floor(deltaTime) > 1 ? "s" : ""} ago` : 
              deltaTime < 3600 ? `${Math.floor(deltaTime / 60)} minute${Math.floor(deltaTime/60) > 1 ? "s" : ""} ago` : 
              deltaTime < 3600 * 12 ? `${Math.floor(deltaTime / 3600)} hour${Math.floor(deltaTime/3600) > 1 ? "s" : ""} ago` :
              deltaTime < 3600 * 12 * 7 ? `${Math.floor(deltaTime / (3600*12))} day${Math.floor(deltaTime / (3600*12)) > 1 ? "s" : ""} ago` : "A Long Time Ago"}

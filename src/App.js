@@ -36,7 +36,7 @@ function App() {
 		setSocket(openSocket("http://localhost:3200"))
     }, [])
     
-    const removeMessage = useCallback(id => {
+    const removeMessage = useCallback((id, platform) => {
         const copy = [...messages]
         const index = copy.findIndex(msg => {
             console.log(msg.id)
@@ -45,16 +45,21 @@ function App() {
         if(index === -1) return
         copy[index].deleted = true 
         setMessages(copy)
-    }, [setMessages, messages])
+
+        if (platform && socket){
+            socket.emit(`deletemsg - ${platform}`, id)
+        }
+    }, [setMessages, messages, socket])
 
 	useEffect(() => {
 		if (socket) {
             socket.removeListener('chatmessage');
 			socket.on("chatmessage", msg => {
-                setMessages((m) => [...m.slice(m.length - 100, m.length), {...msg, sentAt: new Date().getTime()-1000, deleted: false}])
+                setMessages((m) => [...m.slice(m.length - 100, m.length), {...msg, sentAt: new Date().getTime(), deleted: false}])
             })
             return () => socket.removeListener('chatmessage');
-		}
+        }
+        
     }, [socket])
     
     useEffect(() => {
