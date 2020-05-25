@@ -57,8 +57,11 @@ const Message = props => {
                             {props.msg.badges.subscriber &&
                                 <Tooltip arrow title={props.msg.badges.subscriber.title} placement="top"><img className="sub-badge" src={props.msg.badges.subscriber.image} alt=""></img></Tooltip>
                             }
+                            {props.msg.badges.founder &&
+                                <Tooltip arrow title={props.msg.badges.founder.title} placement="top"><img className="sub-badge" src={props.msg.badges.founder.image} alt=""></img></Tooltip>
+                            }
                             {Object.entries(props.msg.badges).map((badge, i) => {
-                                return badge[0] !== "subscriber" ? <Tooltip arrow title={badge[1].title} placement="top"><img src={badge[1].image} alt="" className={`chat-badge badge-${i}`}></img></Tooltip>:<></>
+                                return !["subscriber", "founder"].includes(badge[0]) ? <Tooltip arrow title={badge[1].title} placement="top"><img src={badge[1].image} alt="" className={`chat-badge badge-${i}`}></img></Tooltip>:<></>
                             })}
                         </div>
                         <span>{props.msg.displayName}</span>
