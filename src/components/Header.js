@@ -11,11 +11,11 @@ const Header = props => {
     }, [props])
 
     const clearTwitch = useCallback(() => {
-        props.setMessages(messages => messages.map(msg => {return {...msg, deleted: msg.platform === "twitch"}}))
+        props.setMessages(messages => messages.map(msg => {return {...msg, deleted: msg.deleted || msg.platform === "twitch"}}))
     }, [props])
     
     const clearDiscord = useCallback(() => {
-        props.setMessages(messages => messages.map(msg => {return {...msg, deleted: msg.platform === "discord"}}))
+        props.setMessages(messages => messages.map(msg => { return { ...msg, deleted: msg.deleted || msg.platform === "discord"}}))
     }, [props])
 
     const signout = useCallback(async () => {
