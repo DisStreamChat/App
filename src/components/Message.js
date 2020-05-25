@@ -66,8 +66,8 @@ const Message = props => {
                     </span>
                     <button className="exit-button"><HighlightOffTwoToneIcon onClick={deleteMe}/></button>
                 </div>
-                <div className="msg-body another class" dangerouslySetInnerHTML={{
-                    __html: marked(DOMPurify.sanitize(`<pre>${props.msg.body}</pre>`, {
+                <pre className="msg-body" dangerouslySetInnerHTML={{
+                    __html: marked(DOMPurify.sanitize(props.msg.body, {
                         FORBID_ATTR: [
                             "style",
                             "onerror",
@@ -86,7 +86,7 @@ const Message = props => {
                         ],
                     }))
                 }}>
-                </div>
+                </pre>
                 <div className="message-footer">
                     <div className={`source ${showSource && "open"}`}>{showSourceButton &&
                     <>
