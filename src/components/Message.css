@@ -45,7 +45,7 @@
 
 .msg-body {
 	padding: .5rem;
-	max-height: 250px;
+	max-height: 300px;
 	overflow: auto;
     color: white !important;
     margin: 0 !important;
@@ -53,6 +53,7 @@
     word-break: break-all !important;
     font-size: inherit !important;
     white-space: pre-wrap; 
+    display: flex;
 }
 
 p {

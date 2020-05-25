@@ -33,7 +33,7 @@ function App() {
 	}, [])
 
 	useEffect(() => {
-		setSocket(openSocket("http://localhost:3200"))
+        setSocket(openSocket(process.env.REACT_APP_SOCKET_URL))
     }, [])
     
     const removeMessage = useCallback((id, platform) => {
