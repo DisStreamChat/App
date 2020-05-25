@@ -19,6 +19,10 @@
 	justify-content: space-between;
 }
 
+* {
+    font-family: "Roboto", sans-serif !important;
+}
+
 .message {
 	font-family: "Roboto", sans-serif;
     max-width: 640px;
@@ -142,9 +146,13 @@
 	height: fit-content;
 }
 
+pre{
+    color: white !important;
+}
+
 .source-text {
     font-size: 1rem;
-    max-width: 200px;
+    max-width: 400px;
 }
 
 .sub-badge {

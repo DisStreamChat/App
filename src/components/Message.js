@@ -67,7 +67,7 @@ const Message = props => {
                     <button className="exit-button"><HighlightOffTwoToneIcon onClick={deleteMe}/></button>
                 </div>
                 <div className="msg-body another class" dangerouslySetInnerHTML={{
-                    __html: marked(DOMPurify.sanitize(props.msg.body, {
+                    __html: marked(DOMPurify.sanitize(`<pre>${props.msg.body}</pre>`, {
                         FORBID_ATTR: [
                             "style",
                             "onerror",

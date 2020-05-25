@@ -10,12 +10,12 @@ const width = 650
 function createWindow() {
     mainWindow = new BrowserWindow({ 
         width: width,
-        height: 1080,
+        height: width*1.5,
         icon: "",
         frame: false,
         backgroundColor: '#1e272e',
-        x: 1920 - width,
-        y: 0,
+        // x: 1920 - width,
+        // y: 0,
         hasShadow: true,
         webPreferences: {
             // preload: path.join(__dirname, 'preload.js'),
