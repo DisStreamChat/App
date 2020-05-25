@@ -13,15 +13,20 @@ This is the Chat app for DisTwitchChat. This app has many features that the [ove
 ```
 git clone https://github.com/willjw3/react-electron.git <your-project-name>
 ```
-2. If you havent already, install Yarn globally.
+2. Install Dependencies
+```
+npm install
+```
+3. If you havent already, install Yarn globally.
 ```
 npm install -g yarn
 ```
-3. Navigate into project root and install dependencies.
+4. Create a .env and add enviromnent variables from `.env.sample`
+5. Navigate into project root and install dependencies.
 ```
 cd <your-project-name> && npm install
 ```
-4. Run dev server.
+6. Run dev server.
 ```
 npm run start
 ```
