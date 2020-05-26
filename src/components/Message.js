@@ -10,6 +10,7 @@ import "./Message.css"
 import { AppContext } from "../contexts/AppContext";
 import Tooltip from '@material-ui/core/Tooltip';
 import TimeIndicator from "./TimeIndicator";
+import YouTubeIcon from '@material-ui/icons/YouTube';
 
 let renderer = new marked.Renderer();
 renderer.link = function (href, title, text) {
@@ -29,13 +30,18 @@ const Message = props => {
     const [showSource, setShowSource] = useState(false)
     const [displayPlatform, setDisplayPlatform] = useState(true)
     const [showSourceButton, setShowSourceButton] = useState(false)
+    const [color, setColor] = useState({})
 
     const { streamerInfo } = useContext(AppContext)
+
 
     useEffect(() => {
         setDisplayPlatform(streamerInfo.displayPlatform)
         setShowSourceButton(streamerInfo.showSourceButton)
-    }, [streamerInfo])
+        setColor({
+            backgroundColor: props.msg.messageId === "highlighted-message" ? streamerInfo.highlightedMessageColor : props.msg.platform === "twitch" ? streamerInfo.twitchColor : streamerInfo.discordColor
+        })
+    }, [streamerInfo, props])
 
     useEffect(() => {
         setActive(a => a && !props.msg.deleted)
@@ -49,7 +55,7 @@ const Message = props => {
 
     return (
         <CSSTransition unmountOnExit in={active} timeout={700} classNames="my-node">
-            <div className={`message ${props.msg.messageId} ${displayPlatform === "full" && props.msg.platform+"-message"} ${!active && "fade-out"}`}>
+            <div style={displayPlatform === "full" || props.msg.messageId === "highlighted-message" ? {...color} : {}} className={`message ${props.msg.messageId} ${displayPlatform === "full" && props.msg.platform+"-message"} ${!active && "fade-out"}`}>
                 <div className="name msg-header">
                     <span className="name">
                         <div className={`profile ${props.msg.platform}-${displayPlatform}`}>
