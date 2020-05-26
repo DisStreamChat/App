@@ -122,8 +122,7 @@ pre::-webkit-scrollbar {
 	}
 }
 
-.exit-button {
-	float: right;
+.menu-button {
 	border: none;
 	outline: none !important;
 	background: none;

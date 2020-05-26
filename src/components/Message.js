@@ -11,6 +11,8 @@ import { AppContext } from "../contexts/AppContext";
 import Tooltip from '@material-ui/core/Tooltip';
 import TimeIndicator from "./TimeIndicator";
 import YouTubeIcon from '@material-ui/icons/YouTube';
+import { AiOutlinePushpin } from "react-icons/ai";
+
 
 let renderer = new marked.Renderer();
 renderer.link = function (href, title, text) {
@@ -33,7 +35,6 @@ const Message = props => {
     const [color, setColor] = useState({})
 
     const { streamerInfo } = useContext(AppContext)
-
 
     useEffect(() => {
         setDisplayPlatform(streamerInfo.displayPlatform)
@@ -73,7 +74,10 @@ const Message = props => {
                         <span>{props.msg.displayName}</span>
                         {displayPlatform === "medium" && <Tooltip title={props.msg.platform} placement="top" arrow><img width="20" src={props.msg.platform === "discord" ? discordLogo : twitchLogo} alt="platform" className={"chat-badge " + props.msg.platform} /></Tooltip>}
                     </span>
-                    <button className="exit-button"><HighlightOffTwoToneIcon onClick={deleteMe}/></button>
+                    <span>
+                        {!props.pinned && <button className="menu-button" onClick={() => props.pin(props.msg.id)}><AiOutlinePushpin /></button>}
+                        <button className="menu-button"><HighlightOffTwoToneIcon onClick={deleteMe}/></button>
+                    </span>
                 </div>
                 <pre className="msg-body" dangerouslySetInnerHTML={{
                     __html: marked(DOMPurify.sanitize(props.msg.body, {

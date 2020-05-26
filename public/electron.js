@@ -10,15 +10,11 @@ const width = 650
 function createWindow() {
     mainWindow = new BrowserWindow({ 
         width: width,
-        height: 1080,
+        height: width*1.5,
         icon: "",
         frame: false,
         backgroundColor: '#001e272e',
         transparent: true,
-        x: 1920 - width,
-        y: 0,
-        // minimizable: false,
-        // maximizable: false,
         hasShadow: true,
         // resizable: false,
         alwaysOnTop: true,

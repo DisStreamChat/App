@@ -3,15 +3,17 @@ import firebase from "./firebase"
 import "./App.css"
 
 import openSocket from "socket.io-client"
-import Message from "./components/Message"
+import MessagE from "./components/Message"
 import Header from "./components/Header"
 import { AppContext } from "./contexts/AppContext"
 import { useInterval } from 'react-use';
+import {Message} from "distwitchchat-componentlib"
 
 function App() {
 	const [error, setError] = useState("")
 	const [socket, setSocket] = useState()
-	const [messages, setMessages] = useState([])
+    const [messages, setMessages] = useState([])
+    const [pinnedMessages, setPinnedMessages] = useState([])
 	const [loaded, setLoaded] = useState(false)
 
 	const { streamerInfo, setStreamerInfo, userId, setUserId } = useContext(AppContext)
@@ -19,15 +21,20 @@ function App() {
 	useEffect(() => {
 		if (loaded) {
 			localStorage.setItem("messages", JSON.stringify(messages.filter(msg => !msg.deleted)))
-		}
-	}, [messages, loaded])
+            localStorage.setItem("pinned-messages", JSON.stringify(pinnedMessages.filter(msg => !msg.deleted)))
+        }
+    }, [messages, pinnedMessages, loaded])
 
 	useEffect(() => {
 		(async () => {
-			const localMessages = JSON.parse(localStorage.getItem("messages"))
+            const localMessages = JSON.parse(localStorage.getItem("messages"))
+            const localPinnedMesages = JSON.parse(localStorage.getItem("pinned-messages"))
 			if (localMessages) {
 				await setMessages(localMessages)
-			}
+            }
+            if(localPinnedMesages){
+                setPinnedMessages(localPinnedMesages)
+            }
 			setLoaded(true)
 		})()
 	}, [])
@@ -36,20 +43,30 @@ function App() {
         setSocket(openSocket(process.env.REACT_APP_SOCKET_URL))
     }, [])
     
+    const pinMessage = useCallback(id => {
+        let copy = [...messages]
+        let index = copy.findIndex(msg => msg.id === id)
+        if (index === -1) return
+        const pinnedMessage = copy.splice(index, 1)
+        setMessages(copy)
+        setPinnedMessages(m => [...m, ...pinnedMessage])
+    }, [messages])
+
     const removeMessage = useCallback((id, platform) => {
-        const copy = [...messages]
-        const index = copy.findIndex(msg => {
-            console.log(msg.id)
-            return msg.id === id
-        })
-        if(index === -1) return
+        let copy = [...messages]
+        let index = copy.findIndex(msg => msg.id === id)
+        if(index === -1) {
+            copy = [...pinnedMessages]
+            index = copy.findIndex(msg => msg.id === id)
+        }
+        if (index === -1) return
         copy[index].deleted = true 
         setMessages(copy)
 
         if (platform && socket){
             socket.emit(`deletemsg - ${platform}`, id)
         }
-    }, [setMessages, messages, socket])
+    }, [setMessages, messages, socket, pinnedMessages])
 
 	useEffect(() => {
 		if (socket) {
@@ -104,10 +121,13 @@ function App() {
 			<main className="body">
 				<div className={`overlay-container ${!streamerInfo.showHeader && "full-body"}`}>
 					<div className="overlay">
-						{messages.map((msg, i) => (
-							<Message delete={removeMessage} key={i} msg={msg} />
+						{messages.sort((a, b) => a.sentAt - b.sentAt).map((msg, i) => (
+                            <MessagE pin={pinMessage} delete={removeMessage} key={i} msg={msg} />
 						))}
-					</div>
+                        {pinnedMessages.map(msg => (
+                            <MessagE pin={pinMessage} delete={removeMessage} key={msg.uuid} msg={msg} pinned />
+                        ))}
+					</div> 
 				</div>
 			</main>
 		</div>
