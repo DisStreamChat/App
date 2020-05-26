@@ -38,7 +38,7 @@ const Message = props => {
     }, [streamerInfo])
 
     useEffect(() => {
-        setActive(!props.msg.deleted)
+        setActive(a => a && !props.msg.deleted)
     }, [props])
 
     const deleteMe = useCallback(() => {

@@ -25,16 +25,17 @@
     align-items: center;
 	justify-content: center;
 	height: 100vh;
-    background: linear-gradient(119.36deg, #17181B 21.35%, #24252A 76.56%);
+    /* background: linear-gradient(119.36deg, #17181B 21.35%, #24252A 76.56%); */
 }
 
 .app{
-    background: linear-gradient(119.36deg, #17181B 21.35%, #24252A 76.56%);
+    /* background: linear-gradient(119.36deg, #17181B 21.35%, #24252A 76.56%); */
 }
 
 body{
     margin: 0;
-	padding: 0;
+    padding: 0;
+    background: #00000000 !important;
 }
 
 .body{
@@ -53,7 +54,7 @@ body{
 }
 
 .overlay-container{
-    height: calc(100vh - 130px);
+    height: calc(100vh - 80px);
     overflow: auto;
     width: fit-content;
 }
@@ -65,6 +66,7 @@ body{
 /* width */
 ::-webkit-scrollbar {
   width: 0px;
+  height: 5px;
 }
 
 /* Track */

@@ -1,55 +1,69 @@
-.header{
-    width: 100vw;
-    height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #2a2c30
-}    
-
-.icon{
-    width: 50px;
-    height: 50px;
-    transform: scale(1.2);
-    border-radius: 100%;
-    cursor: pointer;
-    color: white;
+.header {
+	width: 100vw;
+	height: 50px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	background: #2a2c3000;
 }
 
-.icon-container{
-    width: 50px;
-    height: 50px;
-    margin: 0 auto;
-    background: #ffffff;
-    box-shadow: 0px 0px 15px 0px #7288d9;
-    border-radius: 100%;
-    overflow: hidden;
-    color: white;
+.icon {
+	width: 50px;
+	height: 50px;
+	transform: scale(1.2);
+	border-radius: 100%;
+	cursor: pointer;
+	color: white;
 }
 
-.nav{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    padding: 0 .5rem !important;
+.icon-container {
+	width: 50px;
+	height: 50px;
+	margin: 0 auto;
+	background: #ffffff;
+	box-shadow: 0px 0px 15px 0px #7288d9;
+	border-radius: 100%;
+	overflow: hidden;
+	color: white;
 }
 
-.nav button{
-    font-size: .85rem !important;
-    outline: none !important;
+.nav {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	padding: 0 .5rem !important;
 }
 
-.nav button:active{
-    transform: scale(.95);
+.nav button {
+	font-size: .75rem !important;
+	outline: none !important;
 }
 
-.MuiButton-contained{
-    background: var(--distwitchchat-blue) !important;
-    color: white !important;
+.nav button:active {
+	transform: scale(.95);
+}
+
+.MuiButton-contained {
+	background: var(--distwitchchat-blue) !important;
+	color: white !important;
 }
 
 .MuiButton-containedPrimary {
-    background: var(--distwitchchat-purple) !important;
+	background: var(--distwitchchat-purple) !important;
+}
+
+@media screen and (max-width: 550px) {
+	.nav button {
+		font-size: .6rem !important;
+		outline: none !important;
+	}
+}
+
+@media screen and (max-width: 475px) {
+	.nav button {
+		font-size: .5rem !important;
+		outline: none !important;
+	}
 }

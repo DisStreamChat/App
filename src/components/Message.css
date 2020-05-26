@@ -25,8 +25,8 @@
 
 .message {
 	font-family: "Roboto", sans-serif;
-    max-width: 640px;
-    width: 100vw;
+    /* max-width: 640px; */
+    width: 99.5vw;
 	padding: .2rem;
 	margin: .125rem 0;
 	animation: animate-in .7s ease-in-out 0s 1 forwards;
@@ -49,7 +49,7 @@
 	overflow: auto;
     color: white !important;
     margin: 0 !important;
-    max-width: 640px !important;
+    width: 100%;
     word-break: break-all !important;
     font-size: inherit !important;
     white-space: pre-wrap; 
@@ -61,8 +61,29 @@ p {
 }
 
 .msg-body *{
+    width: 100%;
     color: white;
     white-space: pre-wrap;
+}
+
+pre::-webkit-scrollbar {
+  width: 5px !important;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f100;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 15px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 .discord-message {
@@ -163,7 +184,19 @@ p {
 
 .source-text {
     font-size: 1rem;
-    max-width: 400px;
+    max-width: 70vw;
+}
+
+@media screen and (max-width: 375px){
+    .source-text{
+        max-width: 50vw;
+    }
+}
+
+@media screen and (max-width: 225px){
+    .source-text{
+        max-width: 30vw;
+    }
 }
 
 .sub-badge {

@@ -104,8 +104,8 @@ function App() {
 			<main className="body">
 				<div className={`overlay-container ${!streamerInfo.showHeader && "full-body"}`}>
 					<div className="overlay">
-						{messages.map(msg => (
-							<Message delete={removeMessage} key={msg.uuid} msg={msg} />
+						{messages.map((msg, i) => (
+							<Message delete={removeMessage} key={i} msg={msg} />
 						))}
 					</div>
 				</div>
