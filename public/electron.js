@@ -16,6 +16,9 @@ function createWindow() {
         backgroundColor: '#001e272e', // window background color, first two values set alpha which is set to 0 for transparency
         transparent: true, // make window transparent
         alwaysOnTop: true, // make is so other windows won't go on top of this one
+        webPreferences: {
+            nodeIntegration: true
+        },
     });
 
     mainWindow.loadURL(
