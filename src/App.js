@@ -61,6 +61,7 @@ function App() {
         }
     }, [messages, socket])
 
+    // this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
 	useEffect(() => {
 		if (socket) {
             socket.removeListener('chatmessage');
@@ -71,6 +72,7 @@ function App() {
         }
     }, [socket])
     
+    // this is similar to the above useEffect but for adds a listener for when messages are deleted
     useEffect(() => {
         if(socket){
             socket.removeListener('deletemessage');
@@ -79,6 +81,7 @@ function App() {
         }
     }, [socket, removeMessage])
 
+    // used for the current method of local authentication, attempts to get database info from a userId, if no userId is found attempt to get it from localstorage 
 	useEffect(() => {
 		(async () => {
 			if (userId) {
@@ -90,7 +93,6 @@ function App() {
 			} else if (localStorage.getItem("userId")) {
 				setUserId(localStorage.getItem("userId"))
 			}
-			console.log(userId)
 		})()
 	}, [userId, setUserId, setStreamerInfo])
 

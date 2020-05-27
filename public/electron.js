@@ -9,18 +9,13 @@ const width = 650
 
 function createWindow() {
     mainWindow = new BrowserWindow({ 
-        width: width,
-        height: width*1.5,
-        icon: "",
+        width: width, // width of the window
+        height: width*1.5, // height of the window
+        icon: `${process.env.PUBLIC_URL}/dual.png`,
         frame: false,
         backgroundColor: '#001e272e',
         transparent: true,
-        // x: 1920 - width,
-        // y: 0,
-        // minimizable: false,
-        // maximizable: false,
         hasShadow: true,
-        // resizable: false,
         alwaysOnTop: true,
         webPreferences: {
             nodeIntegration: true

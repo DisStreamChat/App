@@ -28,18 +28,13 @@
     /* background: linear-gradient(119.36deg, #17181B 21.35%, #24252A 76.56%); */
 }
 
-.app{
-    /* background: linear-gradient(119.36deg, #17181B 21.35%, #24252A 76.56%); */
-}
+/* originally used to set the background, unneeded with transparent background */
+/* .app{
+    background: linear-gradient(119.36deg, #17181B 21.35%, #24252A 76.56%);
+} */
 
 * {
     font-family: "Roboto", sans-serif !important;
-}
-
-body{
-    margin: 0;
-    padding: 0;
-    background: #00000000 !important;
 }
 
 .body{
