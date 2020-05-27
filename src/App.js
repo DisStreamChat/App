@@ -3,12 +3,13 @@ import firebase from "./firebase"
 import "./App.css"
 
 import openSocket from "socket.io-client"
-import MessagE from "./components/Message"
+// import MessagE from "./components/Message"
 import Header from "./components/Header"
 import { AppContext } from "./contexts/AppContext"
 import { useInterval } from 'react-use';
 import {Message} from "distwitchchat-componentlib"
 import "distwitchchat-componentlib/dist/index.css"
+import "./components/Message.css"
 
 function App() {
 	const [error, setError] = useState("")
