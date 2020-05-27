@@ -64,6 +64,5 @@
 @media screen and (max-width: 475px) {
 	.nav button {
 		font-size: .5rem !important;
-		outline: none !important;
 	}
 }
