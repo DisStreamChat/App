@@ -8,6 +8,7 @@ import Header from "./components/Header"
 import { AppContext } from "./contexts/AppContext"
 import { useInterval } from 'react-use';
 import {Message} from "distwitchchat-componentlib"
+import "distwitchchat-componentlib/dist/index.css"
 
 function App() {
 	const [error, setError] = useState("")
@@ -122,10 +123,10 @@ function App() {
 				<div className={`overlay-container ${!streamerInfo.showHeader && "full-body"}`}>
 					<div className="overlay">
 						{messages.sort((a, b) => a.sentAt - b.sentAt).map((msg, i) => (
-                            <MessagE pin={pinMessage} delete={removeMessage} key={i} msg={msg} />
+                            <Message streamerInfo={streamerInfo} pin={pinMessage} delete={removeMessage} key={i} msg={msg} />
 						))}
                         {pinnedMessages.map(msg => (
-                            <MessagE pin={pinMessage} delete={removeMessage} key={msg.uuid} msg={msg} pinned />
+                            <Message streamerInfo={streamerInfo} pin={pinMessage} delete={removeMessage} key={msg.uuid} msg={msg} pinned />
                         ))}
 					</div> 
 				</div>
