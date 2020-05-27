@@ -16,6 +16,7 @@ const App = () => {
     const [userId, setUserId] = useState("")
     const [streamerInfo, setStreamerInfo] = useState({})
 
+    // this allows me to show the loading spinner until firebase is ready
     useEffect(() => {
         (async () => {
             const result = await firebase.isInitialized();
@@ -35,14 +36,14 @@ const App = () => {
             <Router>
                 <Switch>
                     <ProtectedRoute exact path="/" component={Home} />
-                    <div className="App app--dark">
+                    <div className="App">
                         <Route path="/login" component={Auth} />
                     </div>
                     <Redirect to="/"/>
                 </Switch>
             </Router>
         </AppContext.Provider>
-    ) : <main className="App app--dark">
+    ) : <main className="App">
         <Loader
             loaded={false}
             lines={15}
