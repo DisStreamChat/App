@@ -19,7 +19,6 @@
         const { Menu, BrowserWindow, MenuItem, shell } = remote;
         const fs = require("fs");
 
-
         let MyTitleBar = new customTitlebar.Titlebar({
         	backgroundColor: customTitlebar.Color.fromHex('#2a2c3000'),
         	shadow: false,
@@ -28,17 +27,6 @@
         	// icon: './logo512.png'
         });
         MyTitleBar.updateTitle(' ');
-
-        // function enableClickThrough() {
-        //     console.log("Clickthrough enabled.")
-        //     var window = remote.getCurrentWindow();
-        //     window.setIgnoreMouseEvents(true);
-        // }
-
-        // remote.BrowserWindow.getFocusedWindow().on('minimize', function (event) {
-        //     remote.BrowserWindow.getAllWindows().setIgnoreMouseEvents(false);
-        //     console.log("Clickthrough disabled");
-        // });
     </script>
   </body>
 </html>

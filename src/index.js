@@ -11,6 +11,9 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Loader from "react-loader"
 import {AppContext} from "./contexts/AppContext"
 
+// https://distwitchchat-backend.herokuapp.com/
+
+
 const App = () => {
     const [firebaseInit, setFirebaseInit] = useState(false)
     const [userId, setUserId] = useState("")
