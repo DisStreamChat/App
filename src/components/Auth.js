@@ -3,23 +3,15 @@ import firebase from "../firebase"
 import "./Auth.css"
 import { withRouter } from 'react-router';
 import { Redirect } from 'react-router-dom';
-import { AppContext } from '../contexts/AppContext';
 import YouTubeIcon from '@material-ui/icons/YouTube';
 
 
 const Auth = props => {
-    const [id, setId] = useState()
-    const [error, setError] = useState("")
-
-    const { setUserId } = useContext(AppContext)
-
-
     const signInWithGoogle = useCallback(async () => {
         const provider = new firebase.app.auth.GoogleAuthProvider()
         try {
             const result = await firebase.auth.signInWithPopup(provider)
             const user = result.user
-            console.log(user)
             const { displayName, photoURL: profilePicture } = user
             firebase.auth.currentUser.updateProfile({
                 displayName: user.displayName
@@ -70,19 +62,6 @@ const Auth = props => {
     const loginWithTwitch = () => {
         window.open(`https://id.twitch.tv/oauth2/authorize?client_id=ip3igc72c6wu7j00nqghb24duusmbr&redirect_uri=http://localhost:3000&response_type=code&scope=openid%20moderation:read`)
     }
-
-    const formSubmitHandler = useCallback(async e => {
-        e.preventDefault()
-        try {
-            setError(null)
-            await setUserId(id)
-            await firebase.auth.signInAnonymously()
-            localStorage.setItem("userId", id)
-            props.history.push("/")
-        } catch (err) {
-            setError(err.code)
-        }
-    }, [props.history, id, setUserId])
 
     return firebase.auth.currentUser ? <Redirect to="/" /> : (
         <div className="Modal-Overlay">
