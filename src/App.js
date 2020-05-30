@@ -19,7 +19,7 @@ function App() {
     const { streamerInfo, setStreamerInfo } = useContext(AppContext)
     
     useEffect(() => {
-        setSettings(streamerInfo.appSettings || {})
+        setSettings(streamerInfo?.appSettings || {})
     }, [streamerInfo])
 
     // this runs whenever the messages array changes and stores the messages in localstorage
@@ -87,16 +87,7 @@ function App() {
         }
     }, [socket, removeMessage])
 
-    // used for the current method of local authentication, attempts to get database info from a userId, if no userId is found attempt to get it from localstorage 
-	useEffect(() => {
-		(async () => {
-			const db = firebase.app.firestore()
-			const unsubscribe = db.collection("Streamers").doc(firebase.auth.currentUser.uid).onSnapshot(snapshot => {
-                setStreamerInfo(snapshot.data())
-            })
-            return () => unsubscribe();
-		})()
-	}, [setStreamerInfo])
+    
 
 	useEffect(() => {
 		if (streamerInfo) {

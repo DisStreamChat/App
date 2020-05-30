@@ -26,11 +26,15 @@ const Header = props => {
     }, [props.history]) 
 
     return (
-        <header className="header">
+        <header className={`header ${props.pad}`}>
             <nav className="nav">
-                <Button variant="contained" onClick={clearChat}>Clear Chat</Button>
-                <Button variant="contained" onClick={clearTwitch}>Clear Twitch Chat</Button>
-                <Button variant="contained" onClick={clearDiscord}>Clear Discord Chat</Button>
+                {props.setMessages && 
+                <>
+                    <Button variant="contained" onClick={clearChat}>Clear Chat</Button>
+                    <Button variant="contained" onClick={clearTwitch}>Clear Twitch Chat</Button>
+                    <Button variant="contained" onClick={clearDiscord}>Clear Discord Chat</Button>
+                </>
+                }
                 <Button variant="contained" color="primary" onClick={signout}>Sign Out</Button>
             </nav>
         </header>

@@ -26,7 +26,9 @@
     display: flex;
     align-items: center;
 	justify-content: center;
-	height: 100vh;
+    height: 100vh;
+    font-family: Montserrat;
+    color: #fff;
     /* background: linear-gradient(119.36deg, #17181B 21.35%, #24252A 76.56%); */
 }
 
@@ -36,8 +38,10 @@
 } */
 
 
+
 * {
-    font-family: "Roboto", sans-serif !important;
+    font-family: Montserrat !important;
+    color: #fff;
     padding: 0;
     margin: 0;
     box-sizing: content-box !important;
@@ -96,6 +100,5 @@ p, h1{
 
 #root a{
   color: white !important;
-  text-decoration: underline !important;
 }
 
