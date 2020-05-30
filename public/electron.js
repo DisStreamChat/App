@@ -6,6 +6,7 @@ const isDev = require("electron-is-dev");
 
 let mainWindow;
 const width = 650
+const globalShortcut = electron.globalShortcut
 
 function createWindow() {
     mainWindow = new BrowserWindow({ 
@@ -25,6 +26,18 @@ function createWindow() {
         isDev ? "http://localhost:3000" : `file://${path.join(__dirname, "../build/index.html")}`
     );
     mainWindow.on("closed", () => (mainWindow = null));
+    globalShortcut.register('f5', function () {
+        // console.log('f5 is pressed')
+        mainWindow.setOpacity(.25)
+        mainWindow.setIgnoreMouseEvents(true)
+    })
+    
+    globalShortcut.register('f6', function () {
+        // console.log('f6 is pressed')
+        mainWindow.setOpacity(1)
+        mainWindow.setIgnoreMouseEvents(false)
+    })
+
 }
 
 

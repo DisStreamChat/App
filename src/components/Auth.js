@@ -7,6 +7,7 @@ import YouTubeIcon from '@material-ui/icons/YouTube';
 
 
 const Auth = props => {
+    const [state, setState] = useState("")
     const signInWithGoogle = useCallback(async () => {
         const provider = new firebase.app.auth.GoogleAuthProvider()
         try {
@@ -59,9 +60,65 @@ const Auth = props => {
         }
     }, [])
 
-    const loginWithTwitch = () => {
-        window.open(`https://id.twitch.tv/oauth2/authorize?client_id=ip3igc72c6wu7j00nqghb24duusmbr&redirect_uri=http://localhost:3000&response_type=code&scope=openid%20moderation:read`)
-    }
+    const loginWithTwitch = useCallback(() => {
+
+        async function receiveMessage(event) {
+            if (event.origin !== "https://distwitchchat-backend.herokuapp.com") {
+                console.log('invalid origin', event.origin);
+            } else {
+                const json = event.data
+                const result = await firebase.auth.signInWithCustomToken(json.token)
+                console.log(firebase.auth.currentUser)
+                const uid = result.user.uid
+                const { displayName, profilePicture, ModChannels } = json
+                try {
+                    await firebase.db.collection("Streamers").doc(uid).update({
+                        displayName,
+                        profilePicture,
+                        ModChannels
+                    })
+                } catch (err) {
+                    await firebase.db.collection("Streamers").doc(uid).set({
+                        displayName,
+                        uid,
+                        profilePicture,
+                        ModChannels,
+                        TwitchName: displayName.toLowerCase(),
+                        appSettings: {
+                            TwitchColor: "",
+                            YoutubeColor: "",
+                            discordColor: "",
+                            displayPlatformColors: false,
+                            displayPlatformIcons: false,
+                            highlightedMessageColor: "",
+                            showHeader: true,
+                            showSourceButton: false
+                        },
+                        discordLinked: false,
+                        guildId: "",
+                        liveChatId: "",
+                        overlaySettings: {
+                            TwitchColor: "",
+                            YoutubeColor: "",
+                            discordColor: "",
+                            displayPlatformColors: false,
+                            displayPlatformIcons: false,
+                            highlightedMessageColor: "",
+                        },
+                        twitchAuthenticated: true,
+                        youtubeAuthenticated: false
+                    })
+                }
+                setState(Math.random())
+            }
+        }
+
+        window.addEventListener('message', receiveMessage, {
+            once: true,
+        });
+
+        window.open(`https://id.twitch.tv/oauth2/authorize?client_id=ip3igc72c6wu7j00nqghb24duusmbr&redirect_uri=https://distwitchchat-backend.herokuapp.com/oauth/twitch/&response_type=code&scope=openid%20moderation:read`)
+    }, [])
 
     return firebase.auth.currentUser ? <Redirect to="/" /> : (
         <div className="Modal-Overlay">

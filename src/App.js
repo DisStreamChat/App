@@ -10,12 +10,13 @@ import "distwitchchat-componentlib/dist/index.css"
 import "./components/Message.css"
 
 function App() {
+    // firebase.logout()
 	const [socket, setSocket] = useState()
     const [messages, setMessages] = useState([])
 	const [loaded, setLoaded] = useState(false)
     const [settings, setSettings] = useState({})
 
-    const { streamerInfo, setStreamerInfo, userId, setUserId } = useContext(AppContext)
+    const { streamerInfo, setStreamerInfo } = useContext(AppContext)
     
     useEffect(() => {
         setSettings(streamerInfo.appSettings || {})
@@ -89,19 +90,13 @@ function App() {
     // used for the current method of local authentication, attempts to get database info from a userId, if no userId is found attempt to get it from localstorage 
 	useEffect(() => {
 		(async () => {
-            console.log(userId, localStorage.getItem("userId"))
-			if (userId) {
-				const db = firebase.app.firestore()
-				const unsubscribe = db.collection("Streamers").doc(userId).onSnapshot(snapshot => {
-                    setStreamerInfo(snapshot.data())
-                    console.log(snapshot.data())
-                })
-                return () => unsubscribe();
-			} else if (localStorage.getItem("userId")) {
-				setUserId(localStorage.getItem("userId"))
-			}
+			const db = firebase.app.firestore()
+			const unsubscribe = db.collection("Streamers").doc(firebase.auth.currentUser.uid).onSnapshot(snapshot => {
+                setStreamerInfo(snapshot.data())
+            })
+            return () => unsubscribe();
 		})()
-	}, [userId, setUserId, setStreamerInfo])
+	}, [setStreamerInfo])
 
 	useEffect(() => {
 		if (streamerInfo) {
