@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext, useCallback } from "react"
 import firebase from "./firebase"
+import {useParams} from "react-router-dom"
 import "./App.css"
 
 import openSocket from "socket.io-client"
@@ -15,8 +16,12 @@ function App() {
     const [messages, setMessages] = useState([])
 	const [loaded, setLoaded] = useState(false)
     const [settings, setSettings] = useState({})
+    const [channel, setChannel] = useState()
+    const {id} = useParams()
 
-    const { streamerInfo, setStreamerInfo } = useContext(AppContext)
+    const { streamerInfo} = useContext(AppContext)
+
+    const currentUser = firebase.auth.currentUser
     
     useEffect(() => {
         setSettings(streamerInfo?.appSettings || {})
@@ -87,16 +92,31 @@ function App() {
         }
     }, [socket, removeMessage])
 
-    
+    useEffect(() => {
+        if(id && currentUser){
+            firebase.db.collection("Streamers").doc(id).onSnapshot(snapshot => {
+                const data = snapshot.data()
+                if(data) {
+                    const {TwitchName, guildId, liveChatId} = data
+                    setChannel({
+                        TwitchName,
+                        guildId,
+                        liveChatId
+                    })
+                }
+            })
+        }
+    }, [id, currentUser])
 
 	useEffect(() => {
-		if (streamerInfo) {
+		if (channel) {
+            console.log(channel)
 			// send infoString to backend with sockets, to get proper socket connection
 			if (socket) {
-				socket.emit("addme", streamerInfo)
+				socket.emit("addme", channel)
 			}
 		}
-    }, [streamerInfo, socket])
+    }, [channel, socket])
     
 	return (
 		<div className="app app--dark">

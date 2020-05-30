@@ -1,6 +1,6 @@
 const electron = require("electron");
 const app = electron.app;
-const BrowserWindow = electron.BrowserWindow;
+const {BrowserWindow} = electron;
 const path = require("path");
 const isDev = require("electron-is-dev");
 
@@ -18,7 +18,7 @@ function createWindow() {
         transparent: true, // make window transparent
         alwaysOnTop: true, // make is so other windows won't go on top of this one
         webPreferences: {
-            nodeIntegration: true
+            nodeIntegration: true // integrates the frontend with node, this is used for the custom toolbar
         },
     });
 
@@ -26,14 +26,14 @@ function createWindow() {
         isDev ? "http://localhost:3000" : `file://${path.join(__dirname, "../build/index.html")}`
     );
     mainWindow.on("closed", () => (mainWindow = null));
+
+    // hotkey for turning on and off clickthrough
     globalShortcut.register('f5', function () {
-        // console.log('f5 is pressed')
-        mainWindow.setOpacity(.25)
+        mainWindow.setOpacity(.5)
         mainWindow.setIgnoreMouseEvents(true)
     })
     
     globalShortcut.register('f6', function () {
-        // console.log('f6 is pressed')
         mainWindow.setOpacity(1)
         mainWindow.setIgnoreMouseEvents(false)
     })
@@ -41,19 +41,21 @@ function createWindow() {
 }
 
 
-// this is used to send all links to the default browser
-// app.on('web-contents-created', (e, contents) => {
-//     contents.on('will-navigate', (event, url) => {
-//         event.preventDefault();
-//         require('electron').shell.openExternal(url);
-//         console.log('blocked navigate:', url);
-//     });
-//     contents.on('new-window', async (event, url) => {
-//         event.preventDefault();
-//         require('electron').shell.openExternal(url);
-//         console.log('blocked window:', url);
-//     });
-// });
+// this is used to send all links to the users default browser
+app.on('web-contents-created', (e, contents) => {
+    contents.on('will-navigate', (event, url) => {
+        if (url.includes("id.twitch") || url.includes("about:blank") || url.includes("localhost")) return 
+        event.preventDefault();
+        electron.shell.openExternal(url);
+        console.log('blocked navigate:', url);
+    });
+    contents.on('new-window', async (event, url) => {
+        if (url.includes("id.twitch") || url.includes("about:blank") || url.includes("localhost")) return 
+        event.preventDefault();
+        electron.shell.openExternal(url);
+        console.log('blocked window:', url);
+    });
+});
 
 app.on("ready", createWindow);
 app.on("window-all-closed", () => {

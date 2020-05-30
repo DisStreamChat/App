@@ -13,7 +13,7 @@ const ChannelItem = props => {
             </div>
             <div className="channel-info">
                 <span className="channel-name">{props.display_name || props.name}</span>
-                <button disabled={!props.isMember} className="to-dashboard dashboard-button">{props.isMember ? <Link className="dashboard-link" to={`/chat/${props.uid}`} >{!props.moderator ? "Go To Dashboard" : "Go To ModView"}</Link> : <>This channel doesn't use DisTwitchChat</>}</button>
+                <button disabled={!props.isMember} className="to-dashboard dashboard-button">{props.isMember ? <Link className="dashboard-link" to={`/chat/${props.uid}`} >{!props.moderator ? "Go To Chat" : "Go To ModView"}</Link> : <>This channel doesn't use DisTwitchChat</>}</button>
             </div>
         </div>
     )
@@ -25,8 +25,6 @@ const Channels = () => {
     const [myChannel, setMyChannel] = useState()
     const [modChannels, setModChannels] = useState([])
 
-    const { streamerInfo, setStreamerInfo } = useContext(AppContext)
-
     useEffect(() => {
         firebase.db.collection("Streamers").doc(currentUser.uid).onSnapshot(snapshot => {
             const user = snapshot.data()
@@ -34,10 +32,27 @@ const Channels = () => {
         })
     }, [currentUser])
 
+    useEffect(() => {
+        (async () => {
+            const channelsInfo = (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data().ModChannels
+            const channelNames = channelsInfo.map(channel => channel.login)
+            const streamerRef = firebase.db.collection("Streamers")
+            for (const name of channelNames){
+                const channelData = await streamerRef.where("name", "==", name).get()
+                const idx = channelsInfo.findIndex(channel => channel.login === name)
+                if(!channelData.empty){
+                    channelsInfo[idx].isMember = true
+                    const {uid} = channelData.docs[0].data()
+                    channelsInfo[idx].uid = uid
+                }
+            }
+            setModChannels(channelsInfo.sort().sort((a, b) => a.isMember ? -1 : 1).map(channel => { return { ...channel, modPlatform: "twitch"} }))
+        })()
+    }, [currentUser])
+
     return (
         <div className="my-channels">
-            {streamerInfo?.appSettings?.showHeader && <Header pad="pdbt-1"/>}
-
+            <Header pad="pdbt-1"/>
             <h1>Your Channel</h1>
             <ChannelItem {...myChannel} />
             <hr />
