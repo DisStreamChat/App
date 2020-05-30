@@ -68,7 +68,6 @@ const Auth = props => {
             } else {
                 const json = event.data
                 const result = await firebase.auth.signInWithCustomToken(json.token)
-                console.log(firebase.auth.currentUser)
                 const uid = result.user.uid
                 const { displayName, profilePicture, ModChannels } = json
                 try {
@@ -109,7 +108,7 @@ const Auth = props => {
                         youtubeAuthenticated: false
                     })
                 }
-                setState(Math.random())
+                props.history.push("/")
             }
         }
 

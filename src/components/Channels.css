@@ -24,7 +24,7 @@ hr {
     display: flex;
     align-items: flex-start;
     width: 80%;
-    height: 150px;
+    height: 100px;
     margin: .5rem 0;
     border-radius: .5rem;
     background: #2a2c30;
@@ -72,14 +72,14 @@ hr {
 }
 
 .to-dashboard{
-    padding: 1rem;
+    padding: .75rem;
     border-radius: .25rem;
     border: none;
     outline: none;
     /* background: var(--distwitchchat-blue); */
     color: white;
     transition: .25s;
-    font-weight: bold;
+    /* font-weight: bold; */
 
 }
 
@@ -88,7 +88,8 @@ hr {
 }
 
 .to-dashboard:hover:not(:disabled){
-    font-weight: bolder;
+    font-weight: bold;
+    text-decoration: underline;
 }
 
 .to-dashboard:disabled{
