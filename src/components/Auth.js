@@ -63,7 +63,7 @@ const Auth = props => {
     const loginWithTwitch = useCallback(() => {
 
         async function receiveMessage(event) {
-            if (event.origin !== "https://distwitchchat-backend.herokuapp.com") {
+            if (event.origin !== "https://distwitchchat-backend.herokuapp.com" && event.origin !== "http://localhost:3200") {
                 console.log('invalid origin', event.origin);
             } else {
                 const json = event.data
@@ -117,7 +117,7 @@ const Auth = props => {
             once: true,
         });
 
-        window.open(`https://id.twitch.tv/oauth2/authorize?client_id=ip3igc72c6wu7j00nqghb24duusmbr&redirect_uri=https://distwitchchat-backend.herokuapp.com/oauth/twitch/&response_type=code&scope=openid%20moderation:read`)
+        window.open(`https://id.twitch.tv/oauth2/authorize?client_id=ip3igc72c6wu7j00nqghb24duusmbr&redirect_uri=http://localhost:3200/oauth/twitch/&response_type=code&scope=openid%20moderation:read`)
     }, [])
 
     return firebase.auth.currentUser ? <Redirect to="/" /> : (
