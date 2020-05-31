@@ -1,8 +1,8 @@
 {
-  "name": "react-electron",
-  "version": "0.1.0",
-  "description": "Simple boilerplate for developing an Electron app with React",
-  "author": "willjw3",
+  "name": "distwitchchat",
+  "version": "0.2.0",
+  "description": "Cross platform stream chat manager",
+  "author": "davidwsnyder",
   "build": {
     "appId": "react.electron",
     "win": {

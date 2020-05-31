@@ -78,7 +78,7 @@ hr {
     outline: none;
     color: white;
     transition: .25s;
-    width: 124px;
+    width: 128px;
 }
 
 .to-dashboard:not(:disabled){
