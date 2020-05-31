@@ -49,6 +49,15 @@ function App() {
 	useEffect(() => {
         setSocket(openSocket(process.env.REACT_APP_SOCKET_URL))
     }, [])
+
+    useEffect(() => {
+        return () => {
+            console.log("cleaning up")
+            if(socket){
+                socket.disconnect()
+            }
+        }
+    }, [socket])
     
     // this function is passes into the message and will be used for pinning
     const pinMessage = useCallback((id, pinned=true) => {
@@ -110,7 +119,6 @@ function App() {
 
 	useEffect(() => {
 		if (channel) {
-            console.log(channel)
 			// send infoString to backend with sockets, to get proper socket connection
 			if (socket) {
 				socket.emit("addme", channel)
@@ -120,7 +128,7 @@ function App() {
     
 	return (
 		<div className="app app--dark">
-            {streamerInfo?.appSettings?.showHeader && <Header setMessages={setMessages} />}
+            {streamerInfo?.appSettings?.showHeader && <Header setMessages={setMessages} backButton/>}
 			<main className="body">
 				<div className={`overlay-container ${!streamerInfo?.appSettings?.showHeader && "full-body"}`}>
 					<div className="overlay">

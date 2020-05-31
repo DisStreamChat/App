@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react';
 import "./Header.css"
 import firebase from "../firebase"
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 
-const Header = props => {
 
+const Header = props => {
     const clearChat = useCallback(() => {
         props.setMessages(m => m.map(msg => {return {...msg, deleted: true}}))
     }, [props])
@@ -35,7 +35,11 @@ const Header = props => {
                     <Button variant="contained" onClick={clearDiscord}>Clear Discord Chat</Button>
                 </>
                 }
-                <Button variant="contained" color="primary" onClick={signout}>Sign Out</Button>
+                {props.backButton ? 
+                    <Button variant="contained" color="primary"><Link to="/channels">Channels</Link></Button>
+                    : 
+                    <Button variant="contained" color="primary" onClick={signout}>Sign Out</Button>
+                }
             </nav>
         </header>
     );

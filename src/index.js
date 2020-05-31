@@ -19,6 +19,7 @@ const App = () => {
     const [firebaseInit, setFirebaseInit] = useState(false)
     const [userId, setUserId] = useState("")
     const [streamerInfo, setStreamerInfo] = useState({})
+    const [messages, setMessages] = useState()
 
     // this allows me to show the loading spinner until firebase is ready
     useEffect(() => {
@@ -47,9 +48,11 @@ const App = () => {
         <AppContext.Provider
             value={{
                 userId,
+                messages, 
                 setUserId,
+                setMessages,
                 streamerInfo,
-                setStreamerInfo
+                setStreamerInfo,
             }}
         >
             <Router>

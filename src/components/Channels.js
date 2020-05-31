@@ -20,10 +20,13 @@ const ChannelItem = props => {
 }
 
 const Channels = () => {
-
     const currentUser = firebase.auth.currentUser
     const [myChannel, setMyChannel] = useState()
     const [modChannels, setModChannels] = useState([])
+
+    useEffect(() => {
+        localStorage.setItem("messages", JSON.stringify([]))
+    }, [])
 
     useEffect(() => {
         firebase.db.collection("Streamers").doc(currentUser.uid).onSnapshot(snapshot => {
@@ -34,19 +37,21 @@ const Channels = () => {
 
     useEffect(() => {
         (async () => {
-            const channelsInfo = (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data().ModChannels
-            const channelNames = channelsInfo.map(channel => channel.login)
-            const streamerRef = firebase.db.collection("Streamers")
-            for (const name of channelNames){
-                const channelData = await streamerRef.where("name", "==", name).get()
-                const idx = channelsInfo.findIndex(channel => channel.login === name)
-                if(!channelData.empty){
-                    channelsInfo[idx].isMember = true
-                    const {uid} = channelData.docs[0].data()
-                    channelsInfo[idx].uid = uid
+            if(currentUser){
+                const channelsInfo = (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data().ModChannels
+                const channelNames = channelsInfo.map(channel => channel.login)
+                const streamerRef = firebase.db.collection("Streamers")
+                for (const name of channelNames){
+                    const channelData = await streamerRef.where("name", "==", name).get()
+                    const idx = channelsInfo.findIndex(channel => channel.login === name)
+                    if(!channelData.empty){
+                        channelsInfo[idx].isMember = true
+                        const {uid} = channelData.docs[0].data()
+                        channelsInfo[idx].uid = uid
+                    }
                 }
+                setModChannels(channelsInfo.sort().sort((a, b) => a.isMember ? -1 : 1).map(channel => { return { ...channel, modPlatform: "twitch"} }))
             }
-            setModChannels(channelsInfo.sort().sort((a, b) => a.isMember ? -1 : 1).map(channel => { return { ...channel, modPlatform: "twitch"} }))
         })()
     }, [currentUser])
 
@@ -58,7 +63,7 @@ const Channels = () => {
             <hr />
             <h1>Channels you moderate</h1>
             {modChannels.map(channel => (
-                <ChannelItem {...channel} moderator />
+                <ChannelItem {...channel} moderator/>
             ))}
         </div>
     );
