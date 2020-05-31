@@ -24,6 +24,8 @@ const Auth = props => {
                 await firebase.db.collection("Streamers").doc(user.uid).update({
                     displayName,
                     profilePicture,
+                    TwitchName: displayName.toLowerCase(),
+                    name: displayName.toLowerCase()
                 })
             } catch (err) {
                 await firebase.db.collection("Streamers").doc(user.uid).set({
@@ -32,6 +34,7 @@ const Auth = props => {
                     profilePicture,
                     ModChannels: [],
                     TwitchName: displayName.toLowerCase(),
+                    name: displayName.toLowerCase(),
                     appSettings: {
                         TwitchColor: "",
                         YoutubeColor: "",
