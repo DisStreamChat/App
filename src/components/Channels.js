@@ -31,7 +31,7 @@ const Channels = () => {
     useEffect(() => {
         firebase.db.collection("Streamers").doc(currentUser.uid).onSnapshot(snapshot => {
             const user = snapshot.data()
-            setMyChannel({ name: user?.name, isMember: true, profilePicture: user?.profilePicture, uid: currentUser.uid })
+            setMyChannel({ name: user?.displayName, isMember: true, profilePicture: user?.profilePicture, uid: currentUser.uid })
         })
     }, [currentUser])
 

@@ -87,7 +87,9 @@ const Auth = props => {
                     await firebase.db.collection("Streamers").doc(uid).update({
                         displayName,
                         profilePicture,
-                        ModChannels
+                        ModChannels,
+                        name: displayName.toLowerCase(),
+                        TwitchName: displayName.toLowerCase()
                     })
                 } catch (err) {
                     await firebase.db.collection("Streamers").doc(uid).set({
