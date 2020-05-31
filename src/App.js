@@ -135,7 +135,8 @@ function App() {
     
 	return (
 		<div className="app app--dark">
-            {settings.showHeader && <Header setMessages={setMessages} backButton/>}
+            {/* {settings.showHeader && <Header setMessages={setMessages} backButton/>} */}
+            <Header setMessages={setMessages} backButton/>
 			<main className="body">
 				<div className={`overlay-container ${!streamerInfo?.appSettings?.showHeader && "full-body"}`}>
 					<div className="overlay">
