@@ -19,13 +19,20 @@ function App() {
     const [channel, setChannel] = useState()
     const {id} = useParams()
 
-    const { streamerInfo} = useContext(AppContext)
+    const { streamerInfo } = useContext(AppContext)
 
     const currentUser = firebase.auth.currentUser
     
     useEffect(() => {
-        setSettings(streamerInfo?.appSettings || {})
-    }, [streamerInfo])
+        if(currentUser){
+            firebase.db.collection("Streamers").doc(currentUser.uid).onSnapshot(snapshot => {
+                const data = snapshot.data()
+                if(data){
+                    setSettings(data.appSettings)
+                }
+            })
+        }
+    }, [currentUser])
 
     // this runs whenever the messages array changes and stores the messages in localstorage
 	useEffect(() => {
