@@ -68,70 +68,66 @@ const Auth = props => {
 
     const loginWithTwitch = useCallback(() => {
         // function that is executed when a message is received
-        async function receiveMessage(event) {
+        async function receiveMessage(event, data) {
+            console.log(data)
             // only accept messages from a valid origin
-            if (event.origin !== "https://distwitchchat-backend.herokuapp.com" && event.origin !== "https://api.distwitchchat.com" && event.origin !== "http://localhost:3200") {
-                console.log('invalid origin', event.origin);
-            } else {
-                // the message data is stored in 'event.data', use that data to sign the user in and update or set their database entry
-                const json = event.data
-                const result = await firebase.auth.signInWithCustomToken(json.token)
-                const uid = result.user.uid
-                const { displayName, profilePicture, ModChannels } = json
-                firebase.auth.currentUser.updateProfile({
-                    displayName
+            // the message data is stored in 'event.data', use that data to sign the user in and update or set their database entry
+            const json = data
+            const result = await firebase.auth.signInWithCustomToken(json.token)
+            const uid = result.user.uid
+            const { displayName, profilePicture, ModChannels } = json
+            firebase.auth.currentUser.updateProfile({
+                displayName
+            })
+            // update or set the users database entry. the try catch is used to detect if there is not already a user in the database
+            // it will throw an error trying to update a document that doesn't exist
+            try {
+                await firebase.db.collection("Streamers").doc(uid).update({
+                    displayName,
+                    profilePicture,
+                    ModChannels,
+                    name: displayName.toLowerCase(),
+                    TwitchName: displayName.toLowerCase()
                 })
-                // update or set the users database entry. the try catch is used to detect if there is not already a user in the database
-                // it will throw an error trying to update a document that doesn't exist
-                try {
-                    await firebase.db.collection("Streamers").doc(uid).update({
-                        displayName,
-                        profilePicture,
-                        ModChannels,
-                        name: displayName.toLowerCase(),
-                        TwitchName: displayName.toLowerCase()
-                    })
-                } catch (err) {
-                    await firebase.db.collection("Streamers").doc(uid).set({
-                        displayName,
-                        uid,
-                        profilePicture,
-                        ModChannels,
-                        TwitchName: displayName.toLowerCase(),
-                        name: displayName.toLowerCase(),
-                        appSettings: {
-                            TwitchColor: "",
-                            YoutubeColor: "",
-                            discordColor: "",
-                            displayPlatformColors: false,
-                            displayPlatformIcons: false,
-                            highlightedMessageColor: "",
-                            showHeader: true,
-                            showSourceButton: false
-                        },
-                        discordLinked: false,
-                        guildId: "",
-                        liveChatId: "",
-                        overlaySettings: {
-                            TwitchColor: "",
-                            YoutubeColor: "",
-                            discordColor: "",
-                            displayPlatformColors: false,
-                            displayPlatformIcons: false,
-                            highlightedMessageColor: "",
-                        },
-                        twitchAuthenticated: true,
-                        youtubeAuthenticated: false
-                    })
-                }
-                props.history.push("/")
+            } catch (err) {
+                await firebase.db.collection("Streamers").doc(uid).set({
+                    displayName,
+                    uid,
+                    profilePicture,
+                    ModChannels,
+                    TwitchName: displayName.toLowerCase(),
+                    name: displayName.toLowerCase(),
+                    appSettings: {
+                        TwitchColor: "",
+                        YoutubeColor: "",
+                        discordColor: "",
+                        displayPlatformColors: false,
+                        displayPlatformIcons: false,
+                        highlightedMessageColor: "",
+                        showHeader: true,
+                        showSourceButton: false
+                    },
+                    discordLinked: false,
+                    guildId: "",
+                    liveChatId: "",
+                    overlaySettings: {
+                        TwitchColor: "",
+                        YoutubeColor: "",
+                        discordColor: "",
+                        displayPlatformColors: false,
+                        displayPlatformIcons: false,
+                        highlightedMessageColor: "",
+                    },
+                    twitchAuthenticated: true,
+                    youtubeAuthenticated: false
+                })
             }
+            props.history.push("/")
+
         }
 
         // listen for a message from the popup window that will send the sign in info
-        window.addEventListener('message', receiveMessage, {
-            once: true,
-        });
+        ipcRenderer.once('log-me-in', receiveMessage);
 
         // open a popup window to the twitch oauth url
         ipcRenderer.send('login');

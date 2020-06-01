@@ -82,12 +82,13 @@ ipcMain.on('login', (event) => {
         alwaysOnTop: true, // make is so other windows won't go on top of this one
         webPreferences: {
             nodeIntegration: false, // integrates the frontend with node, this is used for the custom toolbar
-            preload: './loginWindow.js'
+            preload: path.join(__dirname, "loginWindow.js")
         },
     });
     loginWindow.loadURL('https://id.twitch.tv/oauth2/authorize?client_id=ip3igc72c6wu7j00nqghb24duusmbr&redirect_uri=https://api.distwitchchat.com/oauth/twitch/&response_type=code&scope=openid%20moderation:read');
 });
 
-ipcMain.on('login-token', (event, token) => {
-    ipcMain.emit('login-token', token);
+ipcMain.on('login-data', (event, token) => {
+    // ipcMain.emit('log-me-in', token);
+    mainWindow.webContents.send("log-me-in", token)
 });
