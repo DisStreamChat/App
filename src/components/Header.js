@@ -36,7 +36,7 @@ const Header = props => {
                 </>
                 }
                 {props.backButton ? 
-                    <Button variant="contained" color="primary"><Link to="/channels">Channels</Link></Button>
+                    <Link to="/channels"><Button variant="contained" color="primary">Channels</Button></Link>
                     : 
                     <Button variant="contained" color="primary" onClick={signout}>Sign Out</Button>
                 }
