@@ -1,6 +1,5 @@
 const electron = require("electron");
-const app = electron.app;
-const {BrowserWindow, ipcMain} = electron;
+const {BrowserWindow, ipcMain, app} = electron;
 const path = require("path");
 const isDev = require("electron-is-dev");
 
