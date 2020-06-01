@@ -138,7 +138,7 @@ function App() {
             {/* {settings.showHeader && <Header setMessages={setMessages} backButton/>} */}
             <Header setMessages={setMessages} backButton/>
 			<main className="body">
-				<div className={`overlay-container ${!streamerInfo?.appSettings?.showHeader && "full-body"}`}>
+				<div className={`overlay-container ${!settings.showHeader && "full-body"}`}>
 					<div className="overlay">
 						{messages.sort((a, b) => a.sentAt - b.sentAt).map((msg, i) => (
                             <Message streamerInfo={settings} pin={pinMessage} delete={removeMessage} key={msg.uuid} msg={msg} />
