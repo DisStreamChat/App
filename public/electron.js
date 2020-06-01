@@ -14,7 +14,6 @@ function createWindow() {
     mainWindow = new BrowserWindow({ 
         width: width, // width of the window
         height: width*1.5, // height of the window
-        icon: `${process.env.PUBLIC_URL}/dual.png`, // icon, which is only used in the production version
         frame: false, // whether or not the window has 'frame' or header
         backgroundColor: '#001e272e', // window background color, first two values set alpha which is set to 0 for transparency
         transparent: true, // make window transparent
@@ -27,15 +26,15 @@ function createWindow() {
     mainWindow.loadURL(
         isDev ? "http://localhost:3000" : `file://${path.join(__dirname, "../build/index.html")}`
     );
-    mainWindow.on("closed", () => (mainWindow = null));
+    mainWindow.on("closed", () => mainWindow = null);
 
     // hotkey for turning on and off clickthrough
-    globalShortcut.register('f5', function () {
+    globalShortcut.register('f6', function () {
         mainWindow.setOpacity(.5)
         mainWindow.setIgnoreMouseEvents(true)
     })
     
-    globalShortcut.register('f6', function () {
+    globalShortcut.register('f7', function () {
         mainWindow.setOpacity(1)
         mainWindow.setIgnoreMouseEvents(false)
     })
@@ -76,12 +75,11 @@ ipcMain.on('login', (event) => {
     loginWindow = new BrowserWindow({
         width: width, // width of the window
         height: width, // height of the window
-        icon: `${process.env.PUBLIC_URL}/dual.png`, // icon, which is only used in the production version
         frame: true, // whether or not the window has 'frame' or header
         backgroundColor: '#001e272e', // window background color, first two values set alpha which is set to 0 for transparency
         alwaysOnTop: true, // make is so other windows won't go on top of this one
         webPreferences: {
-            nodeIntegration: false, // integrates the frontend with node, this is used for the custom toolbar
+            nodeIntegration: false, // don't allow integration with node
             preload: path.join(__dirname, "loginWindow.js")
         },
     });
@@ -90,5 +88,7 @@ ipcMain.on('login', (event) => {
 
 ipcMain.on('login-data', (event, token) => {
     // ipcMain.emit('log-me-in', token);
-    mainWindow.webContents.send("log-me-in", token)
+    if(mainWindow){
+        mainWindow.webContents.send("log-me-in", token)
+    }
 });

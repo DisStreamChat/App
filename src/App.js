@@ -10,6 +10,7 @@ import {Message} from "distwitchchat-componentlib"
 import "distwitchchat-componentlib/dist/index.css"
 import "./components/Message.css"
 
+
 function App() {
     // firebase.logout()
 	const [socket, setSocket] = useState()
@@ -19,10 +20,9 @@ function App() {
     const [channel, setChannel] = useState()
     const {id} = useParams()
 
-    const { streamerInfo } = useContext(AppContext)
-
     const currentUser = firebase.auth.currentUser
     
+
     useEffect(() => {
         if(currentUser){
             firebase.db.collection("Streamers").doc(currentUser.uid).onSnapshot(snapshot => {
@@ -138,7 +138,8 @@ function App() {
             {/* {settings.showHeader && <Header setMessages={setMessages} backButton/>} */}
             <Header setMessages={setMessages} backButton/>
 			<main className="body">
-				<div className={`overlay-container ${!settings.showHeader==="false" && "full-body"}`}>
+				<div className={`overlay-container`}>
+				{/* <div className={`overlay-container ${!settings.showHeader && false && "full-body"}`}> */}
 					<div className="overlay">
 						{messages.sort((a, b) => a.sentAt - b.sentAt).map((msg, i) => (
                             <Message streamerInfo={settings} pin={pinMessage} delete={removeMessage} key={msg.uuid} msg={msg} />
