@@ -70,7 +70,7 @@ const Auth = props => {
         // function that is executed when a message is received
         async function receiveMessage(event) {
             // only accept messages from a valid origin
-            if (event.origin !== "https://distwitchchat-backend.herokuapp.com" && event.origin !== "http://localhost:3200") {
+            if (event.origin !== "https://distwitchchat-backend.herokuapp.com" && event.origin !== "https://api.distwitchchat.com" && event.origin !== "http://localhost:3200") {
                 console.log('invalid origin', event.origin);
             } else {
                 // the message data is stored in 'event.data', use that data to sign the user in and update or set their database entry
