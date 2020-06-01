@@ -134,7 +134,7 @@ const Auth = props => {
         });
 
         // open a popup window to the twitch oauth url
-        window.open(`https://id.twitch.tv/oauth2/authorize?client_id=ip3igc72c6wu7j00nqghb24duusmbr&redirect_uri=https://distwitchchat-backend.herokuapp.com/oauth/twitch/&response_type=code&scope=openid%20moderation:read`)
+        window.open(`https://id.twitch.tv/oauth2/authorize?client_id=ip3igc72c6wu7j00nqghb24duusmbr&redirect_uri=https://api.distwitchchat.com/oauth/twitch/&response_type=code&scope=openid%20moderation:read`)
     }, [props.history])
 
     return firebase.auth.currentUser ? <Redirect to="/" /> : (
