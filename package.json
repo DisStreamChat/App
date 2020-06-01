@@ -1,6 +1,6 @@
 {
   "name": "distwitchchat",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Cross platform stream chat manager",
   "author": "davidwsnyder",
   "build": {
