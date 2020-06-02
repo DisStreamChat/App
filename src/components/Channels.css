@@ -13,7 +13,7 @@ hr {
     top: 0px;
     padding-top: calc(66px + 1.5rem);
     width: 100%;
-    min-height: calc(100vh - calc(66px + 1.5rem));
+    min-height: calc(100vh - calc(96px + 1.5rem));
     /* padding-top: 1.5rem; */
     display: flex;
     flex-direction: column;
