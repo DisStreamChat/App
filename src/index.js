@@ -23,9 +23,7 @@ const App = () => {
     const [messages, setMessages] = useState()
 
     useEffect(() => {
-        // ipcRenderer.send("sethotkey", ["f8", "f7"])
-        // ipcRenderer.send("sethotkey", ["f8", "f7"])
-        ipcRenderer.send("setclickthrough", "f6")
+        ipcRenderer.send("setclickthrough", "h+j")
         ipcRenderer.send("setunclickthrough", "f7")
     }, [])
 

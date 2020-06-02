@@ -63,24 +63,25 @@ app.on("activate", () => {
 ipcMain.on("setunclickthrough", (event, data) => {
     try {
         globalShortcut.unregister(clickThroughKey)
+        clickThroughKey = data
+        globalShortcut.register(data, function () {
+            mainWindow.setOpacity(1)
+            mainWindow.setIgnoreMouseEvents(false)
+        })
     } catch (err) { }
-    clickThroughKey = data
-    globalShortcut.register(data, function () {
-        mainWindow.setOpacity(1)
-        mainWindow.setIgnoreMouseEvents(false)
-    })
+    
 })
 
 ipcMain.on("setclickthrough", (event, data) => {
     try{
-
         globalShortcut.unregister(unclickThroughKey)
+        unclickThroughKey = data
+        globalShortcut.register(data, function () {
+            mainWindow.setOpacity(.5)
+            mainWindow.setIgnoreMouseEvents(true)
+        })
     }catch(err){}
-    unclickThroughKey = data
-    globalShortcut.register(data, function () {
-        mainWindow.setOpacity(.5)
-        mainWindow.setIgnoreMouseEvents(true)
-    })
+    
 })
 
 ipcMain.on('login', (event) => {
