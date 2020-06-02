@@ -68,7 +68,9 @@ ipcMain.on("setunclickthrough", (event, data) => {
             mainWindow.setOpacity(1)
             mainWindow.setIgnoreMouseEvents(false)
         })
-    } catch (err) { }
+    } catch (err) {
+
+     }
     
 })
 
@@ -80,7 +82,9 @@ ipcMain.on("setclickthrough", (event, data) => {
             mainWindow.setOpacity(.5)
             mainWindow.setIgnoreMouseEvents(true)
         })
-    }catch(err){}
+    }catch(err){
+        
+    }
     
 })
 

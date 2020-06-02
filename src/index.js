@@ -23,8 +23,8 @@ const App = () => {
     const [messages, setMessages] = useState()
 
     useEffect(() => {
-        ipcRenderer.send("setclickthrough", "h+j")
-        ipcRenderer.send("setunclickthrough", "f7")
+        ipcRenderer.send("setclickthrough", "CommandOrControl+j")
+        ipcRenderer.send("setunclickthrough", "CommandOrControl+h")
     }, [])
 
     // this allows me to show the loading spinner until firebase is ready
