@@ -14,9 +14,16 @@
 }
 
 .header.open{
+    padding-top: 50px;
     background: #2a2c30;
     height: 100vh;
 
+}
+
+.header.open .nav{
+    /* justify-content: flex-start; */
+    
+    align-items: flex-start;
 }
 
 .icon {
