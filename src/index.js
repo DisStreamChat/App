@@ -11,6 +11,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Loader from "react-loader"
 import {AppContext} from "./contexts/AppContext"
 import Channels from "./components/Channels"
+const { ipcRenderer } = window.require("electron")
 
 // https://distwitchchat-backend.herokuapp.com/
 
@@ -20,6 +21,13 @@ const App = () => {
     const [userId, setUserId] = useState("")
     const [streamerInfo, setStreamerInfo] = useState({})
     const [messages, setMessages] = useState()
+
+    useEffect(() => {
+        // ipcRenderer.send("sethotkey", ["f8", "f7"])
+        // ipcRenderer.send("sethotkey", ["f8", "f7"])
+        ipcRenderer.send("setclickthrough", "f6")
+        ipcRenderer.send("setunclickthrough", "f7")
+    }, [])
 
     // this allows me to show the loading spinner until firebase is ready
     useEffect(() => {

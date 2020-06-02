@@ -5,6 +5,8 @@ const isDev = require("electron-is-dev");
 
 let mainWindow;
 let loginWindow;
+let clickThroughKey = ""
+let unclickThroughKey = ""
 
 const width = 650
 const globalShortcut = electron.globalShortcut
@@ -26,18 +28,6 @@ function createWindow() {
         isDev ? "http://localhost:3000" : `file://${path.join(__dirname, "../build/index.html")}`
     );
     mainWindow.on("closed", () => mainWindow = null);
-
-    // hotkey for turning on and off clickthrough
-    globalShortcut.register('f6', function () {
-        mainWindow.setOpacity(.5)
-        mainWindow.setIgnoreMouseEvents(true)
-    })
-    
-    globalShortcut.register('f7', function () {
-        mainWindow.setOpacity(1)
-        mainWindow.setIgnoreMouseEvents(false)
-    })
-
 }
 
 
@@ -69,6 +59,29 @@ app.on("activate", () => {
         createWindow();
     }
 });
+
+ipcMain.on("setunclickthrough", (event, data) => {
+    try {
+        globalShortcut.unregister(clickThroughKey)
+    } catch (err) { }
+    clickThroughKey = data
+    globalShortcut.register(data, function () {
+        mainWindow.setOpacity(1)
+        mainWindow.setIgnoreMouseEvents(false)
+    })
+})
+
+ipcMain.on("setclickthrough", (event, data) => {
+    try{
+
+        globalShortcut.unregister(unclickThroughKey)
+    }catch(err){}
+    unclickThroughKey = data
+    globalShortcut.register(data, function () {
+        mainWindow.setOpacity(.5)
+        mainWindow.setIgnoreMouseEvents(true)
+    })
+})
 
 ipcMain.on('login', (event) => {
     loginWindow = new BrowserWindow({
