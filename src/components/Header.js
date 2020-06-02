@@ -6,7 +6,6 @@ import Button from '@material-ui/core/Button';
 
 
 const Header = props => {
-
     const [settingsOpen, setSettingsOpen] = useState(false)
 
     const clearChat = useCallback(() => {

@@ -69,9 +69,9 @@ ipcMain.on("setunclickthrough", (event, data) => {
             mainWindow.setIgnoreMouseEvents(false)
         })
     } catch (err) {
-
-     }
-    
+        clickThroughKey = data
+        console.log(err, data)
+    }
 })
 
 ipcMain.on("setclickthrough", (event, data) => {
@@ -83,9 +83,9 @@ ipcMain.on("setclickthrough", (event, data) => {
             mainWindow.setIgnoreMouseEvents(true)
         })
     }catch(err){
-        
+        unclickThroughKey = data
+        console.log(err, data)
     }
-    
 })
 
 ipcMain.on('login', (event) => {

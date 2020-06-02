@@ -1,13 +1,15 @@
 .header {
 	width: 100vw;
-    height: 50px;
+    height: 100px;
     /* background: black; */
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-    background: #2a2c3000;
+    background: #17181ba1;
     transition: .5s ease-in-out;
+    transition-property: height, background;
     position: fixed;
+    top: 0;
     z-index: 10;
 }
 
@@ -77,6 +79,3 @@
 	}
 }
 
-.pdbt-1{
-    padding-bottom: 1rem;
-}
