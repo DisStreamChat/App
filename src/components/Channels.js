@@ -56,8 +56,9 @@ const Channels = () => {
     }, [currentUser])
 
     return (
+        <>
+        <Header pad="pdbt-1"/>
         <div className="my-channels">
-            <Header pad="pdbt-1"/>
             <h1>Your Channel</h1>
             <ChannelItem {...myChannel} />
             <hr />
@@ -66,6 +67,7 @@ const Channels = () => {
                 <ChannelItem {...channel} moderator/>
             ))}
         </div>
+        </>
     );
 }
 

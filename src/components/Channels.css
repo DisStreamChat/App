@@ -10,7 +10,7 @@ hr {
 
 .my-channels{
     position: fixed;
-    top: 0;
+    top: 66px;
     width: 100%;
     height: 100vh;
     padding-top: 1.5rem;

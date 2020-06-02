@@ -1,10 +1,20 @@
 .header {
 	width: 100vw;
-	height: 50px;
+    height: 50px;
+    /* background: black; */
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	background: #2a2c3000;
+    background: #2a2c3000;
+    transition: .5s ease-in-out;
+    position: fixed;
+    z-index: 10;
+}
+
+.header.open{
+    background: #2a2c30;
+    height: 100vh;
+
 }
 
 .icon {

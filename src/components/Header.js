@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import "./Header.css"
 import firebase from "../firebase"
 import { withRouter, Link } from 'react-router-dom';
@@ -6,6 +6,9 @@ import Button from '@material-ui/core/Button';
 
 
 const Header = props => {
+
+    const [settingsOpen, setSettingsOpen] = useState(false)
+
     const clearChat = useCallback(() => {
         props.setMessages(m => m.map(msg => {return {...msg, deleted: true}}))
     }, [props])
@@ -26,7 +29,7 @@ const Header = props => {
     }, [props.history]) 
 
     return (
-        <header className={`header ${props.pad}`}>
+        <header className={`header ${props.pad} ${settingsOpen && "open"}`} onClick={() => setSettingsOpen(o => !o)}>
             <nav className="nav">
                 {props.setMessages && 
                 <>
