@@ -5,8 +5,8 @@ const isDev = require("electron-is-dev");
 
 let mainWindow;
 let loginWindow;
-let clickThroughKey = ""
-let unclickThroughKey = ""
+let clickThroughKey = "a"
+let unclickThroughKey = "b"
 
 const width = 650
 const globalShortcut = electron.globalShortcut
