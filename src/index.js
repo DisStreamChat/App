@@ -41,7 +41,6 @@ const App = () => {
                 return () => unsubscribe();
             })()
         }
-        
     }, [setStreamerInfo, currentUser])
 
     return firebaseInit !== false ? (
@@ -89,8 +88,4 @@ const App = () => {
     </main>
 }
 
-ReactDOM.render(
-    <App/>,
-    document.getElementById("root")
-    
-)
+ReactDOM.render(<App/>,document.getElementById("root"))
