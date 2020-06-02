@@ -18,7 +18,7 @@
     "bootstrap": "^4.4.1",
     "cross-env": "^6.0.3",
     "custom-electron-titlebar": "^3.2.2-hotfix62",
-    "distwitchchat-componentlib": "^1.0.16",
+    "distwitchchat-componentlib": "^1.0.18",
     "dompurify": "^2.0.10",
     "electron-is-dev": "^1.1.0",
     "electron-packager": "^14.2.1",
@@ -41,7 +41,7 @@
     "build-react": "react-scripts build",
     "test-react": "react-scripts test --env=jsdom",
     "eject-react": "react-scripts eject",
-    "build-electron": "electron-builder",
+    "build-electron": "electron-builder -mwl",
     "start-electron": "electron .",
     "build": "yarn build-react && yarn build-electron",
     "start": "concurrently \"cross-env BROWSER=none yarn start-react\" \"wait-on http://localhost:3000 && electron .\""

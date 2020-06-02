@@ -28,6 +28,7 @@ function App() {
             firebase.db.collection("Streamers").doc(currentUser.uid).onSnapshot(snapshot => {
                 const data = snapshot.data()
                 if(data){
+                    console.log(data.appSettings)
                     setSettings(data.appSettings)
                 }
             })
