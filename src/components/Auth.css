@@ -70,6 +70,7 @@
     cursor: pointer;
     color: white;
     border: none;
+    outline: none !important;
 }
 
 .modal-button:hover{
