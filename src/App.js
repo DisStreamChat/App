@@ -5,7 +5,6 @@ import "./App.css"
 
 import openSocket from "socket.io-client"
 import Header from "./components/Header"
-import { AppContext } from "./contexts/AppContext"
 import {Message} from "distwitchchat-componentlib"
 import "distwitchchat-componentlib/dist/index.css"
 import "./components/Message.css"

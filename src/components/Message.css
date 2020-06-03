@@ -1,3 +1,8 @@
 .emote {
 	width: 2rem !important;
 }
+
+
+a{
+    text-decoration: underline !important;
+}
