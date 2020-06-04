@@ -52,6 +52,7 @@
     justify-content: center;
     position: absolute;
     top: 66px;
+    width: 100vw;
 }
 
 .overlay{

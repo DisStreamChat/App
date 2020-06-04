@@ -3,6 +3,7 @@ import "./Header.css"
 import firebase from "../firebase"
 import { withRouter, Link } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 
 
 const Header = props => {
@@ -28,7 +29,7 @@ const Header = props => {
     }, [props.history]) 
 
     return (
-        <header className={`header ${props.pad} ${settingsOpen && "open"}`} onClick={() => setSettingsOpen(o => !o)}>
+        <header className={`header ${props.pad} ${settingsOpen && "open"}`} >
             <nav className="nav">
                 {props.setMessages && 
                 <>
@@ -43,6 +44,9 @@ const Header = props => {
                     <Button variant="contained" color="primary" onClick={signout}>Sign Out</Button>
                 }
             </nav>
+            <div className="header-lower" onClick={() => setSettingsOpen(o => !o)}>
+                <KeyboardArrowDownIcon className={`chevron ${settingsOpen && "open"}`}/>
+            </div>
         </header>
     );
 } 
