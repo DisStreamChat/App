@@ -45,6 +45,9 @@ function createWindow() {
         mainWindow.setIgnoreMouseEvents(false)
     })
 
+    if (!isDev) autoUpdater.checkForUpdates();
+
+
 }
 
 
@@ -97,4 +100,33 @@ ipcMain.on('login-data', (event, token) => {
     if(mainWindow){
         mainWindow.webContents.send("log-me-in", token)
     }
+});
+
+const sendStatusToWindow = text => {
+    log.info(text)
+    if(mainWindow){
+        mainWindow.webContents.send("message", text)
+    }
+}
+
+autoUpdater.on('checking-for-update', () => {
+    sendStatusToWindow('Checking for update...');
+});
+autoUpdater.on('update-available', info => {
+    sendStatusToWindow('Update available.');
+});
+autoUpdater.on('update-not-available', info => {
+    sendStatusToWindow('Update not available.');
+});
+autoUpdater.on('error', err => {
+    sendStatusToWindow(`Error in auto-updater: ${err.toString()}`);
+});
+autoUpdater.on('download-progress', progressObj => {
+    sendStatusToWindow(
+        `Download speed: ${progressObj.bytesPerSecond} - Downloaded ${progressObj.percent}% (${progressObj.transferred} + '/' + ${progressObj.total} + )`
+    );
+});
+autoUpdater.on('update-downloaded', info => {
+    sendStatusToWindow('Update downloaded; will install now');
+    autoUpdater.quitAndInstall();
 });
