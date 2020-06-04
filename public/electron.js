@@ -2,6 +2,12 @@ const electron = require("electron");
 const {BrowserWindow, ipcMain, app} = electron;
 const path = require("path");
 const isDev = require("electron-is-dev");
+const { autoUpdater } = require("electron-updater")
+const log = require("electron-log")
+
+autoUpdater.logger = log
+autoUpdater.logger.transports.file.level = "info";
+log.info("App starting...")
 
 let mainWindow;
 let loginWindow;

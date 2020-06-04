@@ -1,17 +1,20 @@
 {
   "name": "distwitchchat",
-  "version": "1.0.2",
+  "version": "v1.0.2",
   "description": "Cross platform stream chat manager",
   "author": "David Snyder",
   "build": {
     "appId": "react.electron",
     "win": {
-      "icon": "build/icon.ico"
+      "icon": "build/icon.ico",
+      "publish": [
+        "github"
+      ]
     }
   },
   "main": "public/electron.js",
   "homepage": "./",
-  "private": true,
+  "private": false,
   "dependencies": {
     "@material-ui/core": "^4.9.14",
     "@material-ui/icons": "^4.9.1",
@@ -21,7 +24,9 @@
     "distwitchchat-componentlib": "^1.0.22",
     "dompurify": "^2.0.10",
     "electron-is-dev": "^1.1.0",
+    "electron-log": "^4.2.1",
     "electron-packager": "^14.2.1",
+    "electron-updater": "^2.8.7",
     "firebase": "^7.14.2",
     "marked": "^1.0.0",
     "mousetrap": "^1.6.5",
@@ -43,6 +48,7 @@
     "eject-react": "react-scripts eject",
     "build-electron": "electron-builder",
     "start-electron": "electron .",
+    "release": "electron-builder --win -p always",
     "build": "yarn build-react && yarn build-electron",
     "start": "concurrently \"cross-env BROWSER=none yarn start-react\" \"wait-on http://localhost:3000 && electron .\""
   },
