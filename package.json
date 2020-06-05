@@ -48,7 +48,8 @@
     "eject-react": "react-scripts eject",
     "build-electron": "electron-builder",
     "start-electron": "electron .",
-    "release": "electron-builder --win -p always",
+    "release-electron": "electron-builder --win -p always",
+    "release": "yarn build-react && yarn release-electron",
     "build": "yarn build-react && yarn build-electron",
     "start": "concurrently \"cross-env BROWSER=none yarn start-react\" \"wait-on http://localhost:3000 && electron .\""
   },
