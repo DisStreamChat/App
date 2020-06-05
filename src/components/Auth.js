@@ -69,9 +69,6 @@ const Auth = props => {
     const loginWithTwitch = useCallback(() => {
         // function that is executed when a message is received
         async function receiveMessage(event, data) {
-            console.log(data)
-            // only accept messages from a valid origin
-            // the message data is stored in 'event.data', use that data to sign the user in and update or set their database entry
             const json = data
             const result = await firebase.auth.signInWithCustomToken(json.token)
             const uid = result.user.uid
@@ -79,8 +76,7 @@ const Auth = props => {
             firebase.auth.currentUser.updateProfile({
                 displayName
             })
-            // update or set the users database entry. the try catch is used to detect if there is not already a user in the database
-            // it will throw an error trying to update a document that doesn't exist
+
             try {
                 await firebase.db.collection("Streamers").doc(uid).update({
                     displayName,
@@ -131,7 +127,6 @@ const Auth = props => {
 
         // open a popup window to the twitch oauth url
         ipcRenderer.send('login');
-        // window.open(`https://id.twitch.tv/oauth2/authorize?client_id=ip3igc72c6wu7j00nqghb24duusmbr&redirect_uri=https://api.distwitchchat.com/oauth/twitch/&response_type=code&scope=openid%20moderation:read`)
     }, [props.history])
 
     return firebase.auth.currentUser ? <Redirect to="/" /> : (
