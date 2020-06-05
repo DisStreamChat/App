@@ -15,7 +15,6 @@ const { ipcRenderer } = window.require("electron")
 
 // https://distwitchchat-backend.herokuapp.com/
 
-
 const App = () => {
     const [firebaseInit, setFirebaseInit] = useState(false)
     const [userId, setUserId] = useState("")
@@ -35,8 +34,8 @@ const App = () => {
         })()
     }, [])
 
+
     const currentUser = firebase.auth.currentUser
-    // used for the current method of local authentication, attempts to get database info from a userId, if no userId is found attempt to get it from localstorage 
     useEffect(() => {
         if (currentUser){
             (async () => {

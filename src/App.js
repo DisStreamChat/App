@@ -9,6 +9,8 @@ import {Message} from "distwitchchat-componentlib"
 import "distwitchchat-componentlib/dist/index.css"
 import "./components/Message.css"
 
+const { ipcRenderer } = window.require('electron');
+
 
 function App() {
     // firebase.logout()
@@ -20,7 +22,12 @@ function App() {
     const {id} = useParams()
 
     const currentUser = firebase.auth.currentUser
-    
+
+    useEffect(() => {
+        ipcRenderer.on("message", text => {
+            console.log(text)
+        })
+    }, [])
 
     useEffect(() => {
         if(currentUser){

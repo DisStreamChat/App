@@ -2,6 +2,12 @@ const electron = require("electron");
 const {BrowserWindow, ipcMain, app} = electron;
 const path = require("path");
 const isDev = require("electron-is-dev");
+const { autoUpdater } = require("electron-updater")
+const log = require("electron-log")
+
+autoUpdater.logger = log
+autoUpdater.logger.transports.file.level = "info";
+log.info("App starting...")
 
 let mainWindow;
 let loginWindow;
@@ -15,6 +21,7 @@ function createWindow() {
     mainWindow = new BrowserWindow({ 
         width: width, // width of the window
         height: width*1.5, // height of the window
+        minWidth: 500,
         frame: false, // whether or not the window has 'frame' or header
         backgroundColor: '#001e272e', // window background color, first two values set alpha which is set to 0 for transparency
         transparent: true, // make window transparent
@@ -28,6 +35,21 @@ function createWindow() {
         isDev ? "http://localhost:3000" : `file://${path.join(__dirname, "../build/index.html")}`
     );
     mainWindow.on("closed", () => mainWindow = null);
+
+    // hotkey for turning on and off clickthrough
+    globalShortcut.register('f6', function () {
+        mainWindow.setOpacity(.5)
+        mainWindow.setIgnoreMouseEvents(true)
+    })
+    
+    globalShortcut.register('f7', function () {
+        mainWindow.setOpacity(1)
+        mainWindow.setIgnoreMouseEvents(false)
+    })
+
+    if (!isDev) autoUpdater.checkForUpdates();
+
+
 }
 
 
@@ -108,4 +130,33 @@ ipcMain.on('login-data', (event, token) => {
     if(mainWindow){
         mainWindow.webContents.send("log-me-in", token)
     }
+});
+
+const sendStatusToWindow = text => {
+    log.info(text)
+    if(mainWindow){
+        mainWindow.webContents.send("message", text)
+    }
+}
+
+autoUpdater.on('checking-for-update', () => {
+    sendStatusToWindow('Checking for update...');
+});
+autoUpdater.on('update-available', info => {
+    sendStatusToWindow('Update available.');
+});
+autoUpdater.on('update-not-available', info => {
+    sendStatusToWindow('Update not available.');
+});
+autoUpdater.on('error', err => {
+    sendStatusToWindow(`Error in auto-updater: ${err.toString()}`);
+});
+autoUpdater.on('download-progress', progressObj => {
+    sendStatusToWindow(
+        `Download speed: ${progressObj.bytesPerSecond} - Downloaded ${progressObj.percent}% (${progressObj.transferred} + '/' + ${progressObj.total} + )`
+    );
+});
+autoUpdater.on('update-downloaded', info => {
+    sendStatusToWindow('Update downloaded; will install now');
+    autoUpdater.quitAndInstall();
 });
