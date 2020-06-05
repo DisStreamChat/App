@@ -31,13 +31,13 @@ function App() {
 
     useEffect(() => {
         if(currentUser){
-            firebase.db.collection("Streamers").doc(currentUser.uid).onSnapshot(snapshot => {
+            const unsub = firebase.db.collection("Streamers").doc(currentUser.uid).onSnapshot(snapshot => {
                 const data = snapshot.data()
                 if(data){
-                    console.log(data.appSettings)
                     setSettings(data.appSettings)
                 }
             })
+            return () => unsub()
         }
     }, [currentUser])
 
@@ -117,7 +117,7 @@ function App() {
 
     useEffect(() => {
         if(id && currentUser){
-            firebase.db.collection("Streamers").doc(id).onSnapshot(snapshot => {
+            const unsub = firebase.db.collection("Streamers").doc(id).onSnapshot(snapshot => {
                 const data = snapshot.data()
                 if(data) {
                     const {TwitchName, guildId, liveChatId} = data
@@ -128,6 +128,7 @@ function App() {
                     })
                 }
             })
+            return () => unsub()
         }
     }, [id, currentUser])
 

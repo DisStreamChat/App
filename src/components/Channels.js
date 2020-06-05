@@ -29,10 +29,11 @@ const Channels = () => {
     }, [])
 
     useEffect(() => {
-        firebase.db.collection("Streamers").doc(currentUser.uid).onSnapshot(snapshot => {
+        const unsub = firebase.db.collection("Streamers").doc(currentUser.uid).onSnapshot(snapshot => {
             const user = snapshot.data()
             setMyChannel({ name: user?.displayName, isMember: true, profilePicture: user?.profilePicture, uid: currentUser.uid })
         })
+        return () => unsub()
     }, [currentUser])
 
     useEffect(() => {
