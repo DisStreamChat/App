@@ -8,7 +8,7 @@
 	justify-content: space-between;
     background: #17181ba1;
     transition: .5s ease-in-out;
-    transition-property: all;
+    transition-property: height, background;
     position: fixed;
     top: 0;
     z-index: 10;
@@ -17,13 +17,6 @@
 .header.open{
     background: #2a2c30;
     height: 100vh;
-
-}
-
-.header.open .nav{
-    /* justify-content: flex-start; */
-    
-    align-items: flex-start;
 }
 
 .icon {
@@ -60,13 +53,14 @@
     /* border: solid; */
     display: flex;
     align-items: center;
+    position: absolute;
+    bottom: 0;
 }
 
 .nav {
     width: 100%;
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
+    position: absolute;
+    top: 35px;
 	display: flex;
     align-items: flex-start;
     justify-content: space-around;
