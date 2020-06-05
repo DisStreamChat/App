@@ -10,13 +10,12 @@
     transition: .5s ease-in-out;
     transition-property: height, background;
     position: fixed;
-    top: 0;
     z-index: 10;
 }
 
 .header.open{
     background: #2a2c30;
-    height: 100vh;
+    height: calc(100vh - 30px);
 }
 
 .icon {
@@ -62,7 +61,7 @@
     position: absolute;
     top: 35px;
 	display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-around;
     padding: 0 .5rem !important;
 }
@@ -95,6 +94,13 @@
 @media screen and (max-width: 475px) {
 	.nav button {
 		font-size: .5rem !important;
+	}
+}
+
+@media screen and (max-width: 425px) {
+	.nav button:last-child {
+        /* max-width: 25px; */
+        margin-top: 5px;
 	}
 }
 

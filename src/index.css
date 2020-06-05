@@ -3,6 +3,12 @@ body {
   padding: 0;
   box-sizing: border-box;
   background: #00000000 !important;
+  height: 99.5vh;
+}
+
+.boarder{
+    border: 1px solid;
+
 }
 
 code {
