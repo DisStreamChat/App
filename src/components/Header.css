@@ -20,6 +20,8 @@
 }
 
 .header-settings{
+    transition: .5s ease-in-out;
+    height: 920px;
     max-height: 920px;
     overflow: auto;
     overflow-x: hidden;
@@ -27,11 +29,15 @@
 }
 
 .header:not(.open) > .header-settings{
-    display: none;
+    height: 0;
 }
 
 .MuiSwitch-root{
     box-sizing: border-box !important;
+}
+
+.titlebar{
+    background: #17181ba1 !important
 }
 
 .icon {

@@ -48,7 +48,6 @@
 
 .setting{
     border-bottom: solid;
-    width: 95%;
     display: grid;
     grid-template-columns: auto .9fr;
     grid-template-rows: auto auto;

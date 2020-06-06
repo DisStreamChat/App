@@ -29,20 +29,11 @@
     height: 100vh;
     font-family: Montserrat;
     color: #fff;
-    /* background: linear-gradient(119.36deg, #17181B 21.35%, #24252A 76.56%); */
 }
-
-/* originally used to set the background, unneeded with transparent background */
-/* .app{
-    background: linear-gradient(119.36deg, #17181B 21.35%, #24252A 76.56%);
-} */
 
 .container-after-titlebar{
     overflow-x: hidden !important;
 }
-
-
-
 
 * {
     font-family: Montserrat !important;
@@ -75,6 +66,7 @@
     height: calc(100vh - 98px - 30px);
     overflow: auto;
     width: fit-content;
+    overflow-x: hidden;
 }
 
 .full-body{
