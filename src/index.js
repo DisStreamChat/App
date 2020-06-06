@@ -20,6 +20,10 @@ const App = () => {
     const [userId, setUserId] = useState("")
     const [streamerInfo, setStreamerInfo] = useState({})
     const [messages, setMessages] = useState()
+    const [border, setBorder] = useState(true)
+
+    const currentUser = firebase.auth.currentUser
+
 
     useEffect(() => {
         ipcRenderer.send("setclickthrough", "f6")
@@ -34,8 +38,24 @@ const App = () => {
         })()
     }, [])
 
+    useEffect(() => {
+        console.log("hi")
+        ipcRenderer.on("toggle-border", (event, text) => {
+            console.log(text)
+            setBorder(text)
+        })
+    }, [])
 
-    const currentUser = firebase.auth.currentUser
+    // vanilla dom in react 🤮
+    useEffect(() => {
+        if (border && streamerInfo?.appSettings?.showBorder) {
+            document.body.classList.add("boarder")
+        } else {
+            document.body.classList.remove("boarder")
+        }
+    }, [border, streamerInfo])
+
+
     useEffect(() => {
         if (currentUser){
             (async () => {

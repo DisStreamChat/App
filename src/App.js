@@ -20,15 +20,9 @@ function App() {
     const [settings, setSettings] = useState({})
     const [channel, setChannel] = useState()
     const {id} = useParams()
-    const [boarder, setBoarder] = useState(true)
 
     const currentUser = firebase.auth.currentUser
 
-    useEffect(() => {
-        ipcRenderer.on("toggle-border", text => {
-            console.log(text)
-        })
-    }, [])
 
     useEffect(() => {
         if(currentUser){
@@ -42,14 +36,7 @@ function App() {
         }
     }, [currentUser])
 
-    // vanilla dom in react 🤮
-    useEffect(() => {
-        if(boarder){
-            document.body.classList.add("boarder")
-        }else{
-            document.body.classList.add("boarder")    
-        }
-    }, [boarder])
+
 
     // this runs whenever the messages array changes and stores the messages in localstorage
 	useEffect(() => {

@@ -3,11 +3,7 @@ const {BrowserWindow, ipcMain, app} = electron;
 const path = require("path");
 const isDev = require("electron-is-dev");
 const { autoUpdater } = require("electron-updater")
-const log = require("electron-log")
 
-autoUpdater.logger = log
-autoUpdater.logger.transports.file.level = "info";
-log.info("App starting...")
 
 let mainWindow;
 let loginWindow;
@@ -16,6 +12,24 @@ let unclickThroughKey = "b"
 
 const width = 650
 const globalShortcut = electron.globalShortcut
+
+const sendMessageToWindow = (event, message) => {
+    if(mainWindow){
+        mainWindow.webContents.send(event, message)
+    }
+}
+
+const focus = () => {
+    sendMessageToWindow("toggle-border", true)
+    mainWindow.setOpacity(1)
+    mainWindow.setIgnoreMouseEvents(false)
+}
+
+const unfocus = () => {
+    sendMessageToWindow("toggle-border", false)
+    mainWindow.setOpacity(.5)
+    mainWindow.setIgnoreMouseEvents(true)
+}
 
 function createWindow() {
     mainWindow = new BrowserWindow({ 
@@ -37,15 +51,9 @@ function createWindow() {
     mainWindow.on("closed", () => mainWindow = null);
 
     // hotkey for turning on and off clickthrough
-    globalShortcut.register('f6', function () {
-        mainWindow.setOpacity(.5)
-        mainWindow.setIgnoreMouseEvents(true)
-    })
+    globalShortcut.register('f6', unfocus)
     
-    globalShortcut.register('f7', function () {
-        mainWindow.setOpacity(1)
-        mainWindow.setIgnoreMouseEvents(false)
-    })
+    globalShortcut.register('f7', focus)
 
     if (!isDev) autoUpdater.checkForUpdates();
 
@@ -87,6 +95,7 @@ ipcMain.on("setunclickthrough", (event, data) => {
         globalShortcut.unregister(clickThroughKey)
         clickThroughKey = data
         globalShortcut.register(data, function () {
+            sendMessageToWindow("toggle-border", true)
             mainWindow.setOpacity(1)
             mainWindow.setIgnoreMouseEvents(false)
         })
@@ -101,6 +110,7 @@ ipcMain.on("setclickthrough", (event, data) => {
         globalShortcut.unregister(unclickThroughKey)
         unclickThroughKey = data
         globalShortcut.register(data, function () {
+            sendMessageToWindow("toggle-border", false)
             mainWindow.setOpacity(.5)
             mainWindow.setIgnoreMouseEvents(true)
         })
@@ -126,37 +136,7 @@ ipcMain.on('login', (event) => {
 });
 
 ipcMain.on('login-data', (event, token) => {
-    // ipcMain.emit('log-me-in', token);
     if(mainWindow){
         mainWindow.webContents.send("log-me-in", token)
     }
-});
-
-const sendStatusToWindow = text => {
-    log.info(text)
-    if(mainWindow){
-        mainWindow.webContents.send("message", text)
-    }
-}
-
-autoUpdater.on('checking-for-update', () => {
-    sendStatusToWindow('Checking for update...');
-});
-autoUpdater.on('update-available', info => {
-    sendStatusToWindow('Update available.');
-});
-autoUpdater.on('update-not-available', info => {
-    sendStatusToWindow('Update not available.');
-});
-autoUpdater.on('error', err => {
-    sendStatusToWindow(`Error in auto-updater: ${err.toString()}`);
-});
-autoUpdater.on('download-progress', progressObj => {
-    sendStatusToWindow(
-        `Download speed: ${progressObj.bytesPerSecond} - Downloaded ${progressObj.percent}% (${progressObj.transferred} + '/' + ${progressObj.total} + )`
-    );
-});
-autoUpdater.on('update-downloaded', info => {
-    sendStatusToWindow('Update downloaded; will install now');
-    autoUpdater.quitAndInstall();
 });
