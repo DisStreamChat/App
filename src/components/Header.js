@@ -44,6 +44,9 @@ const Header = props => {
                     <Button variant="contained" color="primary" onClick={signout}>Sign Out</Button>
                 }
             </nav>
+            <div className="header-settings">
+
+            </div>
             <div className="header-lower" onClick={() => setSettingsOpen(o => !o)}>
                 <KeyboardArrowDownIcon className={`chevron ${settingsOpen && "open"}`}/>
             </div>

@@ -1,6 +1,6 @@
 .header {
 	width: 100vw;
-    height: 100px;
+    height: 75px;
     /* background: black; */
 	display: flex;
     align-items: center;
@@ -11,11 +11,18 @@
     transition-property: height, background;
     position: fixed;
     z-index: 10;
+    padding-top: 25px;
 }
 
 .header.open{
     background: #2a2c30;
-    height: calc(100vh - 30px);
+    height: calc(100vh - 30px - 25px);
+}
+
+.header.open > .header-settings{
+    border: solid;
+    height: 50px;
+    width: 100%
 }
 
 .icon {
@@ -52,13 +59,13 @@
     /* border: solid; */
     display: flex;
     align-items: center;
-    position: absolute;
+    /* position: absolute; */
     bottom: 0;
 }
 
 .nav {
     width: 100%;
-    position: absolute;
+    /* position: absolute; */
     top: 35px;
 	display: flex;
     align-items: center;
