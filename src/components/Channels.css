@@ -65,6 +65,7 @@ hr {
 .channel-name{
     /* font-size: 2rem; */
     text-transform: capitalize;
+    padding-right: .5rem;
 }
 
 .dashboard-button{
@@ -130,4 +131,27 @@ hr {
 
 .mychannel{
     min-height: fit-content;
+}
+
+@media screen and (max-width: 525px){
+    .to-dashboard{
+        font-size: 12px;
+        width: 80px
+    }
+
+    .channel-name{
+        font-size: 12px;
+    }
+}
+
+@media screen and (max-width: 400px){
+
+    .channel-profile-pic{
+        padding-right: .5rem;
+        width: 30px;
+    }
+
+    .channel-profile-pic img{
+        max-width: 30px;
+    }   
 }
