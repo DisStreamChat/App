@@ -39,9 +39,7 @@ const App = () => {
     }, [])
 
     useEffect(() => {
-        console.log("hi")
         ipcRenderer.on("toggle-border", (event, text) => {
-            console.log(text)
             setBorder(text)
         })
     }, [])

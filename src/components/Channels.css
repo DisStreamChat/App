@@ -14,7 +14,6 @@ hr {
     padding-top: calc(66px + 1.5rem + 30px);
     width: 100%;
     min-height: calc(100vh - calc(96px + 1.5rem + 30px));
-    /* padding-top: 1.5rem; */
     display: flex;
     flex-direction: column;
     align-items: center;
