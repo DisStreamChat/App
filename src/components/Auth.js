@@ -43,7 +43,9 @@ const Auth = props => {
                         displayPlatformIcons: false,
                         highlightedMessageColor: "",
                         showHeader: true,
-                        showSourceButton: false
+                        showSourceButton: false,
+                        compact: false,
+                        showBorder: false
                     },
                     discordLinked: false,
                     guildId: "",
