@@ -115,4 +115,9 @@ h1{
     position: relative;
     top: -2px;
     left: -1px;
+    transform: scale(.75);
+}
+
+._2WLY1{
+    margin: .125rem 0 !important;
 }
