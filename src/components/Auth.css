@@ -20,6 +20,7 @@
 }
 
 .Modal-Overlay{
+    
     position: fixed;
     top: 0;
     left: 0;
@@ -28,6 +29,7 @@
     background: #214d6966;
     animation: fade-background-in .35s forwards
 }
+
 
 .logo-icon{
     margin-right: .5rem;
