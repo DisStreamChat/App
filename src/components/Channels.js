@@ -60,13 +60,52 @@ const Channels = () => {
         <>
         <Header pad="pdbt-1"/>
         <div className="my-channels">
-            <h1>Your Channel</h1>
-            <ChannelItem {...myChannel} />
+            <div className="mychannel channel-div">
+                <h1>Your Channel</h1>
+                <ChannelItem {...myChannel} />
+            </div>
+            
             <hr />
             <h1>Channels you moderate</h1>
-            {modChannels.map(channel => (
-                <ChannelItem {...channel} moderator/>
-            ))}
+            <div className="modchannels channel-div">
+                {modChannels.map(channel => (
+                    <ChannelItem {...channel} moderator />
+                ))}
+                    {modChannels.map(channel => (
+                        <ChannelItem {...channel} moderator />
+                    ))}
+                    {modChannels.map(channel => (
+                        <ChannelItem {...channel} moderator />
+                    ))}
+                    {modChannels.map(channel => (
+                        <ChannelItem {...channel} moderator />
+                    ))}
+                    {modChannels.map(channel => (
+                        <ChannelItem {...channel} moderator />
+                    ))}
+                    {modChannels.map(channel => (
+                        <ChannelItem {...channel} moderator />
+                    ))}
+                    {modChannels.map(channel => (
+                        <ChannelItem {...channel} moderator />
+                    ))}
+                    {modChannels.map(channel => (
+                        <ChannelItem {...channel} moderator />
+                    ))}
+                    {modChannels.map(channel => (
+                        <ChannelItem {...channel} moderator />
+                    ))}
+                    {modChannels.map(channel => (
+                        <ChannelItem {...channel} moderator />
+                    ))}
+                    {modChannels.map(channel => (
+                        <ChannelItem {...channel} moderator />
+                    ))}
+                    {modChannels.map(channel => (
+                        <ChannelItem {...channel} moderator />
+                    ))}
+            </div>
+            
         </div>
         </>
     );
