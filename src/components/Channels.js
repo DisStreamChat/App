@@ -71,60 +71,6 @@ const Channels = () => {
                 {modChannels.map(channel => (
                     <ChannelItem {...channel} moderator />
                 ))}
-                    {modChannels.map(channel => (
-                        <ChannelItem {...channel} moderator />
-                    ))}
-                    {modChannels.map(channel => (
-                        <ChannelItem {...channel} moderator />
-                    ))}
-                    {modChannels.map(channel => (
-                        <ChannelItem {...channel} moderator />
-                    ))}
-                    {modChannels.map(channel => (
-                        <ChannelItem {...channel} moderator />
-                    ))}
-                    {modChannels.map(channel => (
-                        <ChannelItem {...channel} moderator />
-                    ))}
-                    {modChannels.map(channel => (
-                        <ChannelItem {...channel} moderator />
-                    ))}
-                    {modChannels.map(channel => (
-                        <ChannelItem {...channel} moderator />
-                    ))}
-                    {modChannels.map(channel => (
-                        <ChannelItem {...channel} moderator />
-                    ))}
-                    {modChannels.map(channel => (
-                        <ChannelItem {...channel} moderator />
-                    ))}
-                    {modChannels.map(channel => (
-                        <ChannelItem {...channel} moderator />
-                    ))}
-                    {modChannels.map(channel => (
-                        <ChannelItem {...channel} moderator />
-                    ))}
-                    {modChannels.map(channel => (
-                        <ChannelItem {...channel} moderator />
-                    ))}
-                    {modChannels.map(channel => (
-                        <ChannelItem {...channel} moderator />
-                    ))}
-                    {modChannels.map(channel => (
-                        <ChannelItem {...channel} moderator />
-                    ))}
-                    {modChannels.map(channel => (
-                        <ChannelItem {...channel} moderator />
-                    ))}
-                    {modChannels.map(channel => (
-                        <ChannelItem {...channel} moderator />
-                    ))}
-                    {modChannels.map(channel => (
-                        <ChannelItem {...channel} moderator />
-                    ))}
-                    {modChannels.map(channel => (
-                        <ChannelItem {...channel} moderator />
-                    ))}
             </div>
             
         </div>
