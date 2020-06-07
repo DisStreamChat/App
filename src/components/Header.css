@@ -1,6 +1,6 @@
 .header {
 	width: 100vw;
-    height: 75px;
+    height: 60px;
     /* background: black; */
 	display: flex;
     align-items: center;
@@ -11,12 +11,12 @@
     transition-property: height, background;
     position: fixed;
     z-index: 10;
-    padding-top: 25px;
+    padding-top: 5px;
 }
 
 .header.open{
     background: #2a2c30;
-    height: calc(100vh - 30px - 25px);
+    height: calc(100vh - 30px - 5px);
 }
 
 .header-settings{
@@ -105,23 +105,25 @@
 	background: var(--distwitchchat-purple) !important;
 }
 
-@media screen and (max-width: 550px) {
+@media screen and (max-width: 575px) {
 	.nav button {
 		font-size: .6rem !important;
 		outline: none !important;
 	}
 }
 
-@media screen and (max-width: 475px) {
+@media screen and (max-width: 500px) {
 	.nav button {
 		font-size: .5rem !important;
 	}
 }
 
-@media screen and (max-width: 425px) {
-	.nav button:last-child {
+@media screen and (max-width: 450px) {
+    .nav button{
         /* max-width: 25px; */
-        margin-top: 5px;
+        /* max-width: 10vw !important; */
+        font-size: .45rem !important;
+        padding: 6px 4px !important
 	}
 }
 
