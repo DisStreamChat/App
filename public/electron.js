@@ -66,6 +66,8 @@ function createWindow() {
         e.preventDefault();
     });
 
+    mainWindow.setAlwaysOnTop(true, 'screen-saver');
+
 }
 
 
