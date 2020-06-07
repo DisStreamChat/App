@@ -3,6 +3,7 @@
   "version": "v1.1.1",
   "description": "Cross platform stream chat manager",
   "author": "David Snyder",
+  "license": "MIT",
   "build": {
     "appId": "react.electron",
     "win": {
