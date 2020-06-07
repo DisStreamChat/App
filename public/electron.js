@@ -58,8 +58,12 @@ function createWindow() {
 
     if (!isDev) autoUpdater.checkForUpdates();
 
+    mainWindow.on('page-title-updated', (e) => {
+        e.preventDefault();
+    });
 
 }
+
 
 
 // this is used to send all links to the users default browser
