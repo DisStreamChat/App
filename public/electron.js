@@ -35,7 +35,7 @@ function createWindow() {
     mainWindow = new BrowserWindow({ 
         width: width, // width of the window
         height: width*1.5, // height of the window
-        minWidth: 350,
+        minWidth: 275,
         minHeight: 500,
         frame: false, // whether or not the window has 'frame' or header
         backgroundColor: '#001e272e', // window background color, first two values set alpha which is set to 0 for transparency

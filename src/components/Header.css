@@ -127,3 +127,11 @@
 	}
 }
 
+@media screen and (max-width: 350px) {
+    .nav button{
+        min-width: fit-content !important;
+        font-size: .4rem !important;
+    }
+}
+
+

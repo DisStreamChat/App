@@ -23,7 +23,7 @@ hr {
 .channel-item{
     display: flex;
     align-items: flex-start;
-    width: 100%;
+    width: 95%;
     min-height: 100px;
     margin: .5rem 0;
     border-radius: .5rem;
@@ -114,8 +114,7 @@ hr {
 }
 
 .channel-div{
-
-    width: 80%;
+    width: 90%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -136,7 +135,9 @@ hr {
 @media screen and (max-width: 525px){
     .to-dashboard{
         font-size: 12px;
-        width: 80px
+        max-width: 80px;
+        width: fit-content;
+        padding: .5rem;
     }
 
     .channel-name{
@@ -154,4 +155,29 @@ hr {
     .channel-profile-pic img{
         max-width: 30px;
     }   
+}
+
+@media screen and (max-width: 350px){
+
+    .channel-name{
+        margin-left: -.5rem;
+        font-size: 10px
+    }
+
+    .to-dashboard{
+        padding: .25rem;
+        /* font-size: 10px !important; */
+    }
+
+    .to-dashboard:disabled{
+        font-size: 10px !important;
+    }
+
+    .channel-profile-pic{
+        width: 0px;
+    }
+
+    .channel-profile-pic img{
+        max-width: 0px;
+    }
 }
