@@ -107,6 +107,7 @@ h1{
     top: -2px;
     left: -1px;
     transform: scale(.75);
+    height: fit-content;
 }
 
 ._2WLY1{
