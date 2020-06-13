@@ -307,3 +307,11 @@
         position: initial;
     }
 }
+
+.MuiGrid-item *{
+    box-sizing: border-box !important
+}
+
+#input-slider{
+    margin-top: 1rem !important;
+}

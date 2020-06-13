@@ -19,13 +19,14 @@ const useStyles = makeStyles({
 const PrettoSlider = withStyles({
 	root: {
 		color: "#52af77",
-		height: 8,
+        height: 8,
+        boxSizing: "content-box"
 	},
 	thumb: {
 		height: 16,
 		width: 16,
 		backgroundColor: "#fff",
-		border: "2px solid currentColor",
+		border: "2px solid #52af77",
 		marginTop: -6,
 		// marginLeft: -10,
 		"&:focus, &:hover, &$active": {
@@ -34,6 +35,8 @@ const PrettoSlider = withStyles({
 	},
 	active: {},
 	valueLabel: {
+        // backgroundColor: "#52af77",
+        color: "black",
 		left: "calc(-50% - 4px)",
 	},
 	track: {
@@ -72,7 +75,7 @@ const InputSlider = props => {
 			<Grid container spacing={2} alignItems="center">
 				<Grid item xs>
 					<PrettoSlider
-						valueLabelDisplay="auto"
+						// valueLabelDisplay="auto"
 						value={typeof value === "number" ? value : 0}
 						onChange={props.onSliderChange}
 						aria-labelledby="input-slider"
