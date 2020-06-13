@@ -66,10 +66,7 @@ function createWindow() {
     });
 
     mainWindow.setAlwaysOnTop(true, 'screen-saver');
-
 }
-
-
 
 // this is used to send all links to the users default browser
 app.on('web-contents-created', (e, contents) => {
