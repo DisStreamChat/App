@@ -59,7 +59,9 @@ const Setting = props => {
 		} else {
 			setValue(props.value);
 		}
-	}, [props]);
+    }, [props]);
+    
+    console.log(value)
 
 	const buttonStyles = {
 		backgroundColor: props.default,
@@ -120,7 +122,7 @@ const Setting = props => {
 						control={
 							<FancySwitch
 								color="primary"
-								checked={value}
+								checked={!!value}
 								onChange={e => changeHandler(e.target.checked)}
 								name={props.name}
 							/>
