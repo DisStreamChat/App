@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ChromePicker } from "react-color";
-import { useEffect } from "react";
 import { Switch } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import { blueGrey } from "@material-ui/core/colors";
