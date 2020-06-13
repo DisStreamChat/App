@@ -8,7 +8,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import Button from "@material-ui/core/Button";
 import chroma from "chroma-js";
-import InputSlider from "./InputSlider"
+import InputSlider from "./InputSlider";
 import "./Users.css";
 
 const FancySwitch = withStyles({
@@ -43,14 +43,15 @@ const FancySwitch = withStyles({
 
 const Setting = props => {
 	const [value, setValue] = useState(props.value);
-    const [displayName, setDisplayName] = useState()
+	const [displayName, setDisplayName] = useState();
+
 	const changeHandler = v => {
 		props.onChange(props.name, v);
-    };
-    
-    useEffect(() => {
-        setDisplayName(props.name.match(/[A-Z][a-z]+|[0-9]+/g).join(" "))
-    }, [props.name])
+	};
+
+	useEffect(() => {
+		setDisplayName(props.name.match(/[A-Z][a-z]+|[0-9]+/g).join(" "));
+	}, [props.name]);
 
 	useEffect(() => {
 		if (props.type === "color") {
@@ -133,17 +134,19 @@ const Setting = props => {
 						control={
 							<InputSlider
 								color="primary"
-                                value={value}
-                                min={0}
-                                max={100}
-                                onSliderChange={(e, value) => changeHandler(value)}
-                                onInputChange={event => {
-		                            changeHandler(
+								value={value}
+								min={0}
+								max={100}
+								onSliderChange={(e, value) =>
+									changeHandler(value)
+								}
+								onInputChange={event => {
+									changeHandler(
 										event.target.value === ""
 											? ""
 											: Number(event.target.value)
 									);
-                                }}
+								}}
 								name={displayName}
 							/>
 						}

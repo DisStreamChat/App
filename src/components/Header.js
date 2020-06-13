@@ -14,12 +14,10 @@ const typesIndices = ["boolean", "color", "number"]
 const SettingList = props => {
 	const [index, setIndex] = useState();
 
-	console.log(props)
 
 	return (
 		<SettingAccordion>
 			{Object.entries(props.defaultSettings || {})
-				.filter(([, details]) => (props.app ? true : !details.appOnly))
 				.sort()
 				.sort((a, b) => {
 					return Math.sign(typesIndices.indexOf(a[1].type) - typesIndices.indexOf(b[1].type));
@@ -35,7 +33,8 @@ const SettingList = props => {
 							name={key}
 							type={value.type}
 						/>
-					);
+                    );
+                    
 				})}
 		</SettingAccordion>
 	);
@@ -66,6 +65,7 @@ const Header = props => {
 			.doc(id).onSnapshot(snapshot => {
                 const data = snapshot.data()
                 if(data){
+                    console.log(data)
                     setAppSettings(data.appSettings);
                 }
             })
