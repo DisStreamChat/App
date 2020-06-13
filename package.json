@@ -22,7 +22,7 @@
     "bootstrap": "^4.4.1",
     "cross-env": "^6.0.3",
     "custom-electron-titlebar": "^3.2.2-hotfix62",
-    "distwitchchat-componentlib": "^1.0.28",
+    "distwitchchat-componentlib": "^1.1.0",
     "dompurify": "^2.0.10",
     "electron-is-dev": "^1.1.0",
     "electron-log": "^4.2.1",
@@ -53,7 +53,7 @@
     "release-electron": "electron-builder --win -p always",
     "release": "yarn build-react && yarn release-electron",
     "build": "yarn build-react && yarn build-electron",
-    "start": "concurrently \"cross-env BROWSER=none yarn start-react\" \"wait-on http://localhost:3000 && electron .\""
+    "start": "concurrently \"cross-env BROWSER=none yarn start-react\" \"wait-on http://localhost:3005 && electron .\""
   },
   "eslintConfig": {
     "extends": "react-app"

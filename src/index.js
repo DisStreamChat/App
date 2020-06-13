@@ -46,7 +46,7 @@ const App = () => {
 
     // vanilla dom in react 🤮
     useEffect(() => {
-        if (border && streamerInfo?.appSettings?.showBorder) {
+        if (border && streamerInfo?.appSettings?.ShowBorder) {
             document.body.classList.add("boarder")
         } else {
             document.body.classList.remove("boarder")
