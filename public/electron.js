@@ -57,10 +57,8 @@ function createWindow() {
     
     globalShortcut.register('f7', focus)
 
-    try{
-        if (!isDev) autoUpdater.checkForUpdates();
-    }catch(err){
-        console.log(`error checking for updates :${err.message}`)
+    if (!isDev) {
+        autoUpdater.checkForUpdatesAndNotify().catch(err => console.log(`error checking for updates: ${err.message}`));
     }
 
     mainWindow.on('page-title-updated', (e) => {
