@@ -97,7 +97,7 @@ function App() {
 		if (socket) {
             socket.removeListener('chatmessage');
 			socket.on("chatmessage", msg => {
-                setMessages((m) => [...m.slice(m.length - 100, m.length), msg])
+                setMessages((m) => [...m.slice(-100), msg])
             })
             return () => socket.removeListener('chatmessage');
         }

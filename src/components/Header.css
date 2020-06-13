@@ -24,7 +24,9 @@
     max-height: 920px;
     overflow: auto;
     overflow-x: hidden;
-    max-width: 100vw;
+    max-width: 93vw;
+    width: 90vh;
+    padding: 0 .5rem;
 }
 
 .header:not(.open) > .header-settings{
