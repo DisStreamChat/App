@@ -13,7 +13,6 @@ import {AppContext} from "./contexts/AppContext"
 import Channels from "./components/Channels"
 const { ipcRenderer } = window.require("electron")
 
-// https://distwitchchat-backend.herokuapp.com/
 
 const App = () => {
     const [firebaseInit, setFirebaseInit] = useState(false)
@@ -29,6 +28,17 @@ const App = () => {
         ipcRenderer.send("setclickthrough", "f6")
         ipcRenderer.send("setunclickthrough", "f7")
     }, [])
+
+    useEffect(() => {
+        const unsub = firebase.db.collection("Streamers").doc(currentUser?.uid || " ").onSnapshot(snapshot => {
+            const data = snapshot.data()
+            if(data){
+                const opacity = data.appSettings.ClickThroughOpacity
+                ipcRenderer.send("setopacity", opacity)
+            }
+        })
+        return unsub
+    }, [currentUser])
 
     // this allows me to show the loading spinner until firebase is ready
     useEffect(() => {

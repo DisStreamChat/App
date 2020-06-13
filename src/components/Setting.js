@@ -60,8 +60,6 @@ const Setting = props => {
 		}
     }, [props]);
     
-    console.log(value)
-
 	const buttonStyles = {
 		backgroundColor: props.default,
 		color:
@@ -136,8 +134,9 @@ const Setting = props => {
 							<InputSlider
 								color="primary"
 								value={value}
-								min={0}
-								max={100}
+								min={props.min}
+                                max={props.max}
+                                step={props.step}
 								onSliderChange={(e, value) =>
 									changeHandler(value)
 								}

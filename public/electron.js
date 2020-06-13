@@ -9,6 +9,7 @@ let mainWindow;
 let loginWindow;
 let clickThroughKey = "a"
 let unclickThroughKey = "b"
+let opacity = .5
 
 const width = 650
 const globalShortcut = electron.globalShortcut
@@ -27,7 +28,7 @@ const focus = () => {
 
 const unfocus = () => {
     sendMessageToWindow("toggle-border", false)
-    mainWindow.setOpacity(.5)
+    mainWindow.setOpacity(opacity)
     mainWindow.setIgnoreMouseEvents(true)
 }
 
@@ -100,6 +101,10 @@ app.on("activate", () => {
         createWindow();
     }
 });
+
+ipcMain.on("setopacity", (event, data) => {
+    opacity = Math.min(Math.max(data, .1), 1)
+})
 
 ipcMain.on("setunclickthrough", (event, data) => {
     try {

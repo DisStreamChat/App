@@ -12,9 +12,6 @@ import { defaults, colorStyles, guildOption, types } from "./userUtils";
 const typesIndices = ["boolean", "color", "number"]
 
 const SettingList = props => {
-	const [index, setIndex] = useState();
-
-
 	return (
 		<SettingAccordion>
 			{Object.entries(props.defaultSettings || {})
@@ -27,11 +24,13 @@ const SettingList = props => {
 						<Setting
 							default={defaults[key]}
 							key={key}
-							index={index}
 							onChange={props.updateSettings}
 							value={props?.settings?.[key]}
 							name={key}
-							type={value.type}
+                            type={value.type}
+                            min={value.min}
+                            max={value.max}
+                            step={value.step}
 						/>
                     );
                     

@@ -97,7 +97,7 @@ function App() {
 		if (socket) {
             socket.removeListener('chatmessage');
 			socket.on("chatmessage", msg => {
-                setMessages((m) => [...m.slice(-100), msg])
+                setMessages((m) => [...m, msg])
             })
             return () => socket.removeListener('chatmessage');
         }
@@ -131,7 +131,7 @@ function App() {
 
 	useEffect(() => {
 		if (channel) {
-			// send infoString to backend with sockets, to get proper socket connection
+			// send info to backend with sockets, to get proper socket connection
 			if (socket) {
 				socket.emit("addme", channel)
 			}
@@ -146,7 +146,7 @@ function App() {
 				<div className={`overlay-container`}>
 				{/* <div className={`overlay-container ${!settings.showHeader && false && "full-body"}`}> */}
 					<div className="overlay">
-						{messages.sort((a, b) => a.sentAt - b.sentAt).map((msg, i) => (
+						{messages.slice(-Math.max(settings.MessageLimit, 100)).sort((a, b) => a.sentAt - b.sentAt).map((msg, i) => (
                             <Message streamerInfo={settings} pin={pinMessage} delete={removeMessage} key={msg.uuid} msg={msg} />
 						))}
 					</div> 
