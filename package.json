@@ -75,6 +75,8 @@
     "concurrently": "^5.0.0",
     "electron": "^7.1.0",
     "electron-builder": "^22.1.0",
+    "eslint": "^7.2.0",
+    "eslint-plugin-react": "^7.20.0",
     "wait-on": "^3.3.0"
   }
 }
