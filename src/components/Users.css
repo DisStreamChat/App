@@ -26,7 +26,7 @@
 }
 
 .setting-link.active {
-    background: var(--distwitchchat-blue);
+	background: var(--distwitchchat-blue);
 }
 
 .settings-sub-body {
@@ -230,34 +230,34 @@
 .color-header {
 	height: 40px;
 	padding-left: 0.75rem;
-    grid-column: 1 / span 2;
+	grid-column: 1 / span 2;
 	display: flex;
-    align-items: center;
-    justify-content: space-between;
+	align-items: center;
+	justify-content: space-between;
 	height: 70px;
 	cursor: context-menu;
 }
 
-.color-header h3{
-    font-size: 1rem;
-    font-weight: normal;
-    margin: 0;
+.color-header h3 {
+	font-size: 1rem;
+	font-weight: normal;
+	margin: 0;
 }
 
-.color-header span:first-child{
-    display: flex;
-    align-items: center;
+.color-header span:first-child {
+	display: flex;
+	align-items: center;
 }
 
-.color-header span:last-child{
-    width: 50%;
-    margin-right: 10%;
+.color-header span:last-child {
+	width: 50%;
+	margin-right: 10%;
 }
 
 .color-preview {
 	height: 40px;
-    border-radius: 0.5rem;
-    margin-left: 1rem;
+	border-radius: 0.5rem;
+	margin-left: 1rem;
 }
 
 .color-setting {
@@ -266,11 +266,10 @@
 	overflow: hidden;
 }
 
-.number-setting{
-    padding-left: 1.5rem;
-    height: 70px;
-    display: flex;
-
+.number-setting {
+	padding-left: 1.5rem;
+	height: 70px;
+	display: flex;
 }
 
 .color-setting.open {
@@ -291,27 +290,29 @@
 	font-weight: bold !important;
 }
 
-
-
-@media screen and (max-width: 1400px){
-    .category{
-        font-size: .75rem;
-    }
+@media screen and (max-width: 1400px) {
+	.category {
+		font-size: 0.75rem;
+	}
 }
 
-@media screen and (max-width: 1110px){
-    .settings-sub-body{
-        flex-direction: column;
-    }
-    .settings-categories{
-        position: initial;
-    }
+@media screen and (max-width: 1110px) {
+	.settings-sub-body {
+		flex-direction: column;
+	}
+	.settings-categories {
+		position: initial;
+	}
 }
 
-.MuiGrid-item *{
-    box-sizing: border-box !important
+.MuiGrid-item * {
+	box-sizing: border-box !important;
 }
 
-#input-slider{
-    margin-top: 1rem !important;
+#input-slider {
+	margin-top: 1rem !important;
+}
+
+._17Vfh {
+	max-width: 18px;
 }
