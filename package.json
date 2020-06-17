@@ -23,12 +23,13 @@
     "chroma-js": "^2.1.0",
     "cross-env": "^6.0.3",
     "custom-electron-titlebar": "^3.2.2-hotfix62",
-    "distwitchchat-componentlib": "^1.1.0",
+    "distwitchchat-componentlib": "^1.1.2",
     "dompurify": "^2.0.10",
     "electron-is-dev": "^1.1.0",
     "electron-log": "^4.2.1",
     "electron-packager": "^14.2.1",
     "electron-updater": "^4.0.0",
+    "eslint": "^6.6.0",
     "firebase": "^7.14.2",
     "marked": "^1.0.0",
     "mousetrap": "^1.6.5",
@@ -75,7 +76,6 @@
     "concurrently": "^5.0.0",
     "electron": "^7.1.0",
     "electron-builder": "^22.1.0",
-    "eslint": "^7.2.0",
     "eslint-plugin-react": "^7.20.0",
     "wait-on": "^3.3.0"
   }
