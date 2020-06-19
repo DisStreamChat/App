@@ -23,7 +23,6 @@ const App = () => {
 
     const currentUser = firebase.auth.currentUser
 
-
     useEffect(() => {
         ipcRenderer.send("setclickthrough", "f6")
         ipcRenderer.send("setunclickthrough", "f7")
@@ -53,6 +52,21 @@ const App = () => {
             setBorder(text)
         })
     }, [])
+
+    useEffect(() => {
+        (async () => {
+            if(firebaseInit !== false){
+                const userData = (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data()
+                const profilePictureResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/profilepicture?user=${userData?.TwitchName}`)
+                const profilePicture = await profilePictureResponse.json()
+                const modChannels = ""
+                console.log(currentUser.uid)
+                firebase.db.collection("Streamers").doc(currentUser.uid).update({
+                    profilePicture
+                })
+            }
+        })()
+    }, [firebaseInit])
 
     // vanilla dom in react 🤮
     useEffect(() => {
