@@ -69,7 +69,7 @@ const App = () => {
 				});
 			}
 		})();
-	}, [firebaseInit]);
+	}, [firebaseInit, currentUser]);
 
 	// vanilla dom in react 🤮
 	useEffect(() => {
