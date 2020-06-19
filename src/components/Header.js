@@ -64,12 +64,11 @@ const Header = props => {
 			.doc(id).onSnapshot(snapshot => {
                 const data = snapshot.data()
                 if(data){
-                    console.log(data)
                     setAppSettings(data.appSettings);
                 }
             })
         return unsub
-	}, []);
+	}, [id]);
 
     const clearChat = useCallback(() => {
         props.setMessages(m => m.map(msg => {return {...msg, deleted: true}}))
@@ -99,7 +98,6 @@ const Header = props => {
     const signout = useCallback(async () => {
         await firebase.logout()
         localStorage.removeItem("userId")
-        localStorage.removeItem("messages")
         props.history.push("/")
     }, [props.history]) 
 

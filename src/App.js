@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useCallback } from "react"
+import React, { useEffect, useState, useCallback } from "react"
 import firebase from "./firebase"
 import {useParams} from "react-router-dom"
 import "./App.css"
@@ -9,20 +9,14 @@ import {Message} from "distwitchchat-componentlib"
 import "distwitchchat-componentlib/dist/index.css"
 import "./components/Message.css"
 
-const { ipcRenderer } = window.require('electron');
-
-
 function App() {
-    // firebase.logout()
 	const [socket, setSocket] = useState()
     const [messages, setMessages] = useState([])
-	const [loaded, setLoaded] = useState(false)
     const [settings, setSettings] = useState({})
     const [channel, setChannel] = useState()
     const {id} = useParams()
 
     const currentUser = firebase.auth.currentUser
-
 
     useEffect(() => {
         if(currentUser){
@@ -36,26 +30,6 @@ function App() {
         }
     }, [currentUser])
 
-
-
-    // this runs whenever the messages array changes and stores the messages in localstorage
-	useEffect(() => {
-		if (loaded) {
-			localStorage.setItem("messages", JSON.stringify(messages.filter(msg => !msg.deleted)))
-        }
-    }, [messages, loaded])
-
-    // this runs once on load, and it loads messages from localstorage
-	useEffect(() => {
-		(async () => {
-            const localMessages = JSON.parse(localStorage.getItem("messages"))
-			if (localMessages) {
-				await setMessages(localMessages)
-            }
-			setLoaded(true)
-		})()
-	}, [])
-
     // this runs once on load, and starts the socket
 	useEffect(() => {
         setSocket(openSocket(process.env.REACT_APP_SOCKET_URL))
@@ -63,7 +37,6 @@ function App() {
 
     useEffect(() => {
         return () => {
-            console.log("cleaning up")
             if(socket){
                 socket.disconnect()
             }
@@ -72,37 +45,42 @@ function App() {
     
     // this function is passes into the message and will be used for pinning
     const pinMessage = useCallback((id, pinned=true) => {
-        let copy = [...messages]
-        let index = copy.findIndex(msg => msg.id === id)
-        if (index === -1) return
-        copy[index].pinned = pinned
-        setMessages(copy)
-    }, [messages])
+        setMessages(prev => {
+            let copy = [...prev]
+            let index = copy.findIndex(msg => msg.id === id)
+            if (index === -1) return prev
+            copy[index].pinned = pinned 
+            return copy
+        })
+    }, [])
 
     // this is used to delete messages, in certain conditions will also send a message to backend tell it to delete the message from the sent platform
     const removeMessage = useCallback((id, platform) => {
-        let copy = [...messages]
-        let index = copy.findIndex(msg => msg.id === id)
-        if (index === -1) return
-        copy[index].deleted = true 
-        setMessages(copy)
+        setMessages(prev => {
+            let copy = [...prev]
+            let index = copy.findIndex(msg => msg.id === id)
+            if (index === -1) return prev
+            copy[index].deleted = true 
+            return copy
+        })
 
         if (platform && socket){
             socket.emit(`deletemsg - ${platform}`, id)
         }
-    }, [messages, socket])
+    }, [socket])
 
     // this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
 	useEffect(() => {
 		if (socket) {
+            console.log("hi")
             socket.removeListener('chatmessage');
 			socket.on("chatmessage", msg => {
-                setMessages((m) => [...m, msg])
+                setMessages((m) => [...m.slice(-Math.max(settings.MessageLimit, 100)), msg])
             })
             return () => socket.removeListener('chatmessage');
         }
-    }, [socket])
-    
+    }, [settings, socket])
+  
     // this is similar to the above useEffect but for adds a listener for when messages are deleted
     useEffect(() => {
         if(socket){
@@ -146,7 +124,7 @@ function App() {
 				<div className={`overlay-container`}>
 				{/* <div className={`overlay-container ${!settings.showHeader && false && "full-body"}`}> */}
 					<div className="overlay">
-						{messages.slice(-Math.max(settings.MessageLimit, 100)).sort((a, b) => a.sentAt - b.sentAt).map((msg, i) => (
+						{messages.sort((a, b) => a.sentAt - b.sentAt).map((msg, i) => (
                             <Message streamerInfo={settings} pin={pinMessage} delete={removeMessage} key={msg.uuid} msg={msg} />
 						))}
 					</div> 

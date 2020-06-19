@@ -25,10 +25,6 @@ const Channels = () => {
     const [modChannels, setModChannels] = useState([])
 
     useEffect(() => {
-        localStorage.setItem("messages", JSON.stringify([]))
-    }, [])
-
-    useEffect(() => {
         const unsub = firebase.db.collection("Streamers").doc(currentUser.uid).onSnapshot(snapshot => {
             const user = snapshot.data()
             setMyChannel({ name: user?.displayName, isMember: true, profilePicture: user?.profilePicture, uid: currentUser.uid })
