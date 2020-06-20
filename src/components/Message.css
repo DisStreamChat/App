@@ -10,10 +10,3 @@
 a{
     text-decoration: underline !important;
 }
-
-
-@media screen and (max-width: 330px){
-    ._2WzYd{
-        font-size: 1rem !important;
-    }
-}

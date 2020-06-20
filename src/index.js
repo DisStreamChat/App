@@ -57,7 +57,7 @@ const App = () => {
 
 	useEffect(() => {
 		(async () => {
-			if (firebaseInit !== false) {
+			if (firebaseInit !== false && currentUser) {
 				const userData = (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data();
 				const profilePictureResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/profilepicture?user=${userData?.TwitchName}`);
 				const profilePicture = await profilePictureResponse.json();

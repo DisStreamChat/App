@@ -117,3 +117,14 @@ h1{
 .ml-1r{
     margin-left: 1rem !important;
 }
+
+@media screen and (max-width: 360px){
+
+    ._2WzYd{
+        font-size: .85rem !important;
+    }
+
+    ._jnNsa{
+        transform: scale(.75);
+    }
+}

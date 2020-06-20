@@ -113,6 +113,15 @@
 	background: var(--distwitchchat-purple) !important;
 }
 
+#root .MuiFormControlLabel-root {
+	width: 100%;
+}
+
+#root .makeStyles-root-128 {
+	max-width: 250px;
+	width: 100%;
+}
+
 @media screen and (max-width: 575px) {
 	.nav button {
 		font-size: .6rem !important;
@@ -142,4 +151,9 @@
     }
 }
 
-
+@media screen and (max-width: 340px){
+    .color-preview{
+        margin-left: -1rem;
+        margin-right: 4rem;
+    }
+}
