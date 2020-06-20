@@ -30,53 +30,12 @@ const Auth = props => {
         async function receiveMessage(event, data) {
             const json = data
             const result = await firebase.auth.signInWithCustomToken(json.token)
-            const uid = result.user.uid
-            const { displayName, profilePicture, ModChannels } = json
+            const { displayName } = json
             firebase.auth.currentUser.updateProfile({
                 displayName
             })
 
-            try {
-                await firebase.db.collection("Streamers").doc(uid).update({
-                    displayName,
-                    profilePicture,
-                    ModChannels,
-                    name: displayName.toLowerCase(),
-                    TwitchName: displayName.toLowerCase()
-                })
-            } catch (err) {
-                await firebase.db.collection("Streamers").doc(uid).set({
-                    displayName,
-                    uid,
-                    profilePicture,
-                    ModChannels,
-                    TwitchName: displayName.toLowerCase(),
-                    name: displayName.toLowerCase(),
-                    appSettings: {
-                        TwitchColor: "",
-                        YoutubeColor: "",
-                        discordColor: "",
-                        displayPlatformColors: false,
-                        displayPlatformIcons: false,
-                        highlightedMessageColor: "",
-                        showHeader: true,
-                        showSourceButton: false
-                    },
-                    discordLinked: false,
-                    guildId: "",
-                    liveChatId: "",
-                    overlaySettings: {
-                        TwitchColor: "",
-                        YoutubeColor: "",
-                        discordColor: "",
-                        displayPlatformColors: false,
-                        displayPlatformIcons: false,
-                        highlightedMessageColor: "",
-                    },
-                    twitchAuthenticated: true,
-                    youtubeAuthenticated: false
-                })
-            }
+            
             props.history.push("/")
 
         }
