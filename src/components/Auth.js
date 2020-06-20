@@ -14,57 +14,11 @@ const Auth = props => {
             // sign in with a google popup and get the resulting user info from google
             const result = await firebase.auth.signInWithPopup(provider)
             const user = result.user
-            const { displayName, photoURL: profilePicture } = user
+            const { displayName } = user
             firebase.auth.currentUser.updateProfile({
-                displayName: user.displayName
+                displayName
             })
-            // update or set the users database entry. the try catch is used to detect if there is not already a user in the database
-            // it will throw an error trying to update a document that doesn't exist
-            try {
-                await firebase.db.collection("Streamers").doc(user.uid).update({
-                    displayName,
-                    profilePicture,
-                    TwitchName: displayName.toLowerCase(),
-                    name: displayName.toLowerCase()
-                })
-            } catch (err) {
-                await firebase.db.collection("Streamers").doc(user.uid).set({
-                    displayName,
-                    uid: user.uid,
-                    profilePicture,
-                    ModChannels: [],
-                    TwitchName: displayName.toLowerCase(),
-                    name: displayName.toLowerCase(),
-                    appSettings: {
-                        TwitchColor: "",
-                        YoutubeColor: "",
-                        discordColor: "",
-                        displayPlatformColors: false,
-                        displayPlatformIcons: false,
-                        highlightedMessageColor: "",
-                        showHeader: true,
-                        showSourceButton: false,
-                        compact: false,
-                        showBorder: false,
-                        nameColors: true
-                    },
-                    discordLinked: false,
-                    guildId: "",
-                    liveChatId: "",
-                    overlaySettings: {
-                        TwitchColor: "",
-                        YoutubeColor: "",
-                        discordColor: "",
-                        displayPlatformColors: false,
-                        displayPlatformIcons: false,
-                        highlightedMessageColor: "",
-                        nameColors: true,
-                        compact: false
-                    },
-                    twitchAuthenticated: true,
-                    youtubeAuthenticated: false
-                })
-            }
+
             props.history.push("/")
         } catch (err) {
             console.log(err.message)
