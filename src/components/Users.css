@@ -288,7 +288,8 @@
 	justify-self: center;
 	border-radius: 0.5rem !important;
 	font-size: 1.25rem !important;
-	font-weight: bold !important;
+    font-weight: bold !important;
+    background: #000;
 }
 
 @media screen and (max-width: 1400px) {

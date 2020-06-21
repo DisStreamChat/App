@@ -5,19 +5,22 @@ import { withRouter, Link } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import Setting from "./Setting"
+import ClearRoundedIcon from "@material-ui/icons/ClearRounded";
 import SettingAccordion from "./SettingsAccordion"
 
 import { defaults, colorStyles, guildOption, types } from "./userUtils";
 
-const typesIndices = ["boolean", "color", "number"]
 
 const SettingList = props => {
 	return (
 		<SettingAccordion>
-			{Object.entries(props.defaultSettings || {})
+            {Object.entries(props.defaultSettings || {})
+            .filter(([name,]) => (!props.search ? true : name?.toLowerCase()?.includes(props?.search?.toLowerCase())))
 				.sort()
 				.sort((a, b) => {
-					return Math.sign(typesIndices.indexOf(a[1].type) - typesIndices.indexOf(b[1].type));
+                    const categoryOrder = (a[1].type.localeCompare(b[1].type));
+                    const nameOrder = a[0].localeCompare(b[0])
+					return !!categoryOrder ? categoryOrder : nameOrder
 				})
 				.map(([key, value]) => {
 					return (
@@ -45,6 +48,15 @@ const Header = props => {
 	const [defaultSettings, setDefaultSettings] = useState();
     const currentUser = firebase.auth.currentUser
     const id = currentUser.uid
+    const [search, setSearch] = useState()
+
+    const handleChange = useCallback(e => {
+		setSearch(e.target.value);
+    }, []);
+    
+    const resetSearch = useCallback(() => {
+		setSearch("");
+	}, []);
 
 	useEffect(() => {
 		(async () => {
@@ -118,8 +130,13 @@ const Header = props => {
                 }
             </nav>
             <div className="header-settings">
+            <div className="search-container" >
+				<input value={search}  onChange={handleChange} type="text" name="" id="" placeholder="Search" className="settings--searchbox" />
+				<ClearRoundedIcon className="clear-button" onClick={resetSearch} />
+			</div>
                 <SettingList 
                     all
+                    search={search}
                     defaultSettings={defaultSettings}
                     settings={appSettings}
                     updateSettings={updateAppSetting}

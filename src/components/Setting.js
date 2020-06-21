@@ -41,7 +41,8 @@ const FancySwitch = withStyles({
 })(Switch);
 
 const Setting = props => {
-	const [value, setValue] = useState(props.value);
+    const [value, setValue] = useState(props.value);
+    console.log(props.default)
 	const [displayName, setDisplayName] = useState();
 
 	const changeHandler = v => {
@@ -61,7 +62,7 @@ const Setting = props => {
     }, [props]);
     
 	const buttonStyles = {
-		backgroundColor: props.default,
+		backgroundColor: props.default + " !important",
 		color:
 			chroma.contrast(chroma(props.default || "#000"), "white") > 2
 				? "white"
@@ -106,7 +107,13 @@ const Setting = props => {
 					<Button
 						variant="contained"
 						className="reset-button"
-						style={buttonStyles}
+						style={{
+                            backgroundColor: props.default,
+                            color:
+                                chroma.contrast(chroma(props.default || "#000"), "white") > 2
+                                    ? "white"
+                                    : "black",
+                        }}
 						onClick={() => changeHandler(props.default)}
 						color="primary"
 					>
