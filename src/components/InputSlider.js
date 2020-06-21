@@ -19,7 +19,7 @@ const useStyles = makeStyles({
 
 const PrettoSlider = withStyles({
 	root: {
-		color: "#52af77",
+		color: "#462B45",
         height: 8,
         marginBottom: 16,
         paddingTop: 4,
@@ -29,7 +29,7 @@ const PrettoSlider = withStyles({
 		height: 24,
 		width: 24,
 		backgroundColor: "#fff",
-		border: "2px solid #52af77",
+		border: "4px solid #2D688D",
 		marginTop: 0,
 		"&:focus, &:hover, &:active": {
 			boxShadow: "inherit",

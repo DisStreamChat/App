@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { ChromePicker } from "react-color";
 import { Switch } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
@@ -8,56 +8,8 @@ import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import Button from "@material-ui/core/Button";
 import chroma from "chroma-js";
 import InputSlider from "./InputSlider";
+import lodash from "lodash";
 import "./Users.css";
-
-
-// Credit David Walsh (https://davidwalsh.name/javascript-debounce-function)
-
-// Returns a function, that, as long as it continues to be invoked, will not
-// be triggered. The function will be called after it stops being called for
-// N milliseconds. If `immediate` is passed, trigger the function on the
-// leading edge, instead of the trailing.
-function debounce(func, wait, immediate) {
-    var timeout;
-  
-    // This is the function that is actually executed when
-    // the DOM event is triggered.
-    return function executedFunction() {
-      // Store the context of this and any
-      // parameters passed to executedFunction
-      var context = this;
-      var args = arguments;
-          
-      // The function to be called after 
-      // the debounce time has elapsed
-      var later = function() {
-        // null timeout to indicate the debounce ended
-        timeout = null;
-          
-        // Call function now if you did not on the leading end
-        if (!immediate) func.apply(context, args);
-      };
-  
-      // Determine if you should call the function
-      // on the leading or trail end
-      var callNow = immediate && !timeout;
-      
-      // This will reset the waiting every function execution.
-      // This is the step that prevents the function from
-      // being executed because it will never reach the 
-      // inside of the previous setTimeout  
-      clearTimeout(timeout);
-      
-      // Restart the debounce waiting period.
-      // setTimeout returns a truthy value (it differs in web vs node)
-      timeout = setTimeout(later, wait);
-      
-      // Call immediately if you're dong a leading
-      // end execution
-      if (callNow) func.apply(context, args);
-    };
-  };
-
 
 const FancySwitch = withStyles({
 	root: {
@@ -67,8 +19,7 @@ const FancySwitch = withStyles({
 		width: 24,
 		height: 24,
 		backgroundColor: "#fff",
-		boxShadow:
-			"0 0 12px 0 rgba(0,0,0,0.08), 0 0 8px 0 rgba(0,0,0,0.12), 0 0 4px 0 rgba(0,0,0,0.38)",
+		boxShadow: "0 0 12px 0 rgba(0,0,0,0.08), 0 0 8px 0 rgba(0,0,0,0.12), 0 0 4px 0 rgba(0,0,0,0.38)",
 	},
 	switchBase: {
 		color: "rgba(0,0,0,0.38)",
@@ -90,12 +41,15 @@ const FancySwitch = withStyles({
 })(Switch);
 
 const Setting = props => {
-    const [value, setValue] = useState(props.value);
+	const [value, setValue] = useState(props.value);
 	const [displayName, setDisplayName] = useState();
 
-	const changeHandler = v => {
-		props.onChange(props.name, v);
-	};
+	const changeHandler = useCallback(
+		lodash.debounce(v => {
+			props.onChange(props.name, v);
+		}, 1000),
+		[props.onChange, props.name]
+	);
 
 	useEffect(() => {
 		setDisplayName(props.name.match(/[A-Z][a-z]+|[0-9]+/g).join(" "));
@@ -110,23 +64,12 @@ const Setting = props => {
     }, [props]);
     
 	return (
-		<div
-			className={`setting ${props.type === "color" && "color-setting"} ${
-				props.open && "open"
-			}`}
-		>
+		<div className={`setting ${props.type === "color" && "color-setting"} ${props.open && "open"}`}>
 			{props.type === "color" ? (
 				<>
-					<div
-						className="color-header"
-						onClick={() => props.onClick(props.name)}
-					>
+					<div className="color-header" onClick={() => props.onClick(props.name)}>
 						<span>
-							<KeyboardArrowDownIcon
-								className={`${
-									props.open ? "open" : "closed"
-								} mr-quarter`}
-							/>
+							<KeyboardArrowDownIcon className={`${props.open ? "open" : "closed"} mr-quarter`} />
 							<h3>{displayName}</h3>
 						</span>
 						<span>
@@ -140,7 +83,10 @@ const Setting = props => {
 					</div>
 					<ChromePicker
 						color={value}
-						onChange={color => changeHandler(color.hex)}
+						onChange={color => {
+							setValue(color.hex);
+							changeHandler(color.hex);
+						}}
 						disableAlpha
 						className="ml-1r"
 					/>
@@ -148,13 +94,13 @@ const Setting = props => {
 						variant="contained"
 						className="reset-button"
 						style={{
-                            backgroundColor: props.default,
-                            color:
-                                chroma.contrast(chroma(props.default || "#000"), "white") > 2
-                                    ? "white"
-                                    : "black",
-                        }}
-						onClick={() => changeHandler(props.default)}
+							backgroundColor: props.default,
+							color: chroma.contrast(chroma(props.default || "#000"), "white") > 2 ? "white" : "black",
+						}}
+						onClick={() => {
+                            setValue(props.default)
+							changeHandler(props.default);
+						}}
 						color="primary"
 					>
 						Reset
@@ -163,14 +109,10 @@ const Setting = props => {
 			) : props.type === "boolean" ? (
 				<span className="checkbox-setting">
 					<FormControlLabel
-						control={
-							<FancySwitch
-								color="primary"
-								checked={!!value}
-								onChange={e => changeHandler(e.target.checked)}
-								name={props.name}
-							/>
-						}
+						control={<FancySwitch color="primary" checked={!!value} onChange={e => {
+                            setValue(e.target.checked)
+                            changeHandler(e.target.checked)
+                        }} name={props.name} />}
 						label={displayName}
 					/>
 				</span>
@@ -182,17 +124,15 @@ const Setting = props => {
 								color="primary"
 								value={value}
 								min={props.min}
-                                max={props.max}
-                                step={props.step}
-								onSliderChange={(e, value) =>
-									changeHandler(value)
-								}
+								max={props.max}
+								step={props.step}
+								onSliderChange={(e, value) => {
+									setValue(value);
+									changeHandler(value);
+								}}
 								onInputChange={event => {
-									changeHandler(
-										event.target.value === ""
-											? ""
-											: Number(event.target.value)
-									);
+									setValue(event.target.value === "" ? "" : Number(event.target.value));
+									changeHandler(event.target.value === "" ? "" : Number(event.target.value));
 								}}
 								name={displayName}
 							/>

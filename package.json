@@ -31,6 +31,7 @@
     "electron-updater": "^4.0.0",
     "eslint": "^6.6.0",
     "firebase": "^7.14.2",
+    "lodash": "^4.17.15",
     "marked": "^1.0.0",
     "mousetrap": "^1.6.5",
     "node-sass": "^4.14.1",
