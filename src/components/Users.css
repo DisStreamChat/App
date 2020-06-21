@@ -207,7 +207,7 @@
 	transform: rotate(0deg);
 }
 
-.settings svg.closed {
+.setting svg.closed {
 	transform: rotate(-90deg);
 }
 
