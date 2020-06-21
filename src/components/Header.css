@@ -164,8 +164,18 @@
 }
 
 .nav .MuiButton-contained {
-	background: var(--distwitchchat-blue);
+    background: var(--distwitchchat-blue);
+    transition: .25s;
 	color: white !important;
+}
+
+#root .nav .MuiButton-contained:hover {
+    background: var(--distwitchchat-blue);
+    filter: contrast(125%)
+}
+
+#root .nav .MuiButton-containedPrimary:hover{
+    background: var(--distwitchchat-purple);
 }
 
 .nav .MuiButton-containedPrimary {
