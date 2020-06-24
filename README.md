@@ -11,7 +11,7 @@ This is the Chat app for DisTwitchChat. This app has many features that the [ove
 ## Install for Devolopment
 1. Clone this repository.
 ```
-git clone https://github.com/willjw3/react-electron.git <your-project-name>
+git clone https://github.com/DisStreamChat/App.git <your-project-name>
 ```
 2. Install Dependencies
 ```
