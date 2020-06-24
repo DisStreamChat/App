@@ -71,7 +71,7 @@ const Setting = props => {
 				<>
 					<div className="color-header" onClick={() => props.onClick(props.name)}>
 						<span>
-							<KeyboardArrowDownIcon className={`${props.open ? "open" : "closed"}  mr-quarter`} />
+							<KeyboardArrowDownIcon className={` ${props.open ? "open" : "closed"}  mr-quarter`} />
 							<h3>{displayName}</h3>
 						</span>
 						<span>
