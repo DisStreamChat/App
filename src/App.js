@@ -13,7 +13,8 @@ function App() {
 	const [socket, setSocket] = useState();
 	const [messages, setMessages] = useState([]);
 	const [settings, setSettings] = useState({});
-	const [channel, setChannel] = useState();
+    const [channel, setChannel] = useState();
+    const [connected, setConnected] = useState(false)
 	const { id } = useParams();
 
 	const currentUser = firebase.auth.currentUser;
@@ -84,7 +85,20 @@ function App() {
 			});
 			return () => socket.removeListener("chatmessage");
 		}
-	}, [settings, socket]);
+    }, [settings, socket]);
+   
+    // this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
+	useEffect(() => {
+		if (socket) {
+			socket.removeListener("imConnected");
+			socket.on("imConnected", () => {
+                if(channel){
+                    socket.emit("addme", channel)
+                }
+            });
+			return () => socket.removeListener("imConnected");
+		}
+	}, [settings, socket, connected, channel]);
 
 	useEffect(() => {
 		setMessages(m => m.slice(-Math.max(settings.MessageLimit, 100)));
@@ -123,7 +137,7 @@ function App() {
 		if (channel) {
 			// send info to backend with sockets, to get proper socket connection
 			if (socket) {
-				socket.emit("addme", channel);
+                socket.emit("addme", channel);
 			}
 		}
 	}, [channel, socket]);

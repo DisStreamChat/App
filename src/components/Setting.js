@@ -44,8 +44,6 @@ const Setting = props => {
 	const [value, setValue] = useState(props.value);
 	const [displayName, setDisplayName] = useState();
 
-    console.log(props.open)
-
 	const changeHandler = useCallback(
 		lodash.debounce(v => {
 			props.onChange(props.name, v);

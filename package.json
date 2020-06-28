@@ -1,6 +1,6 @@
 {
   "name": "disstreamchat",
-  "version": "v1.2.3",
+  "version": "v1.2.4",
   "description": "Cross platform stream chat manager",
   "author": "David Snyder",
   "license": "MIT",
@@ -42,7 +42,7 @@
     "react-loader": "^2.4.7",
     "react-router-dom": "^5.1.2",
     "react-scripts": "^3.4.1",
-    "react-use": "^15.1.0",
+    "react-use": "^15.3.0",
     "socket.io-client": "^2.3.0",
     "twitch": "^4.0.10",
     "twitch-electron-auth-provider": "^4.0.10"

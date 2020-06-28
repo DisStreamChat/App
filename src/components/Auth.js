@@ -29,13 +29,12 @@ const Auth = props => {
         // function that is executed when a message is received
         async function receiveMessage(event, data) {
             const json = data
-            const result = await firebase.auth.signInWithCustomToken(json.token)
+            await firebase.auth.signInWithCustomToken(json.token)
             const { displayName } = json
             firebase.auth.currentUser.updateProfile({
                 displayName
             })
-
-            
+           
             props.history.push("/")
 
         }
