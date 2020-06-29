@@ -8,7 +8,7 @@ import Setting from "./Setting"
 import ClearRoundedIcon from "@material-ui/icons/ClearRounded";
 import SettingAccordion from "./SettingsAccordion"
 
-import { defaults, colorStyles, guildOption, types } from "./userUtils";
+// import { defaults, colorStyles, guildOption, types } from "./userUtils";
 
 
 const SettingList = props => {

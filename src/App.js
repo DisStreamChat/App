@@ -15,7 +15,7 @@ function App() {
 	const [messages, setMessages] = useState([]);
 	const [settings, setSettings] = useState({});
 	const [channel, setChannel] = useState();
-	const [search, setSearch] = useState("");
+    const [search, setSearch] = useState("");
 	const { id } = useParams();
 
 	const currentUser = firebase.auth.currentUser;
@@ -153,7 +153,8 @@ function App() {
 				socket.emit("addme", channel);
 			}
 		}
-	}, [channel, socket]);
+    }, [channel, socket]);
+    
 
 	return (
 		<div className="app app--dark">
@@ -164,13 +165,7 @@ function App() {
 					{/* <div className={`overlay-container ${!settings.showHeader && false && "full-body"}`}> */}
 					<div className="overlay">
 						{messages
-							.filter(msg => {
-								try {
-									return !search || msg.body.match(search);
-								} catch (err) {
-									return true;
-								}
-							})
+							.filter(msg => !search || msg.body.toLowerCase().includes(search.toLowerCase()))
 							.map((msg, i) => (
 								<Message streamerInfo={settings} pin={pinMessage} delete={removeMessage} key={msg.uuid} msg={msg} />
 							))}
