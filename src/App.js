@@ -111,6 +111,18 @@ function App() {
 			socket.on("deletemessage", removeMessage);
 			return () => socket.removeListener("deletemessage");
 		}
+    }, [socket, removeMessage]);
+    
+    // this is similar to the above useEffect but for adds a listener for when messages are deleted
+	useEffect(() => {
+		if (socket) {
+			socket.removeListener("purgeuser");
+			socket.on("purgeuser", username => {
+                console.log("test")
+                setMessages(prev => prev.map(msg => ({...msg, deleted: msg.deleted || msg.displayName?.toLowerCase() === username})))
+            });
+			return () => socket.removeListener("purgeuser");
+		}
 	}, [socket, removeMessage]);
 
 	useEffect(() => {
