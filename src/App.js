@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import firebase from "./firebase";
 import { useParams } from "react-router-dom";
+import ClearRoundedIcon from "@material-ui/icons/ClearRounded";
 import "./App.css";
 
 import openSocket from "socket.io-client";
@@ -152,8 +153,8 @@ function App() {
 				socket.emit("addme", channel);
 			}
 		}
-    }, [channel, socket]);
-    
+	}, [channel, socket]);
+
 	return (
 		<div className="app app--dark">
 			{/* {settings.showHeader && <Header setMessages={setMessages} backButton/>} */}
@@ -164,16 +165,27 @@ function App() {
 					<div className="overlay">
 						{messages
 							.filter(msg => {
-                                try{
-                                    return !search || msg.body.match(search)
-                                }catch(err){
-                                    return true
-                                }
-                            })
+								try {
+									return !search || msg.body.match(search);
+								} catch (err) {
+									return true;
+								}
+							})
 							.map((msg, i) => (
 								<Message streamerInfo={settings} pin={pinMessage} delete={removeMessage} key={msg.uuid} msg={msg} />
 							))}
-						<input type="text" className="search" value={search} onChange={e => setSearch(e.target.value)} />
+						<div className="search-container">
+							<input
+								value={search}
+								onChange={e => setSearch(e.target.value)}
+								type="text"
+								name=""
+								id=""
+								placeholder="Search Messages"
+								className="settings--searchbox"
+							/>
+							<ClearRoundedIcon className="clear-button" onClick={() => setSearch("")} />
+						</div>
 					</div>
 				</div>
 			</main>

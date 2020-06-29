@@ -64,12 +64,9 @@
     height: calc(100vh - 30px);
 }
 
-.search{
-    position: sticky;
-    top: .5rem;
-    justify-self: center;
-    align-self: center;
-    margin: .25rem 0;
+.overlay .search-container{
+    z-index: 0;
+    width: 100vw;
 }
 
 /* width */

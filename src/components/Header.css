@@ -19,6 +19,10 @@
     height: calc(100vh - 30px - 5px);
 }
 
+#root .overlay .settings--searchbox{
+    width: 100vw
+}
+
 #root .settings--searchbox {
 	box-sizing: border-box;
     width: 90vw;
