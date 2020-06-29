@@ -1,5 +1,5 @@
 # DisTwitchChat App
-This is the Chat app for DisTwitchChat. This app has many features that the [overlay](https://github.com/DisTwitchChat/Overlay) does not have.
+This is the Chat client for DisTwitchChat. This app has many features that the [overlay](https://github.com/DisTwitchChat/Overlay) does not have.
 
 # Framework/Tech use
 * electron
