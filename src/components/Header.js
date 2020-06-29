@@ -84,14 +84,23 @@ const Header = props => {
 
     const clearChat = useCallback(() => {
         props.setMessages(m => m.map(msg => {return {...msg, deleted: true}}))
+        setTimeout(() => {
+            props.setMessages([])
+        }, 10000)
     }, [props])
 
     const clearTwitch = useCallback(() => {
         props.setMessages(messages => messages.map(msg => {return {...msg, deleted: msg.deleted || msg.platform === "twitch"}}))
+        setTimeout(() => {
+            props.setMessages(prev => prev.filter(msg => !msg.deleted))
+        }, 10000)
     }, [props])
     
     const clearDiscord = useCallback(() => {
         props.setMessages(messages => messages.map(msg => { return { ...msg, deleted: msg.deleted || msg.platform === "discord"}}))
+        setTimeout(() => {
+            props.setMessages(prev => prev.filter(msg => !msg.deleted))
+        }, 10000)
     }, [props])
 
 	const updateAppSetting = useCallback(

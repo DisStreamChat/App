@@ -13,8 +13,8 @@ function App() {
 	const [socket, setSocket] = useState();
 	const [messages, setMessages] = useState([]);
 	const [settings, setSettings] = useState({});
-    const [channel, setChannel] = useState();
-    const [connected, setConnected] = useState(false)
+	const [channel, setChannel] = useState();
+	const [search, setSearch] = useState("");
 	const { id } = useParams();
 
 	const currentUser = firebase.auth.currentUser;
@@ -81,24 +81,24 @@ function App() {
 		if (socket) {
 			socket.removeListener("chatmessage");
 			socket.on("chatmessage", msg => {
-				setMessages(m => [...m.slice(-Math.max(settings.MessageLimit, 100)), msg]);
+				setMessages(m => [...m.slice(-Math.max(settings.MessageLimit, 100)), msg].sort((a, b) => a.sentAt - b.sentAt));
 			});
 			return () => socket.removeListener("chatmessage");
 		}
-    }, [settings, socket]);
-   
-    // this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
+	}, [settings, socket]);
+
+	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
 	useEffect(() => {
 		if (socket) {
 			socket.removeListener("imConnected");
 			socket.on("imConnected", () => {
-                if(channel){
-                    socket.emit("addme", channel)
-                }
-            });
+				if (channel) {
+					socket.emit("addme", channel);
+				}
+			});
 			return () => socket.removeListener("imConnected");
 		}
-	}, [settings, socket, connected, channel]);
+	}, [settings, socket, channel]);
 
 	useEffect(() => {
 		setMessages(m => m.slice(-Math.max(settings.MessageLimit, 100)));
@@ -111,16 +111,16 @@ function App() {
 			socket.on("deletemessage", removeMessage);
 			return () => socket.removeListener("deletemessage");
 		}
-    }, [socket, removeMessage]);
-    
-    // this is similar to the above useEffect but for adds a listener for when messages are deleted
+	}, [socket, removeMessage]);
+
+	// this is similar to the above useEffect but for adds a listener for when messages are deleted
 	useEffect(() => {
 		if (socket) {
 			socket.removeListener("purgeuser");
 			socket.on("purgeuser", username => {
-                console.log("test")
-                setMessages(prev => prev.map(msg => ({...msg, deleted: msg.deleted || msg.displayName?.toLowerCase() === username})))
-            });
+				console.log("test");
+				setMessages(prev => prev.map(msg => ({ ...msg, deleted: msg.deleted || msg.displayName?.toLowerCase() === username })));
+			});
 			return () => socket.removeListener("purgeuser");
 		}
 	}, [socket, removeMessage]);
@@ -149,11 +149,11 @@ function App() {
 		if (channel) {
 			// send info to backend with sockets, to get proper socket connection
 			if (socket) {
-                socket.emit("addme", channel);
+				socket.emit("addme", channel);
 			}
 		}
-	}, [channel, socket]);
-
+    }, [channel, socket]);
+    
 	return (
 		<div className="app app--dark">
 			{/* {settings.showHeader && <Header setMessages={setMessages} backButton/>} */}
@@ -163,10 +163,17 @@ function App() {
 					{/* <div className={`overlay-container ${!settings.showHeader && false && "full-body"}`}> */}
 					<div className="overlay">
 						{messages
-							.sort((a, b) => a.sentAt - b.sentAt)
+							.filter(msg => {
+                                try{
+                                    return !search || msg.body.match(search)
+                                }catch(err){
+                                    return true
+                                }
+                            })
 							.map((msg, i) => (
 								<Message streamerInfo={settings} pin={pinMessage} delete={removeMessage} key={msg.uuid} msg={msg} />
 							))}
+						<input type="text" className="search" value={search} onChange={e => setSearch(e.target.value)} />
 					</div>
 				</div>
 			</main>
