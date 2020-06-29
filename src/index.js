@@ -4,13 +4,14 @@ import "./index.css";
 import { HashRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 import firebase from "./firebase";
 
-import Home from "./App";
+import Chat from "./components/Chat";
 import Auth from "./components/Auth";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Loader from "react-loader";
 import { AppContext } from "./contexts/AppContext";
 import Channels from "./components/Channels";
+import Header from "./components/Header"
 const { ipcRenderer } = window.require("electron");
 
 const App = () => {
@@ -74,9 +75,9 @@ const App = () => {
 	// vanilla dom in react 🤮
 	useEffect(() => {
 		if (border && streamerInfo?.appSettings?.ShowBorder) {
-			document.body.classList.add("boarder");
+			document.body.classList.add("body--border");
 		} else {
-			document.body.classList.remove("boarder");
+			document.body.classList.remove("body--border");
 		}
 	}, [border, streamerInfo]);
 
@@ -107,8 +108,9 @@ const App = () => {
 			}}
 		>
 			<Router>
+                <Header/>
 				<Switch>
-					<ProtectedRoute exact path="/chat/:id" component={Home} />
+					<ProtectedRoute exact path="/chat/:id" component={Chat} />
 					<ProtectedRoute path="/channels" component={Channels} />
 					<Route path="/login" component={Auth} />
 					<Redirect to="/channels" />

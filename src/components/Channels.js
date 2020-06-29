@@ -54,13 +54,11 @@ const Channels = () => {
 
     return (
         <>
-        <Header pad="pdbt-1"/>
         <div className="my-channels">
             <div className="mychannel channel-div">
                 <h1>Your Channel</h1>
                 <ChannelItem {...myChannel} />
             </div>
-            
             <hr />
             <h1>Channels you moderate</h1>
             <div className="modchannels channel-div">

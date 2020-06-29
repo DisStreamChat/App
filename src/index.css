@@ -3,11 +3,11 @@ body {
   padding: 0;
   box-sizing: border-box;
   background: #00000000 !important;
-  height: 99.5vh;
+  height: calc(100vh - 4px);
 }
 
-.boarder{
-    border: 1px solid;
+.body--border{
+    border: 2px solid;
 }
 
 input{

@@ -1,40 +1,4 @@
-import React from "react";
 import chroma from "chroma-js";
-
-export const GuildIcon = props => {
-	return props.icon ? (
-		<img
-			style={{
-				minWidth: props.size,
-				height: props.size,
-				borderRadius: "50%",
-				marginRight: "1rem",
-			}}
-			alt=""
-			src={`https://cdn.discordapp.com/icons/${props.id}/${props.icon}`}
-		></img>
-	) : (
-		<span
-			className="no-icon"
-			style={{
-				minWidth: props.size,
-				height: props.size,
-				borderRadius: "50%",
-				marginRight: "1rem",
-				backgroundColor: "#36393f",
-			}}
-		>
-			{props.name.split(" ").map(w => w[0])}
-		</span>
-	);
-};
-
-export const defaults = {
-	TwitchColor: "#462b45",
-	YoutubeColor: "#c4302b",
-	DiscordColor: "#2d688d",
-	HighlightedMessageColor: "#6e022e",
-};
 
 export const types = {
 	ShowNameColors: "boolean",
@@ -102,18 +66,4 @@ export const colorStyles = {
 		};
 	},
 	singleValue: styles => ({ ...styles, color: "white" }),
-};
-
-export const guildOption = guild => {
-	if (!guild) return null;
-	const size = 40;
-	return {
-		value: guild.name,
-		label: (
-			<span style={{ height: size }}>
-				<GuildIcon size={size} {...guild} />
-				{guild.name}
-			</span>
-		),
-	};
 };
