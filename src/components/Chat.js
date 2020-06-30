@@ -155,14 +155,9 @@ function App() {
 		<div className="overlay-container">
 			<div className="overlay">
 				<Messages
-					messages={messages.filter(
-						msg =>
-							!search ||
-							msg.body
-								.toLowerCase()
-								.includes(search.toLowerCase())
-								.sort((a, b) => a.sentAt - b.sentAt)
-					)}
+					messages={messages
+						.filter(msg => !search || msg.body.toLowerCase().includes(search.toLowerCase()))
+						.sort((a, b) => a.sentAt - b.sentAt)}
 					settings={settings}
 					removeMessage={removeMessage}
 				/>
