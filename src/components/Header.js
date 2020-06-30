@@ -54,7 +54,7 @@ const Header = props => {
     const {location} = props
 	useEffect(() => {
 		setChatHeader(location?.pathname?.includes("chat"));
-        setShow(!location.pathname.includes("login"))
+        setShow(!location?.pathname?.includes("login"))
     }, [location]);
 
 	useEffect(() => {
