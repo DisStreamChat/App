@@ -121,7 +121,7 @@ const Header = props => {
 	}, [props.history]);
 
 	return !show ? <></> :(
-		<header className={`header ${props.pad} ${settingsOpen && "open"}`}>
+		<header className={`header ${settingsOpen && "open"}`}>
 			<nav className="nav">
 				{chatHeader && (
 					<>
