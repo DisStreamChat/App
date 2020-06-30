@@ -8,6 +8,7 @@ import firebase from "../firebase";
 import Button from "@material-ui/core/Button";
 import Setting from "./Setting";
 import "./Header.css";
+import SearchBox from "./SearchBox";
 
 const SettingList = props => {
 	return (
@@ -44,24 +45,18 @@ const Header = props => {
 	const [appSettings, setAppSettings] = useState();
 	const [defaultSettings, setDefaultSettings] = useState();
 	const [search, setSearch] = useState();
-	const [chatHeader, setChatHeader] = useState(false);
+    const [chatHeader, setChatHeader] = useState(false);
+    const [show, setShow] = useState(true)
 	const currentUser = firebase.auth.currentUser;
-    const id = currentUser.uid;
+    const id = currentUser?.uid || " ";
     const {setMessages} = useContext(AppContext)
     
     
     const {location} = props
 	useEffect(() => {
 		setChatHeader(location?.pathname?.includes("chat"));
-	}, [location]);
-
-	const handleChange = useCallback(e => {
-		setSearch(e.target.value);
-	}, []);
-
-	const resetSearch = useCallback(() => {
-		setSearch("");
-	}, []);
+        setShow(!location.pathname.includes("login"))
+    }, [location]);
 
 	useEffect(() => {
 		(async () => {
@@ -93,7 +88,7 @@ const Header = props => {
 		setTimeout(() => {
 			setMessages([]);
 		}, 10000);
-	}, [props]);
+	}, [setMessages]);
 
 	const clearTwitch = useCallback(() => {
 		setMessages(messages =>
@@ -104,7 +99,7 @@ const Header = props => {
 		setTimeout(() => {
 			setMessages(prev => prev.filter(msg => !msg.deleted));
 		}, 10000);
-	}, [props]);
+	}, [setMessages]);
 
 	const clearDiscord = useCallback(() => {
 		setMessages(messages =>
@@ -115,7 +110,7 @@ const Header = props => {
 		setTimeout(() => {
 			setMessages(prev => prev.filter(msg => !msg.deleted));
 		}, 10000);
-	}, [props]);
+	}, [setMessages]);
 
 	const updateAppSetting = useCallback(
 		async (name, value) => {
@@ -136,7 +131,7 @@ const Header = props => {
 		props.history.push("/");
 	}, [props.history]);
 
-	return (
+	return !show ? <></> :(
 		<header className={`header ${props.pad} ${settingsOpen && "open"}`}>
 			<nav className="nav">
 				{chatHeader && (
@@ -165,10 +160,7 @@ const Header = props => {
 				)}
 			</nav>
 			<div className="header-settings">
-				<div className="search-container">
-					<input value={search} onChange={handleChange} type="text" name="" id="" placeholder="Search" className="settings--searchbox" />
-					<ClearRoundedIcon className="clear-button" onClick={resetSearch} />
-				</div>
+				<SearchBox onChange={setSearch}/>
 				<SettingList all search={search} defaultSettings={defaultSettings} settings={appSettings} updateSettings={updateAppSetting} />
 			</div>
 			<div className="header-lower" onClick={() => setSettingsOpen(o => !o)}>

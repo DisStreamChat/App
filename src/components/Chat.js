@@ -1,34 +1,15 @@
 import React, { useEffect, useState, useCallback } from "react";
 import firebase from "../firebase";
 import { useParams } from "react-router-dom";
-import ClearRoundedIcon from "@material-ui/icons/ClearRounded";
-import "./Chat.css";
 
 import openSocket from "socket.io-client";
 import { Message } from "distwitchchat-componentlib";
-import "distwitchchat-componentlib/dist/index.css";
-import "./Message.css";
 import { useContext } from "react";
 import { AppContext } from "../contexts/AppContext";
-
-const SearchBox = React.memo(({ onChange }) => {
-	const [value, setValue] = useState("");
-
-	const handleChange = useCallback(
-		e => {
-			setValue(e.target.value);
-			onChange(e.target.value);
-		},
-		[onChange]
-	);
-
-	return (
-		<div className="search-container">
-			<input value={value} onChange={handleChange} type="text" name="" id="" placeholder="Search Messages" className="settings--searchbox" />
-			<ClearRoundedIcon className="clear-button" onClick={() => setValue("")} />
-		</div>
-	);
-});
+import SearchBox from "./SearchBox"
+import "./Chat.css";
+import "./Message.css";
+import "distwitchchat-componentlib/dist/index.css";
 
 const Messages = React.memo(props => {
 	return (
@@ -137,7 +118,7 @@ function App() {
 			});
 			return () => socket.removeListener("purgeuser");
 		}
-	}, [socket, removeMessage]);
+	}, [socket, removeMessage, setMessages]);
 
 	useEffect(() => {
 		if (id && currentUser) {
@@ -171,12 +152,10 @@ function App() {
 	const handleSearch = useCallback(setSearch);
 
 	return (
-		<main className="body">
-			<div className="overlay">
-				<Messages messages={messages.filter(msg => !search || msg.body.includes(search))} settings={settings} removeMessage={removeMessage} />
-				<SearchBox onChange={handleSearch} />
-			</div>
-		</main>
+		<div className="overlay">
+			<Messages messages={messages.filter(msg => !search || msg.body.toLowerCase().includes(search.toLowerCase()))} settings={settings} removeMessage={removeMessage} />
+			<SearchBox onChange={handleSearch} />
+		</div>
 	);
 }
 
