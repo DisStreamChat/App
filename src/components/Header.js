@@ -2,13 +2,12 @@ import React, { useCallback, useState, useEffect, useContext } from "react";
 import { withRouter, Link } from "react-router-dom";
 import { AppContext } from "../contexts/AppContext";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
-import ClearRoundedIcon from "@material-ui/icons/ClearRounded";
 import SettingAccordion from "./SettingsAccordion";
 import firebase from "../firebase";
 import Button from "@material-ui/core/Button";
 import Setting from "./Setting";
-import "./Header.css";
 import SearchBox from "./SearchBox";
+import "./Header.css";
 
 const SettingList = props => {
 	return (
@@ -85,9 +84,6 @@ const Header = props => {
 				return { ...msg, deleted: true };
 			})
 		);
-		setTimeout(() => {
-			setMessages([]);
-		}, 10000);
 	}, [setMessages]);
 
 	const clearTwitch = useCallback(() => {
@@ -96,9 +92,6 @@ const Header = props => {
 				return { ...msg, deleted: msg.deleted || msg.platform === "twitch" };
 			})
 		);
-		setTimeout(() => {
-			setMessages(prev => prev.filter(msg => !msg.deleted));
-		}, 10000);
 	}, [setMessages]);
 
 	const clearDiscord = useCallback(() => {
@@ -107,9 +100,6 @@ const Header = props => {
 				return { ...msg, deleted: msg.deleted || msg.platform === "discord" };
 			})
 		);
-		setTimeout(() => {
-			setMessages(prev => prev.filter(msg => !msg.deleted));
-		}, 10000);
 	}, [setMessages]);
 
 	const updateAppSetting = useCallback(
@@ -127,7 +117,6 @@ const Header = props => {
 
 	const signout = useCallback(async () => {
 		await firebase.logout();
-		localStorage.removeItem("userId");
 		props.history.push("/");
 	}, [props.history]);
 
