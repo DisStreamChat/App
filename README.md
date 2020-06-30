@@ -1,5 +1,5 @@
 # DisTwitchChat App
-This is the Chat app for DisTwitchChat. This app has many features that the [overlay](https://github.com/DisTwitchChat/Overlay) does not have.
+This is the Chat client for DisTwitchChat. This app has many features that the [overlay](https://github.com/DisTwitchChat/Overlay) does not have.
 
 # Framework/Tech use
 * electron
@@ -21,7 +21,7 @@ npm install
 ```
 npm install -g yarn
 ```
-4. Create a .env and add enviromnent variables from `.env.sample`. unless you are using a development version of the backend, the socket url should be set to `https://api.distwitchchat.com/`
+4. Create a .env and add enviromnent variables from `.env.sample`. unless you are using a development version of the backend, the socket url should be set to `https://api.disstreamchat.com/`
 5. Navigate into project root and install dependencies.
 ```
 cd <your-project-name> && npm install
