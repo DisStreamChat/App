@@ -11,9 +11,9 @@ hr {
 .my-channels{
     position: absolute;
     top: 0;
-    padding-top: calc(66px + 1.5rem + 30px);
+    padding-top: 1rem;
     width: 100%;
-    height: calc(100vh - calc(96px + 1.5rem + 30px));
+    height: calc(100vh - 111px);
     display: flex;
     flex-direction: column;
     align-items: center;
