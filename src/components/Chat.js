@@ -154,7 +154,7 @@ function App() {
 	return (
 		<div className="overlay">
 			<Messages messages={messages.filter(msg => !search || msg.body.toLowerCase().includes(search.toLowerCase()))} settings={settings} removeMessage={removeMessage} />
-			<SearchBox onChange={handleSearch} />
+			<SearchBox onChange={handleSearch} placeHolder="Search Messages"/>
 		</div>
 	);
 }

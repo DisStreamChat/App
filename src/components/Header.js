@@ -160,7 +160,7 @@ const Header = props => {
 				)}
 			</nav>
 			<div className="header-settings">
-				<SearchBox onChange={setSearch}/>
+				<SearchBox onChange={setSearch} placeHolder="Search Settings"/>
 				<SettingList all search={search} defaultSettings={defaultSettings} settings={appSettings} updateSettings={updateAppSetting} />
 			</div>
 			<div className="header-lower" onClick={() => setSettingsOpen(o => !o)}>
