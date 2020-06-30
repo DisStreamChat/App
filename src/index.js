@@ -15,15 +15,16 @@ import Header from "./components/Header"
 const { ipcRenderer } = window.require("electron");
 
 const App = () => {
-	const [firebaseInit, setFirebaseInit] = useState(false);
-	const [userId, setUserId] = useState("");
+    const [firebaseInit, setFirebaseInit] = useState(false);
 	const [streamerInfo, setStreamerInfo] = useState({});
-	const [messages, setMessages] = useState();
+	const [messages, setMessages] = useState([]);
 	const [border, setBorder] = useState(true);
-
-	const currentUser = firebase.auth.currentUser;
-
+    const currentUser = firebase.auth.currentUser;
+    
 	useEffect(() => {
+        ipcRenderer.on("toggle-border", (event, text) => {
+			setBorder(text);
+		});
 		ipcRenderer.send("setclickthrough", "f6");
 		ipcRenderer.send("setunclickthrough", "f7");
 	}, []);
@@ -50,19 +51,14 @@ const App = () => {
 		})();
 	}, []);
 
-	useEffect(() => {
-		ipcRenderer.on("toggle-border", (event, text) => {
-			setBorder(text);
-		});
-	}, []);
-
+    // retrieve the profile picture and mod channels for a user on load
 	useEffect(() => {
 		(async () => {
 			if (firebaseInit !== false && currentUser) {
 				const userData = (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data();
-				const profilePictureResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/profilepicture?user=${userData?.TwitchName}`);
+				const profilePictureResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/profilepicture?user=${userData.TwitchName}`);
 				const profilePicture = await profilePictureResponse.json();
-				const modChannelResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/modchannels?user=${userData?.TwitchName}`);
+				const modChannelResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/modchannels?user=${userData.TwitchName}`);
 				const ModChannels = await modChannelResponse.json();
 				firebase.db.collection("Streamers").doc(currentUser.uid).update({
                     profilePicture,
@@ -81,27 +77,26 @@ const App = () => {
 		}
 	}, [border, streamerInfo]);
 
+
 	useEffect(() => {
 		if (currentUser) {
-			(async () => {
-				const db = firebase.db;
-				const unsubscribe = db
-					.collection("Streamers")
-					.doc(currentUser.uid)
-					.onSnapshot(snapshot => {
-						setStreamerInfo(snapshot.data());
-					});
-				return () => unsubscribe();
-			})();
+			const unsub = firebase.db
+				.collection("Streamers")
+				.doc(currentUser.uid)
+				.onSnapshot(snapshot => {
+					const data = snapshot.data();
+					if (data) {
+						setStreamerInfo(data.appSettings);
+					}
+				});
+			return () => unsub();
 		}
-	}, [setStreamerInfo, currentUser]);
+	}, [currentUser]);
 
 	return firebaseInit !== false ? (
 		<AppContext.Provider
 			value={{
-				userId,
 				messages,
-				setUserId,
 				setMessages,
 				streamerInfo,
 				setStreamerInfo,

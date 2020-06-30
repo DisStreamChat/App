@@ -8,18 +8,8 @@ import openSocket from "socket.io-client";
 import { Message } from "distwitchchat-componentlib";
 import "distwitchchat-componentlib/dist/index.css";
 import "./Message.css";
-
-import { useRef } from "react";
-
-export const useRenderCount = () => {
-	const ref = useRef(0);
-
-	useEffect(() => {
-		ref.current += 1;
-	});
-
-	return ref.current;
-};
+import { useContext } from "react";
+import { AppContext } from "../contexts/AppContext";
 
 const SearchBox = React.memo(({ onChange }) => {
 	const [value, setValue] = useState("");
@@ -27,9 +17,9 @@ const SearchBox = React.memo(({ onChange }) => {
 	const handleChange = useCallback(
 		e => {
 			setValue(e.target.value);
-			// onChange(e.target.value);
+			onChange(e.target.value);
 		},
-		[]
+		[onChange]
 	);
 
 	return (
@@ -52,28 +42,13 @@ const Messages = React.memo(props => {
 
 function App() {
 	const [socket, setSocket] = useState();
-	const [messages, setMessages] = useState([]);
-	const [settings, setSettings] = useState({});
+	const {streamerInfo: settings, messages, setMessages} = useContext(AppContext)
 	const [channel, setChannel] = useState();
 	const [search, setSearch] = useState("");
 	const { id } = useParams();
+    const currentUser = firebase.auth.currentUser;
 
-	const currentUser = firebase.auth.currentUser;
-
-	useEffect(() => {
-		if (currentUser) {
-			const unsub = firebase.db
-				.collection("Streamers")
-				.doc(currentUser.uid)
-				.onSnapshot(snapshot => {
-					const data = snapshot.data();
-					if (data) {
-						setSettings(data.appSettings);
-					}
-				});
-			return () => unsub();
-		}
-	}, [currentUser]);
+	
 
 	// this runs once on load, and starts the socket
 	useEffect(() => {
@@ -198,16 +173,12 @@ function App() {
 	const handleSearch = useCallback(setSearch);
 
 	return (
-			// {/* {settings.showHeader && <Header setMessages={setMessages} backButton/>} */}
-			<main className="body">
-				<div className={`overlay-container`}>
-					{/* <div className={`overlay-container ${!settings.showHeader && false && "full-body"}`}> */}
-					<div className="overlay">
-						<Messages messages={messages} settings={settings} removeMessage={removeMessage} />
-					    <SearchBox onChange={handleSearch} />
-					</div>
-				</div>
-			</main>
+		<main className="body">
+			<div className="overlay">
+				<Messages messages={messages.filter(msg => !search || msg.body.includes(search))} settings={settings} removeMessage={removeMessage} />
+				<SearchBox onChange={handleSearch} />
+			</div>
+		</main>
 	);
 }
 

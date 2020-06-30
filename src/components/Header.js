@@ -1,14 +1,13 @@
-import React, { useCallback, useState, useEffect } from "react";
-import "./Header.css";
-import firebase from "../firebase";
+import React, { useCallback, useState, useEffect, useContext } from "react";
 import { withRouter, Link } from "react-router-dom";
-import Button from "@material-ui/core/Button";
+import { AppContext } from "../contexts/AppContext";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
-import Setting from "./Setting";
 import ClearRoundedIcon from "@material-ui/icons/ClearRounded";
 import SettingAccordion from "./SettingsAccordion";
-
-// import { defaults, colorStyles, guildOption, types } from "./userUtils";
+import firebase from "../firebase";
+import Button from "@material-ui/core/Button";
+import Setting from "./Setting";
+import "./Header.css";
 
 const SettingList = props => {
 	return (
@@ -47,10 +46,11 @@ const Header = props => {
 	const [search, setSearch] = useState();
 	const [chatHeader, setChatHeader] = useState(false);
 	const currentUser = firebase.auth.currentUser;
-	const id = currentUser.uid;
+    const id = currentUser.uid;
+    const {setMessages} = useContext(AppContext)
+    
+    
     const {location} = props
-    console.log(props)
-
 	useEffect(() => {
 		setChatHeader(location?.pathname?.includes("chat"));
 	}, [location]);
@@ -85,35 +85,35 @@ const Header = props => {
 	}, [id]);
 
 	const clearChat = useCallback(() => {
-		props.setMessages(m =>
+		setMessages(m =>
 			m.map(msg => {
 				return { ...msg, deleted: true };
 			})
 		);
 		setTimeout(() => {
-			props.setMessages([]);
+			setMessages([]);
 		}, 10000);
 	}, [props]);
 
 	const clearTwitch = useCallback(() => {
-		props.setMessages(messages =>
+		setMessages(messages =>
 			messages.map(msg => {
 				return { ...msg, deleted: msg.deleted || msg.platform === "twitch" };
 			})
 		);
 		setTimeout(() => {
-			props.setMessages(prev => prev.filter(msg => !msg.deleted));
+			setMessages(prev => prev.filter(msg => !msg.deleted));
 		}, 10000);
 	}, [props]);
 
 	const clearDiscord = useCallback(() => {
-		props.setMessages(messages =>
+		setMessages(messages =>
 			messages.map(msg => {
 				return { ...msg, deleted: msg.deleted || msg.platform === "discord" };
 			})
 		);
 		setTimeout(() => {
-			props.setMessages(prev => prev.filter(msg => !msg.deleted));
+			setMessages(prev => prev.filter(msg => !msg.deleted));
 		}, 10000);
 	}, [props]);
 
