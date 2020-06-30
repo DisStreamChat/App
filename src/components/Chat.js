@@ -42,13 +42,11 @@ const Messages = React.memo(props => {
 
 function App() {
 	const [socket, setSocket] = useState();
-	const {streamerInfo: settings, messages, setMessages} = useContext(AppContext)
+	const { streamerInfo: settings, messages, setMessages } = useContext(AppContext);
 	const [channel, setChannel] = useState();
 	const [search, setSearch] = useState("");
 	const { id } = useParams();
-    const currentUser = firebase.auth.currentUser;
-
-	
+	const currentUser = firebase.auth.currentUser;
 
 	// this runs once on load, and starts the socket
 	useEffect(() => {
@@ -63,16 +61,16 @@ function App() {
 		};
 	}, [socket]);
 
-	// this function is passes into the message and will be used for pinning
-	const pinMessage = useCallback((id, pinned = true) => {
-		setMessages(prev => {
-			let copy = [...prev];
-			let index = copy.findIndex(msg => msg.id === id);
-			if (index === -1) return prev;
-			copy[index].pinned = pinned;
-			return copy;
-		});
-	}, []);
+	// this function is passed into the message and will be used for pinning
+	// const pinMessage = useCallback((id, pinned = true) => {
+	// 	setMessages(prev => {
+	// 		let copy = [...prev];
+	// 		let index = copy.findIndex(msg => msg.id === id);
+	// 		if (index === -1) return prev;
+	// 		copy[index].pinned = pinned;
+	// 		return copy;
+	// 	});
+	// }, []);
 
 	// this is used to delete messages, in certain conditions will also send a message to backend tell it to delete the message from the sent platform
 	const removeMessage = useCallback(
@@ -89,7 +87,7 @@ function App() {
 				socket.emit(`deletemsg - ${platform}`, id);
 			}
 		},
-		[socket]
+		[socket, setMessages]
 	);
 
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
@@ -101,7 +99,7 @@ function App() {
 			});
 			return () => socket.removeListener("chatmessage");
 		}
-	}, [settings, socket]);
+	}, [settings, socket, setMessages]);
 
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
 	useEffect(() => {
@@ -118,7 +116,7 @@ function App() {
 
 	useEffect(() => {
 		setMessages(m => m.slice(-Math.max(settings.MessageLimit, 100)));
-	}, [settings]);
+	}, [settings, setMessages]);
 
 	// this is similar to the above useEffect but for adds a listener for when messages are deleted
 	useEffect(() => {
