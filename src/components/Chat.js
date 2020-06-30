@@ -6,7 +6,7 @@ import openSocket from "socket.io-client";
 import { Message } from "distwitchchat-componentlib";
 import { useContext } from "react";
 import { AppContext } from "../contexts/AppContext";
-import SearchBox from "./SearchBox"
+import SearchBox from "./SearchBox";
 import "./Chat.css";
 import "./Message.css";
 import "distwitchchat-componentlib/dist/index.css";
@@ -152,9 +152,15 @@ function App() {
 	const handleSearch = useCallback(setSearch);
 
 	return (
-		<div className="overlay">
-			<Messages messages={messages.filter(msg => !search || msg.body.toLowerCase().includes(search.toLowerCase()))} settings={settings} removeMessage={removeMessage} />
-			<SearchBox onChange={handleSearch} placeHolder="Search Messages"/>
+		<div className="overlay-container">
+			<div className="overlay">
+				<Messages
+					messages={messages.filter(msg => !search || msg.body.toLowerCase().includes(search.toLowerCase()))}
+					settings={settings}
+					removeMessage={removeMessage}
+				/>
+				<SearchBox onChange={handleSearch} placeHolder="Search Messages" />
+			</div>
 		</div>
 	);
 }

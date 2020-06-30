@@ -48,9 +48,9 @@
     flex-direction: column-reverse;
     align-items: flex-end;
     justify-content: flex-end;
-    padding: .25rem 0;
-    transition: 25s;
-    margin-top: -3px;
+}
+
+.overlay-container{
     height: calc(100vh - 95px);
     overflow: auto;
     width: fit-content;
