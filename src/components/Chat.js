@@ -76,7 +76,7 @@ function App() {
 		if (socket) {
 			socket.removeListener("chatmessage");
 			socket.on("chatmessage", msg => {
-				setMessages(m => [...m.slice(-Math.max(settings.MessageLimit, 100)), msg].sort((a, b) => a.sentAt - b.sentAt));
+				setMessages(m => [...m.slice(-Math.max(settings.MessageLimit, 100)), msg]);
 			});
 			return () => socket.removeListener("chatmessage");
 		}
@@ -155,7 +155,14 @@ function App() {
 		<div className="overlay-container">
 			<div className="overlay">
 				<Messages
-					messages={messages.filter(msg => !search || msg.body.toLowerCase().includes(search.toLowerCase()))}
+					messages={messages.filter(
+						msg =>
+							!search ||
+							msg.body
+								.toLowerCase()
+								.includes(search.toLowerCase())
+								.sort((a, b) => a.sentAt - b.sentAt)
+					)}
 					settings={settings}
 					removeMessage={removeMessage}
 				/>
