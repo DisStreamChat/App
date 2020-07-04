@@ -171,6 +171,7 @@ function App() {
     }, [])
 
     const checkReadMessage = useCallback(node => {
+        if(!node)return
         if(!observerRef.current){
             observerRef.current = new IntersectionObserver(entries => {
                 entries.forEach((entry, i) => {
@@ -185,14 +186,19 @@ function App() {
                 })
             })
         }
-        if(observerRef.current){
-            observerRef.current.observe(node)
+        if(observerRef.current && node){
+            try{
+
+                observerRef.current.observe(node)
+            }catch(err){
+                console.log(node)
+            }
         }
     }, [observerRef, setMessages])
 
     useEffect(() => {
         setTimeout(() => {
-            setUnreadMessages(!!messages.find(msg => !msg.read))
+            setUnreadMessages(!!messages.find(msg => !msg.read && !msg.deleted))
         }, 500)
     }, [messages])
 
@@ -200,6 +206,8 @@ function App() {
         setMessages(prev => prev.map(msg => ({...msg, read: true})))
         setUnreadMessages(false)
     }, [setMessages])
+
+    console.log(messages)
 
 	return (
 		<div ref={bodyRef} className="overlay-container">
