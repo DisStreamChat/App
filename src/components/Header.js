@@ -7,7 +7,7 @@ import firebase from "../firebase";
 import Button from "@material-ui/core/Button";
 import Setting from "./Setting";
 import SearchBox from "./SearchBox";
-import PeopleAltTwoToneIcon from '@material-ui/icons/PeopleAltTwoTone';
+import PeopleAltTwoToneIcon from "@material-ui/icons/PeopleAltTwoTone";
 import "./Header.css";
 
 const SettingList = props => {
@@ -56,8 +56,8 @@ const Header = props => {
 	const { location } = props;
 
 	useEffect(() => {
-        setViewingUserId(location.pathname.split("/").slice(-1)[0]);
-        setViewingUserStats(null)
+		setViewingUserId(location.pathname.split("/").slice(-1)[0]);
+		setViewingUserStats(null);
 	}, [location]);
 
 	useEffect(() => {
@@ -72,7 +72,7 @@ const Header = props => {
 	}, [chatHeader, show, viewingUserId]);
 
 	useEffect(() => {
-		const id = setInterval(async () => {
+		async function getStats() {
 			if (viewingUserInfo) {
 				// const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=instafluff`;
 				const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=${viewingUserInfo.name}`;
@@ -92,9 +92,12 @@ const Header = props => {
 							isLive: false,
 						};
 					}
-                });
+				});
+				console.log("hi");
 			}
-		}, 10000);
+		}
+		getStats();
+		const id = setInterval(getStats, 10000);
 		return () => clearInterval(id);
 	}, [viewingUserInfo]);
 
@@ -151,7 +154,10 @@ const Header = props => {
 					<div className="stats">
 						<div className={`live-status ${viewingUserStats?.isLive ? "live" : ""}`}></div>
 						<div className="name">{viewingUserStats?.name}</div>
-						<div className={`live-viewers`}><PeopleAltTwoToneIcon/>{viewingUserStats?.viewers}</div>
+						<div className={`live-viewers`}>
+							<PeopleAltTwoToneIcon />
+							{viewingUserStats?.viewers}
+						</div>
 					</div>
 				)}
 				{chatHeader ? (
