@@ -81,7 +81,6 @@
 
 .header-settings{
     transition: .5s ease-in-out;
-    max-height: 920px;
     overflow: auto;
     overflow-x: hidden;
     max-width: 93vw;
