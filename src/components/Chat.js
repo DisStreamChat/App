@@ -168,8 +168,11 @@ function App() {
         bodyRef.current.addEventListener("scroll", e => {
             setShowToTop(prev => bodyRef.current.scrollTop > 600)
         })
-        return () => bodyRef.removeListener("scroll")
     }, [])
+
+    useEffect(() => {
+        setShowToTop(prev => prev || unreadMessages)
+    }, [unreadMessages])
 
     const checkReadMessage = useCallback(node => {
         if(!node)return
