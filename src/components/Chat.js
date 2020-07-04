@@ -166,9 +166,9 @@ function App() {
 
     useEffect(() => {
         bodyRef.current.addEventListener("scroll", e => {
-            setShowToTop(prev => bodyRef.current.scrollTop > 800)
+            setShowToTop(prev => bodyRef.current.scrollTop > 800 || unreadMessages)
         })
-    }, [])
+    }, [unreadMessages])
 
     const checkReadMessage = useCallback(node => {
         if(!node)return
