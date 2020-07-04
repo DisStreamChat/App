@@ -1,12 +1,13 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import firebase from "../firebase";
 import { useParams } from "react-router-dom";
-
 import openSocket from "socket.io-client";
 import { Message } from "distwitchchat-componentlib";
 import { useContext } from "react";
 import { AppContext } from "../contexts/AppContext";
 import SearchBox from "./SearchBox";
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import {CSSTransition} from "react-transition-group"
 import "./Chat.css";
 import "./Message.css";
 import "distwitchchat-componentlib/dist/index.css";
@@ -26,7 +27,9 @@ function App() {
 	const { streamerInfo: settings, messages, setMessages } = useContext(AppContext);
 	const [channel, setChannel] = useState();
 	const [search, setSearch] = useState("");
-	const { id } = useParams();
+    const { id } = useParams();
+    const [showToTop, setShowToTop] = useState(false);
+    const bodyRef = useRef()
 	const currentUser = firebase.auth.currentUser;
 
 	// this runs once on load, and starts the socket
@@ -149,10 +152,23 @@ function App() {
 		}
 	}, [channel, socket]);
 
-	const handleSearch = useCallback(setSearch);
+    const handleSearch = useCallback(setSearch);
+    
+    const scrollTop = useCallback(() => {
+        bodyRef.current.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        })
+    }, [])
+
+    useEffect(() => {
+        bodyRef.current.addEventListener("scroll", e => {
+            setShowToTop(prev => bodyRef.current.scrollTop > 800)
+        })
+    }, [])
 
 	return (
-		<div className="overlay-container">
+		<div ref={bodyRef} className="overlay-container">
 			<div className="overlay">
 				<Messages
 					messages={messages
@@ -163,6 +179,9 @@ function App() {
 				/>
 				<SearchBox onChange={handleSearch} placeHolder="Search Messages" />
 			</div>
+            <CSSTransition unmountOnExit timeout={400} classNames={"to-top-node"} in={showToTop}>
+                <button className="back-to-top-button fade-in" onClick={scrollTop}><KeyboardArrowUpIcon></KeyboardArrowUpIcon></button>
+            </CSSTransition>
 		</div>
 	);
 }
