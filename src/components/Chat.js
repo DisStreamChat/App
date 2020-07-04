@@ -8,6 +8,7 @@ import { AppContext } from "../contexts/AppContext";
 import SearchBox from "./SearchBox";
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import {CSSTransition} from "react-transition-group"
+import RateReviewIcon from '@material-ui/icons/RateReview';
 import "./Chat.css";
 import "./Message.css";
 import "distwitchchat-componentlib/dist/index.css";
@@ -119,7 +120,6 @@ function App() {
 		if (socket) {
 			socket.removeListener("purgeuser");
 			socket.on("purgeuser", username => {
-				console.log("test");
 				setMessages(prev => prev.map(msg => ({ ...msg, deleted: msg.deleted || msg.displayName?.toLowerCase() === username })));
 			});
 			return () => socket.removeListener("purgeuser");
@@ -206,8 +206,6 @@ function App() {
         setMessages(prev => prev.map(msg => ({...msg, read: true})))
         setUnreadMessages(false)
     }, [setMessages])
-
-    console.log(messages)
 
 	return (
 		<div ref={bodyRef} className="overlay-container">
