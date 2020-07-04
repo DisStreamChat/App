@@ -131,6 +131,28 @@ h1 {
 	}
 }
 
+.unread-notification{
+    box-sizing: border-box !important;
+    position: absolute;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    padding: .5rem 1rem;
+    width: 95%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #4f545caa;
+    border-radius: 2rem;
+    margin-top: .75rem;
+}
+
+.unread-notification button{
+    background: none;
+    outline: none !important;
+    border: none;
+    text-decoration: underline;
+}
+
 .back-to-top-button {
 	position: fixed;
 	bottom: 1rem;
@@ -165,3 +187,23 @@ h1 {
     transform: translateY(100%);
 	transition: 400ms;
 }
+
+.unread-node-enter {
+    opacity: 0;
+    transform: translate(-50%, -100%);
+}
+.unread-node-enter-active {
+    opacity: 1;
+    transform: translate(-50%, 0);
+	transition: 400ms;
+}
+.unread-node-exit {
+    transform: translate(-50%, 0);
+	opacity: 1;
+}
+.unread-node-exit-active {
+    opacity: 0;
+    transform: translate(-50%, -100%);
+	transition: 400ms;
+}
+

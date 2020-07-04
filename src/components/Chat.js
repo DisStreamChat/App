@@ -16,7 +16,7 @@ const Messages = React.memo(props => {
 	return (
 		<>
 			{props.messages.map((msg, i) => (
-				<Message streamerInfo={props.settings} delete={props.removeMessage} key={msg.id} msg={msg} />
+				<Message index={i} forwardRef={props.unreadMessageHandler} streamerInfo={props.settings} delete={props.removeMessage} key={msg.id} msg={msg} />
 			))}
 		</>
 	);
@@ -29,7 +29,9 @@ function App() {
 	const [search, setSearch] = useState("");
     const { id } = useParams();
     const [showToTop, setShowToTop] = useState(false);
+    const [unreadMessages, setUnreadMessages] = useState(false)
     const bodyRef = useRef()
+    const observerRef = useRef()
 	const currentUser = firebase.auth.currentUser;
 
 	// this runs once on load, and starts the socket
@@ -79,11 +81,12 @@ function App() {
 		if (socket) {
 			socket.removeListener("chatmessage");
 			socket.on("chatmessage", msg => {
-				setMessages(m => [...m.slice(-Math.max(settings.MessageLimit, 100)), msg]);
+				setMessages(m => [...m.slice(-Math.max(settings.MessageLimit, 100)), {...msg, read: false}]);
 			});
 			return () => socket.removeListener("chatmessage");
 		}
-	}, [settings, socket, setMessages]);
+    }, [settings, socket, setMessages]);
+
 
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
 	useEffect(() => {
@@ -167,15 +170,53 @@ function App() {
         })
     }, [])
 
+    const checkReadMessage = useCallback(node => {
+        if(!observerRef.current){
+            observerRef.current = new IntersectionObserver(entries => {
+                entries.forEach((entry, i) => {
+                    if(entry.isIntersecting){
+                        setMessages(prev => {
+                            const copy = [...prev]
+                            copy[entry.target.dataset.idx].read = true
+                            return copy
+                        })
+                        observerRef.current.unobserve(entry.target);
+                    }
+                })
+            })
+        }
+        if(observerRef.current){
+            observerRef.current.observe(node)
+        }
+    }, [observerRef, setMessages])
+
+    useEffect(() => {
+        setTimeout(() => {
+            setUnreadMessages(!!messages.find(msg => !msg.read))
+        }, 500)
+    }, [messages])
+
+    const markAsRead = useCallback(() => {
+        setMessages(prev => prev.map(msg => ({...msg, read: true})))
+        setUnreadMessages(false)
+    }, [setMessages])
+
 	return (
 		<div ref={bodyRef} className="overlay-container">
+            <CSSTransition unmountOnExit timeout={400} classNames={"unread-node"} in={unreadMessages}>
+                <div className="unread-notification">
+                    <span>You have unread messages</span>
+                    <button onClick={markAsRead}>Mark as read</button>
+                </div>
+            </CSSTransition>
 			<div className="overlay">
 				<Messages
 					messages={messages
 						.filter(msg => !search || msg.body.toLowerCase().includes(search.toLowerCase()))
 						.sort((a, b) => a.sentAt - b.sentAt)}
 					settings={settings}
-					removeMessage={removeMessage}
+                    removeMessage={removeMessage}
+                    unreadMessageHandler={checkReadMessage}
 				/>
 				<SearchBox onChange={handleSearch} placeHolder="Search Messages" />
 			</div>
