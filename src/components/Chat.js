@@ -17,7 +17,7 @@ const Messages = React.memo(props => {
 	return (
 		<>
 			{props.messages.map((msg, i) => (
-				<Message index={i} forwardRef={props.unreadMessageHandler} streamerInfo={props.settings} delete={props.removeMessage} key={msg.id} msg={msg} />
+				<Message index={msg.id} forwardRef={props.unreadMessageHandler} streamerInfo={props.settings} delete={props.removeMessage} key={msg.id} msg={msg} />
 			))}
 		</>
 	);
@@ -178,7 +178,7 @@ function App() {
                     if(entry.isIntersecting){
                         setMessages(prev => {
                             const copy = [...prev]
-                            copy[entry.target.dataset.idx].read = true
+                            copy[copy.findIndex(msg => msg.id ===entry.target.dataset.idx)].read = true
                             return copy
                         })
                         observerRef.current.unobserve(entry.target);
