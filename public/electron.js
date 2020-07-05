@@ -143,7 +143,7 @@ ipcMain.on('login', (event) => {
             preload: path.join(__dirname, "loginWindow.js")
         },
     });
-    loginWindow.loadURL('https://id.twitch.tv/oauth2/authorize?client_id=ip3igc72c6wu7j00nqghb24duusmbr&redirect_uri=https://api.distwitchchat.com/oauth/twitch/&response_type=code&scope=openid%20moderation:read%20chat:edit%20chat:read%20channel:moderate');
+    loginWindow.loadURL('https://id.twitch.tv/oauth2/authorize?client_id=ip3igc72c6wu7j00nqghb24duusmbr&redirect_uri=https://api.distwitchchat.com/oauth/twitch/&response_type=code&scope=openid%20moderation:read%20chat:edit%20chat:read%20channel:moderate%20channel:read:redemptions');
 });
 
 ipcMain.on('login-data', (event, token) => {
