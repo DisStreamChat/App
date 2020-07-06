@@ -93,7 +93,6 @@ const Header = props => {
 						};
 					}
 				});
-				console.log("hi");
 			}
 		}
 		getStats();

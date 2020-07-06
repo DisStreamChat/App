@@ -89,7 +89,6 @@ function App() {
 		if (socket) {
 			socket.removeListener("chatmessage");
 			socket.on("chatmessage", msg => {
-                console.log(msg)
 				setMessages(m => {
                     let ignoredMessage = false
                     if(settings?.IgnoredUsers?.map?.(item => item.value.toLowerCase()).includes(msg.displayName.toLowerCase())){
