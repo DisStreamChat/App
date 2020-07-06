@@ -19,7 +19,7 @@
 
 .header.open{
     background: #2a2c30;
-    height: calc(100vh - 30px - 5px);
+    height: calc(100vh - 30px);
 }
 
 #root .overlay .settings--searchbox{
