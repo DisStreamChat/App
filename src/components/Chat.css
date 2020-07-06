@@ -207,3 +207,6 @@ h1 {
 	transition: 400ms;
 }
 
+.rah-static{
+    overflow: hidden !important;
+}

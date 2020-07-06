@@ -125,7 +125,7 @@ const Header = props => {
 				}
 			});
 		return unsub;
-	}, [id]);
+	}, [id]); 
 
 	const updateAppSetting = useCallback(
 		async (name, value) => {
