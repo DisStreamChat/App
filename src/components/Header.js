@@ -8,7 +8,7 @@ import Button from "@material-ui/core/Button";
 import Setting from "./Setting";
 import SearchBox from "./SearchBox";
 import PeopleAltTwoToneIcon from "@material-ui/icons/PeopleAltTwoTone";
-import "./Header.css";
+import "./Header.scss";
 
 const SettingList = props => {
 	return (
@@ -108,7 +108,7 @@ const Header = props => {
 
 	useEffect(() => {
 		(async () => {
-			const settingsRef = await firebase.db.collection("defaults").doc("settings").get();
+			const settingsRef = await firebase.db.collection("defaults").doc("testSettings").get();
 			const settingsData = settingsRef.data().settings;
 			setDefaultSettings(settingsData);
 		})();

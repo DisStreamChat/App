@@ -10,6 +10,11 @@ import chroma from "chroma-js";
 import InputSlider from "./InputSlider";
 import lodash from "lodash";
 import "./Users.css";
+import CheckIcon from "@material-ui/icons/Check";
+import ClearIcon from "@material-ui/icons/Clear";
+import uid from "uid";
+import AddIcon from "@material-ui/icons/Add";
+import AnimateHeight from "react-animate-height";
 
 const FancySwitch = withStyles({
 	root: {
@@ -42,7 +47,9 @@ const FancySwitch = withStyles({
 
 const Setting = props => {
 	const [value, setValue] = useState(props.value);
-	const [displayName, setDisplayName] = useState();
+    const [displayName, setDisplayName] = useState();
+    const [addingItem, setAddingItem] = useState(false);
+	const [valueToBeAdded, setValueToBeAdded] = useState();
 
 	const changeHandler = useCallback(
 		lodash.debounce(v => {
@@ -64,7 +71,7 @@ const Setting = props => {
     }, [props]);
     
 	return (
-		<div className={`setting ${props.type === "color" && "color-setting"} ${props.open && "open"}`}>
+		<div className={`setting ${props.type === "color" ? "color-setting" : "list-setting"} ${props.open && "open"}`}>
 			{props.type === "color" ? (
 				<>
 					<div className="color-header" onClick={() => props.onClick(props.name)}>
@@ -116,7 +123,7 @@ const Setting = props => {
 						label={displayName}
 					/>
 				</span>
-			) : (
+			) : props.type === "number" ? (
 				<span className="number-setting">
 					<FormControlLabel
 						control={
@@ -139,7 +146,69 @@ const Setting = props => {
 						}
 					/>
 				</span>
-			)}
+			) : (
+				<>
+					<span className="list-header" onClick={() => props.onClick(props.name)}>
+						<KeyboardArrowDownIcon className={`${props.open ? "open" : "closed"} mr-quarter`} />
+						<h3>{displayName}</h3>
+					</span>
+					<AnimateHeight duration={250} height={!props.open ? 0 : "auto"}>
+						<div className="list-body">
+							<div className="item add-item" onClick={() => setAddingItem(prev => !prev)}>
+								<h3>Add Item</h3>
+								<button>
+									<AddIcon />
+								</button>
+							</div>
+							{addingItem && (
+								<form
+									onSubmit={e => {
+										e.preventDefault();
+										if (!valueToBeAdded) return;
+										setValue(value => {
+											const newValue = [{ value: valueToBeAdded, id: uid() }, ...value];
+											changeHandler(newValue);
+											return newValue;
+										});
+										setValueToBeAdded("");
+									}}
+									className="item adding-item"
+								>
+									<input value={valueToBeAdded} onChange={e => setValueToBeAdded(e.target.value)} placeholder={props.placeholder} />
+									<span className="buttons">
+										<button type="subit">
+											<CheckIcon />
+										</button>
+										<button
+											onClick={() => {
+												setValueToBeAdded("");
+												setAddingItem(false);
+											}}
+										>
+											<ClearIcon />
+										</button>
+									</span>
+								</form>
+							)}
+							{value?.map?.(item => (
+								<div className="item">
+									{item.value}
+									<button
+										onClick={() => {
+											setValue(prev => {
+												const newValue = prev.filter(prevItem => prevItem.id !== item.id);
+												changeHandler(newValue);
+												return newValue;
+											});
+										}}
+									>
+										<ClearIcon />
+									</button>
+								</div>
+							))}
+						</div>
+					</AnimateHeight>
+				</>)}
 		</div>
 	);
 };

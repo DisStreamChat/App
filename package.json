@@ -1,6 +1,6 @@
 {
   "name": "disstreamchat",
-  "version": "v1.2.10",
+  "version": "v1.2.11",
   "description": "Cross platform stream chat manager",
   "author": "David Snyder",
   "license": "MIT",
@@ -36,6 +36,7 @@
     "mousetrap": "^1.6.5",
     "node-sass": "^4.14.1",
     "react": "^16.11.0",
+    "react-animate-height": "^2.0.21",
     "react-color": "^2.18.1",
     "react-dom": "^16.11.0",
     "react-icons": "^3.10.0",
@@ -45,7 +46,8 @@
     "react-use": "^15.3.0",
     "socket.io-client": "^2.3.0",
     "twitch": "^4.0.10",
-    "twitch-electron-auth-provider": "^4.0.10"
+    "twitch-electron-auth-provider": "^4.0.10",
+    "uid": "^1.0.0"
   },
   "scripts": {
     "start-react": "react-scripts start",
