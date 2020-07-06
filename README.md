@@ -1,4 +1,6 @@
 # DisTwitchChat App
+<a href="https://www.buymeacoffee.com/DavidS" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+
 This is the Chat client for DisTwitchChat. This app has many features that the [overlay](https://github.com/DisTwitchChat/Overlay) does not have.
 
 # Framework/Tech use
