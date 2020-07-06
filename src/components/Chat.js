@@ -94,7 +94,7 @@ function App() {
                     if(settings?.IgnoredUsers?.map?.(item => item.value.toLowerCase()).includes(msg.displayName.toLowerCase())){
                         ignoredMessage = true
                     }
-                    const _ = settings?.IgnoredCommandPrefixes.forEach(prefix => {
+                    const _ = settings?.IgnoredCommandPrefixes?.forEach(prefix => {
                         if(msg.body.startsWith(prefix.value)){
                             ignoredMessage = true
                         }
