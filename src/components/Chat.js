@@ -131,7 +131,25 @@ function App() {
 			socket.on("deletemessage", removeMessage);
 			return () => socket.removeListener("deletemessage");
 		}
-	}, [socket, removeMessage]);
+    }, [socket, removeMessage]);
+    
+    useEffect(() => {
+		if (socket) {
+			socket.removeListener("updateMessage");
+			socket.on("updateMessage", newMessage => {
+                setMessages(m => {
+                    const copy = [...m]
+                    const messageToUpdate = m.find(msg => msg.id === newMessage.id)
+                    if(!messageToUpdate) return m
+                    const updatedMessage = {...messageToUpdate, body: newMessage.body}
+                    const messageToUpdateIndex = m.findIndex(msg => msg.id === newMessage.id)
+                    copy.splice(messageToUpdateIndex, 1, updatedMessage)
+                    return copy
+                })
+            });
+			return () => socket.removeListener("updateMessage");
+		}
+	}, [socket, removeMessage, setMessages]);
 
 	// this is similar to the above useEffect but for adds a listener for when messages are deleted
 	useEffect(() => {

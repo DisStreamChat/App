@@ -4,6 +4,9 @@ const path = require("path");
 const isDev = require("electron-is-dev");
 const { autoUpdater } = require("electron-updater");
 const windowStateKeeper = require("electron-window-state");
+const contextMenu = require('electron-context-menu');
+ 
+
 
 let mainWindow;
 let loginWindow;
@@ -33,6 +36,25 @@ const unfocus = () => {
 };
 
 function createWindow() {
+
+    contextMenu({
+        prepend: (defaultActions, params, browserWindow) => [
+            {
+                label: 'Rainbow',
+                // Only show it when right-clicking images
+                visible: params.mediaType === 'image'
+            },
+            {
+                label: 'Search Google for “{selection}”',
+                // Only show it when right-clicking text
+                visible: params.selectionText.trim().length > 0,
+                click: () => {
+                    electron.shell.openExternal(`https://google.com/search?q=${encodeURIComponent(params.selectionText)}`);
+                }
+            }
+        ]
+    });
+
 	let mainWindowState = windowStateKeeper({
 		defaultWidth: width,
 		defaultHeight: width * 1.5,
