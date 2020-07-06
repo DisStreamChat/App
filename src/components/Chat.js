@@ -6,9 +6,9 @@ import { Message } from "distwitchchat-componentlib";
 import { useContext } from "react";
 import { AppContext } from "../contexts/AppContext";
 import SearchBox from "./SearchBox";
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import {CSSTransition} from "react-transition-group"
-import RateReviewIcon from '@material-ui/icons/RateReview';
+import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
+import { CSSTransition } from "react-transition-group";
+import RateReviewIcon from "@material-ui/icons/RateReview";
 import "./Chat.css";
 import "./Message.css";
 import "distwitchchat-componentlib/dist/index.css";
@@ -17,7 +17,14 @@ const Messages = React.memo(props => {
 	return (
 		<>
 			{props.messages.map((msg, i) => (
-				<Message index={msg.id} forwardRef={props.unreadMessageHandler} streamerInfo={props.settings} delete={props.removeMessage} key={msg.id} msg={msg} />
+				<Message
+					index={msg.id}
+					forwardRef={props.unreadMessageHandler}
+					streamerInfo={props.settings}
+					delete={props.removeMessage}
+					key={msg.id}
+					msg={msg}
+				/>
 			))}
 		</>
 	);
@@ -28,11 +35,11 @@ function App() {
 	const { streamerInfo: settings, messages, setMessages } = useContext(AppContext);
 	const [channel, setChannel] = useState();
 	const [search, setSearch] = useState("");
-    const { id } = useParams();
-    const [showToTop, setShowToTop] = useState(false);
-    const [unreadMessages, setUnreadMessages] = useState(false)
-    const bodyRef = useRef()
-    const observerRef = useRef()
+	const { id } = useParams();
+	const [showToTop, setShowToTop] = useState(false);
+	const [unreadMessages, setUnreadMessages] = useState(false);
+	const bodyRef = useRef();
+	const observerRef = useRef();
 	const currentUser = firebase.auth.currentUser;
 
 	// this runs once on load, and starts the socket
@@ -82,12 +89,23 @@ function App() {
 		if (socket) {
 			socket.removeListener("chatmessage");
 			socket.on("chatmessage", msg => {
-				setMessages(m => [...m.slice(-Math.max(settings.MessageLimit, 100)), {...msg, read: false}]);
+				setMessages(m => {
+                    let ignoredMessage = false
+                    if(settings?.IgnoredUsers?.map?.(item => item.value.toLowerCase()).includes(msg.displayName.toLowerCase())){
+                        ignoredMessage = true
+                    }
+                    const _ = settings?.IgnoredCommandPrefixes.forEach(prefix => {
+                        if(msg.body.startsWith(prefix.value)){
+                            ignoredMessage = true
+                        }
+                    })
+                    if (ignoredMessage) return m
+					return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
+				});
 			});
 			return () => socket.removeListener("chatmessage");
 		}
-    }, [settings, socket, setMessages]);
-
+	}, [settings, socket, setMessages]);
 
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
 	useEffect(() => {
@@ -155,84 +173,88 @@ function App() {
 		}
 	}, [channel, socket]);
 
-    const handleSearch = useCallback(setSearch);
-    
-    const scrollTop = useCallback(() => {
-        bodyRef.current.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        })
-    }, [])
+	const handleSearch = useCallback(setSearch);
 
-    useEffect(() => {
-        bodyRef.current.addEventListener("scroll", e => {
-            setShowToTop(prev => bodyRef.current.scrollTop > 600)
-        })
-    }, [])
+	const scrollTop = useCallback(() => {
+		bodyRef.current.scrollTo({
+			top: 0,
+			behavior: "smooth",
+		});
+	}, []);
 
-    useEffect(() => {
-        setShowToTop(prev => prev || unreadMessages)
-    }, [unreadMessages])
+	useEffect(() => {
+		bodyRef.current.addEventListener("scroll", e => {
+			setShowToTop(prev => bodyRef.current.scrollTop > 600);
+		});
+	}, []);
 
-    const checkReadMessage = useCallback(node => {
-        if(!node)return
-        if(!observerRef.current){
-            observerRef.current = new IntersectionObserver(entries => {
-                entries.forEach((entry, i) => {
-                    if(entry.isIntersecting){
-                        setMessages(prev => {
-                            const copy = [...prev]
-                            copy[copy.findIndex(msg => msg.id ===entry.target.dataset.idx)].read = true
-                            return copy
-                        })
-                        observerRef.current.unobserve(entry.target);
-                    }
-                })
-            })
-        }
-        if(observerRef.current && node){
-            try{
+	useEffect(() => {
+		setShowToTop(prev => prev || unreadMessages);
+	}, [unreadMessages]);
 
-                observerRef.current.observe(node)
-            }catch(err){
-                console.log(node)
-            }
-        }
-    }, [observerRef, setMessages])
+	const checkReadMessage = useCallback(
+		node => {
+			if (!node) return;
+			if (!observerRef.current) {
+				observerRef.current = new IntersectionObserver(entries => {
+					entries.forEach((entry, i) => {
+						if (entry.isIntersecting) {
+							setMessages(prev => {
+								const copy = [...prev];
+								copy[copy.findIndex(msg => msg.id === entry.target.dataset.idx)].read = true;
+								return copy;
+							});
+							observerRef.current.unobserve(entry.target);
+						}
+					});
+				});
+			}
+			if (observerRef.current && node) {
+				try {
+					observerRef.current.observe(node);
+				} catch (err) {
+					console.log(node);
+				}
+			}
+		},
+		[observerRef, setMessages]
+	);
 
-    useEffect(() => {
-        setTimeout(() => {
-            setUnreadMessages(!!messages.find(msg => !msg.read && !msg.deleted))
-        }, 500)
-    }, [messages])
+	useEffect(() => {
+		setTimeout(() => {
+			setUnreadMessages(!!messages.find(msg => !msg.read && !msg.deleted));
+		}, 500);
+	}, [messages]);
 
-    const markAsRead = useCallback(() => {
-        setMessages(prev => prev.map(msg => ({...msg, read: true})))
-        setUnreadMessages(false)
-    }, [setMessages])
+	const markAsRead = useCallback(() => {
+		setMessages(prev => prev.map(msg => ({ ...msg, read: true })));
+		setUnreadMessages(false);
+	}, [setMessages]);
 
 	return (
 		<div ref={bodyRef} className="overlay-container">
-            <CSSTransition unmountOnExit timeout={400} classNames={"unread-node"} in={unreadMessages}>
-                <div className="unread-notification">
-                    <span>You have unread messages</span>
-                    <button onClick={markAsRead}>Mark as read</button>
-                </div>
-            </CSSTransition>
+			<CSSTransition unmountOnExit timeout={400} classNames={"unread-node"} in={unreadMessages}>
+				<div className="unread-notification">
+					<span>You have unread messages</span>
+					<button onClick={markAsRead}>Mark as read</button>
+				</div>
+			</CSSTransition>
 			<div className="overlay">
 				<Messages
 					messages={messages
 						.filter(msg => !search || msg.body.toLowerCase().includes(search.toLowerCase()))
 						.sort((a, b) => a.sentAt - b.sentAt)}
 					settings={settings}
-                    removeMessage={removeMessage}
-                    unreadMessageHandler={checkReadMessage}
+					removeMessage={removeMessage}
+					unreadMessageHandler={checkReadMessage}
 				/>
 				<SearchBox onChange={handleSearch} placeHolder="Search Messages" />
 			</div>
-            <CSSTransition unmountOnExit timeout={400} classNames={"to-top-node"} in={showToTop}>
-                <button className="back-to-top-button fade-in" onClick={scrollTop}><KeyboardArrowUpIcon></KeyboardArrowUpIcon></button>
-            </CSSTransition>
+			<CSSTransition unmountOnExit timeout={400} classNames={"to-top-node"} in={showToTop}>
+				<button className="back-to-top-button fade-in" onClick={scrollTop}>
+					<KeyboardArrowUpIcon></KeyboardArrowUpIcon>
+				</button>
+			</CSSTransition>
 		</div>
 	);
 }

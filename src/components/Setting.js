@@ -66,9 +66,11 @@ const Setting = props => {
 		if (props.type === "color") {
 			setValue(props.value || props.default);
 		} else {
-			setValue(props.value);
+			setValue(prev => {
+				return props.value == undefined ? props.default : props.value;
+			});
 		}
-    }, [props]);
+	}, [props]);
     
 	return (
 		<div className={`setting ${props.type === "color" ? "color-setting" : "list-setting"} ${props.open && "open"}`}>
