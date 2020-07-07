@@ -10,6 +10,8 @@ import SearchBox from "./SearchBox";
 import PeopleAltTwoToneIcon from "@material-ui/icons/PeopleAltTwoTone";
 import GetAppIcon from '@material-ui/icons/GetApp';
 import "./Header.scss";
+const remote = window.require("electron").remote
+
 
 const SettingList = props => {
 	return (
