@@ -276,7 +276,7 @@ function App() {
 			<div className="overlay">
 				<Messages
 					messages={messages
-						.filter(msg => !search || msg.body.toLowerCase().includes(search.toLowerCase()))
+						.filter(msg => !search || msg.displayName.toLowerCase().includes(search.toLowerCase()) || msg.body.toLowerCase().includes(search.toLowerCase()))
 						.sort((a, b) => a.sentAt - b.sentAt)}
                     settings={settings}
                     timeout={timeout}
