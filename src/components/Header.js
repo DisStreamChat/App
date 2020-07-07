@@ -8,6 +8,7 @@ import Button from "@material-ui/core/Button";
 import Setting from "./Setting";
 import SearchBox from "./SearchBox";
 import PeopleAltTwoToneIcon from "@material-ui/icons/PeopleAltTwoTone";
+import GetAppIcon from '@material-ui/icons/GetApp';
 import "./Header.scss";
 
 const SettingList = props => {
