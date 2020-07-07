@@ -8,10 +8,11 @@ import Button from "@material-ui/core/Button";
 import Setting from "./Setting";
 import SearchBox from "./SearchBox";
 import PeopleAltTwoToneIcon from "@material-ui/icons/PeopleAltTwoTone";
-import GetAppIcon from '@material-ui/icons/GetApp';
+import GetAppIcon from "@material-ui/icons/GetApp";
 import "./Header.scss";
-const remote = window.require("electron").remote
-
+import compare from "semver-compare";
+import { last } from "lodash";
+const remote = window.require("electron").remote;
 
 const SettingList = props => {
 	return (
@@ -56,7 +57,25 @@ const Header = props => {
 	const [viewingUserId, setViewingUserId] = useState();
 	const [viewingUserInfo, setViewingUserInfo] = useState();
 	const [viewingUserStats, setViewingUserStats] = useState();
+	const [updateLink, setUpdateLink] = useState();
 	const { location } = props;
+
+	useEffect(() => {
+		(async () => {
+			const currentVersion = remote.app.getVersion();
+			const response = await fetch("https://api.github.com/repos/disstreamchat/App/releases");
+			const json = await response.json();
+			const latestVersionInfo = json[0];
+			const latestVersion = latestVersionInfo.tag_name;
+			const updateable = compare(latestVersion, currentVersion) > 0;
+			if (updateable) {
+                // add cross platform url
+				const windowsDownloadAsset = latestVersionInfo.assets[0];
+				const windowsDownloadUrl = windowsDownloadAsset.browser_download_url;
+				setUpdateLink(windowsDownloadUrl);
+			}
+		})();
+	}, []);
 
 	useEffect(() => {
 		setViewingUserId(location.pathname.split("/").slice(-1)[0]);
@@ -127,7 +146,7 @@ const Header = props => {
 				}
 			});
 		return unsub;
-	}, [id]); 
+	}, [id]);
 
 	const updateAppSetting = useCallback(
 		async (name, value) => {
@@ -172,6 +191,11 @@ const Header = props => {
 					<Button variant="contained" color="primary" onClick={signout}>
 						Sign Out
 					</Button>
+				)}
+				{updateLink && (
+					<a href={updateLink}>
+						<GetAppIcon></GetAppIcon>
+					</a>
 				)}
 			</nav>
 			<div className="header-settings">
