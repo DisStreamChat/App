@@ -21,7 +21,9 @@ const Messages = React.memo(props => {
 					index={msg.id}
 					forwardRef={props.unreadMessageHandler}
 					streamerInfo={props.settings}
-					delete={props.removeMessage}
+                    delete={props.removeMessage}
+                    timeout={props.timeout}
+                    ban={props.ban}
 					key={msg.id}
 					msg={msg}
 				/>
@@ -65,6 +67,20 @@ function App() {
 	// 		return copy;
 	// 	});
 	// }, []);
+
+    const ban = useCallback((id, platform) => {
+        if (platform && socket) {
+            const banMsg = messages.find(msg => msg.id === id)
+            socket.emit(`banuser - ${platform}`, banMsg?.displayName);
+        }
+    }, [socket, messages])
+
+    const timeout = useCallback((id, platform) => {
+        if (platform && socket) {
+            const banMsg = messages.find(msg => msg.id === id)
+            socket.emit(`timeoutuser - ${platform}`, banMsg?.displayName);
+        }
+    }, [socket, messages])
 
 	// this is used to delete messages, in certain conditions will also send a message to backend tell it to delete the message from the sent platform
 	const removeMessage = useCallback(
@@ -262,8 +278,10 @@ function App() {
 					messages={messages
 						.filter(msg => !search || msg.body.toLowerCase().includes(search.toLowerCase()))
 						.sort((a, b) => a.sentAt - b.sentAt)}
-					settings={settings}
-					removeMessage={removeMessage}
+                    settings={settings}
+                    timeout={timeout}
+                    removeMessage={removeMessage}
+                    ban={ban}
 					unreadMessageHandler={checkReadMessage}
 				/>
 				<SearchBox onChange={handleSearch} placeHolder="Search Messages" />
