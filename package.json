@@ -23,7 +23,7 @@
     "chroma-js": "^2.1.0",
     "cross-env": "^6.0.3",
     "custom-electron-titlebar": "^3.2.2-hotfix62",
-    "distwitchchat-componentlib": "^1.1.51-hotfix1",
+    "distwitchchat-componentlib": "^1.1.52",
     "dompurify": "^2.0.10",
     "electron-context-menu": "^2.1.0",
     "electron-is-dev": "^1.1.0",
