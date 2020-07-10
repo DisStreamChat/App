@@ -17,6 +17,13 @@
     box-sizing: border-box !important;
 }
 
+.version{
+    position: fixed;
+    top: 6px;
+    left: 10px;
+    z-index: 999999;
+}
+
 .header.open{
     background: #2a2c30;
     height: calc(100vh - 30px);

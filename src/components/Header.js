@@ -59,17 +59,19 @@ const Header = props => {
 	const [viewingUserStats, setViewingUserStats] = useState();
 	const [updateLink, setUpdateLink] = useState();
 	const { location } = props;
+	const [version, setVersion] = useState();
 
 	useEffect(() => {
 		(async () => {
 			const currentVersion = remote.app.getVersion();
+			setVersion(currentVersion);
 			const response = await fetch("https://api.github.com/repos/disstreamchat/App/releases");
 			const json = await response.json();
 			const latestVersionInfo = json[0];
 			const latestVersion = latestVersionInfo.tag_name;
 			const updateable = compare(latestVersion, currentVersion) > 0;
 			if (updateable) {
-                // add cross platform url
+				// add cross platform url
 				const windowsDownloadAsset = latestVersionInfo.assets[0];
 				const windowsDownloadUrl = windowsDownloadAsset.browser_download_url;
 				setUpdateLink(windowsDownloadUrl);
@@ -169,43 +171,46 @@ const Header = props => {
 	return !show ? (
 		<></>
 	) : (
-		<header className={`header ${settingsOpen && "open"}`}>
-			<nav className="nav">
-				{chatHeader && viewingUserStats && (
-					<div className="stats">
-						<div className={`live-status ${viewingUserStats?.isLive ? "live" : ""}`}></div>
-						<div className="name">{viewingUserStats?.name}</div>
-						<div className={`live-viewers`}>
-							<PeopleAltTwoToneIcon />
-							{viewingUserStats?.viewers}
+		<>
+			<div className="version">DisStreamChat {version}</div>
+			<header className={`header ${settingsOpen && "open"}`}>
+				<nav className="nav">
+					{chatHeader && viewingUserStats && (
+						<div className="stats">
+							<div className={`live-status ${viewingUserStats?.isLive ? "live" : ""}`}></div>
+							<div className="name">{viewingUserStats?.name}</div>
+							<div className={`live-viewers`}>
+								<PeopleAltTwoToneIcon />
+								{viewingUserStats?.viewers}
+							</div>
 						</div>
-					</div>
-				)}
-				{chatHeader ? (
-					<Link to="/channels">
-						<Button variant="contained" color="primary">
-							Channels
+					)}
+					{chatHeader ? (
+						<Link to="/channels">
+							<Button variant="contained" color="primary">
+								Channels
+							</Button>
+						</Link>
+					) : (
+						<Button variant="contained" color="primary" onClick={signout}>
+							Sign Out
 						</Button>
-					</Link>
-				) : (
-					<Button variant="contained" color="primary" onClick={signout}>
-						Sign Out
-					</Button>
-				)}
-				{updateLink && (
-					<a href={updateLink}>
-						<GetAppIcon></GetAppIcon>
-					</a>
-				)}
-			</nav>
-			<div className="header-settings">
-				<SearchBox onChange={setSearch} placeHolder="Search Settings" />
-				<SettingList all search={search} defaultSettings={defaultSettings} settings={appSettings} updateSettings={updateAppSetting} />
-			</div>
-			<div className="header-lower" onClick={() => setSettingsOpen(o => !o)}>
-				<KeyboardArrowDownIcon className={`chevron ${settingsOpen && "open"}`} />
-			</div>
-		</header>
+					)}
+					{updateLink && (
+						<a href={updateLink}>
+							<GetAppIcon></GetAppIcon>
+						</a>
+					)}
+				</nav>
+				<div className="header-settings">
+					<SearchBox onChange={setSearch} placeHolder="Search Settings" />
+					<SettingList all search={search} defaultSettings={defaultSettings} settings={appSettings} updateSettings={updateAppSetting} />
+				</div>
+				<div className="header-lower" onClick={() => setSettingsOpen(o => !o)}>
+					<KeyboardArrowDownIcon className={`chevron ${settingsOpen && "open"}`} />
+				</div>
+			</header>
+		</>
 	);
 };
 
