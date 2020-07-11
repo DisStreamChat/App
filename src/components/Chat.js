@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import firebase from "../firebase";
 import { useParams } from "react-router-dom";
 import openSocket from "socket.io-client";
@@ -12,6 +12,28 @@ import RateReviewIcon from "@material-ui/icons/RateReview";
 import "./Chat.css";
 import "./Message.css";
 import "distwitchchat-componentlib/dist/index.css";
+import hasFlag from "../utils/flagFunctions/has"
+import fromFlag from "../utils/flagFunctions/from"
+import platformFlag from "../utils/flagFunctions/platform"
+
+const flagRegex = /([a-z]*):([a-z]*)/gmi
+
+const handleFlags = (searchString, messages) => {
+    const flags = [...searchString.matchAll(flagRegex)].map(([,flag,parameter]) => ({flag, parameter}))
+    const flaglessSearch = searchString.replace(flagRegex, "")
+    let matchingMessages = [...messages].filter(msg => !flaglessSearch || msg.body.toLowerCase().includes(flaglessSearch.toLowerCase()))
+    flags.forEach(({flag, parameter}) => {
+        if(flag === "has"){
+            matchingMessages = hasFlag(parameter, matchingMessages)
+        }else if(flag === "from"){
+            matchingMessages = fromFlag(parameter, matchingMessages)
+        }else if(flag === "platform"){
+            matchingMessages = platformFlag(parameter, matchingMessages)
+        }
+    })
+    return matchingMessages
+}
+
 
 const Messages = React.memo(props => {
 	return (
@@ -105,6 +127,7 @@ function App() {
 		if (socket) {
 			socket.removeListener("chatmessage");
 			socket.on("chatmessage", msg => {
+                console.log(msg)
                 msg.body = `<p>${msg.body}</p>`
 				setMessages(m => {
                     let ignoredMessage = false
@@ -264,7 +287,13 @@ function App() {
 	const markAsRead = useCallback(() => {
 		setMessages(prev => prev.map(msg => ({ ...msg, read: true })));
 		setUnreadMessages(false);
-	}, [setMessages]);
+    }, [setMessages]);
+    
+    const [flagMatches, setFlagMatches] = useState([])
+
+    useEffect(() => {
+        setFlagMatches(handleFlags(search, messages))
+    }, [messages, search])
 
 	return (
 		<div ref={bodyRef} className="overlay-container">
@@ -276,8 +305,8 @@ function App() {
 			</CSSTransition>
 			<div className="overlay">
 				<Messages
-					messages={messages
-						.filter(msg => !search || msg.displayName.toLowerCase().includes(search.toLowerCase()) || msg.body.toLowerCase().includes(search.toLowerCase()))
+					messages={flagMatches
+						// .filter(msg => !search || msg.displayName.toLowerCase().includes(search.toLowerCase()) || msg.body.toLowerCase().includes(search.toLowerCase()))
 						.sort((a, b) => a.sentAt - b.sentAt)}
                     settings={settings}
                     timeout={timeout}
