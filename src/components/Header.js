@@ -12,6 +12,7 @@ import GetAppIcon from "@material-ui/icons/GetApp";
 import "./Header.scss";
 import compare from "semver-compare";
 import { last } from "lodash";
+import ClearIcon from "@material-ui/icons/Clear";
 const remote = window.require("electron").remote;
 
 const SettingList = props => {
@@ -206,9 +207,10 @@ const Header = props => {
 					<SearchBox onChange={setSearch} placeHolder="Search Settings" />
 					<SettingList all search={search} defaultSettings={defaultSettings} settings={appSettings} updateSettings={updateAppSetting} />
 				</div>
-				<div className="header-lower" onClick={() => setSettingsOpen(o => !o)}>
-					<KeyboardArrowDownIcon className={`chevron ${settingsOpen && "open"}`} />
+				<div className="header-lower">
+					<KeyboardArrowDownIcon onClick={() => setSettingsOpen(o => !o)} className={`chevron ${settingsOpen && "open"}`} />
 				</div>
+				<ClearIcon onClick={() => setSettingsOpen(o => !o)} className={`closeButton ${settingsOpen && "open"}`} />
 			</header>
 		</>
 	);

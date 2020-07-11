@@ -139,6 +139,7 @@
 
 .chevron.open{
     transform: rotate(180deg);
+    opacity: 0;
 }
 
 .header-lower{
@@ -151,6 +152,18 @@
     bottom: .25rem;
     font-size: 2.5rem;
     left: -4px
+}
+
+.closeButton{
+    position: absolute;
+    top: 40px;
+    left: 0px;
+    opacity: 0;
+    font-size: 2rem !important;
+    transition: .5s !important;
+    &.open{
+        opacity: 1;
+    }
 }
 
 #root .header-lower *{
