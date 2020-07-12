@@ -13,7 +13,7 @@ const ChannelItem = props => {
             </div>
             <div className="channel-info">
                 <span className="channel-name">{props.display_name || props.name}</span>
-    <Link className="dashboard-link" to={props.isMember ? `/chat/${props.uid}` : ""} ><button disabled={!props.isMember} className="to-dashboard dashboard-button">{props.isMember ? !props.moderator ? "Go To Chat" : "Go To ModView" : <>This channel doesn't use DisTwitchChat</>}</button></Link>
+                <Link className="dashboard-link" to={props.isMember ? `/chat/${props.uid}` : ""} ><button disabled={!props.isMember} className="to-dashboard dashboard-button">{props.isMember ? !props.moderator ? "Go To Chat" : "Go To ModView" : <>This channel doesn't use DisTwitchChat</>}</button></Link>
             </div>
         </div>
     )
