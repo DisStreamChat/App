@@ -15,12 +15,13 @@ import "distwitchchat-componentlib/dist/index.css";
 import hasFlag from "../utils/flagFunctions/has"
 import fromFlag from "../utils/flagFunctions/from"
 import platformFlag from "../utils/flagFunctions/platform"
+import isFlag from "../utils/flagFunctions/is"
 
-const flagRegex = /([a-z]*):([a-z]*)/gmi
+const flagRegex = /(\s|^)(has|from|platform|is):([^\s]*)/gmi
 
 const handleFlags = (searchString, messages) => {
-    const flags = [...searchString.matchAll(flagRegex)].map(([,flag,parameter]) => ({flag, parameter}))
-    const flaglessSearch = searchString.replace(flagRegex, "")
+    const flags = [...searchString.matchAll(flagRegex)].map(([,,flag,parameter]) => ({flag, parameter}))
+    const flaglessSearch = searchString.replace(flagRegex, "").trim()
     let matchingMessages = [...messages].filter(msg => !flaglessSearch || msg.body.toLowerCase().includes(flaglessSearch.toLowerCase()))
     flags.forEach(({flag, parameter}) => {
         if(flag === "has"){
@@ -29,6 +30,8 @@ const handleFlags = (searchString, messages) => {
             matchingMessages = fromFlag(parameter, matchingMessages)
         }else if(flag === "platform"){
             matchingMessages = platformFlag(parameter, matchingMessages)
+        }else if(flag === "is"){
+            matchingMessages = isFlag(parameter, matchingMessages)
         }
     })
     return matchingMessages
