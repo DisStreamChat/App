@@ -30,7 +30,8 @@ const focus = () => {
 };
 
 const unfocus = () => {
-	sendMessageToWindow("toggle-border", false);
+    sendMessageToWindow("toggle-border", false);
+    console.log(opacity)
 	mainWindow.setOpacity(opacity);
 	mainWindow.setIgnoreMouseEvents(true);
 };
