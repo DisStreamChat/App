@@ -127,7 +127,7 @@ app.on("activate", () => {
 });
 
 ipcMain.on("setopacity", (event, data) => {
-	opacity = Math.min(Math.max(data, 0.1), 1);
+	opacity = Math.min(Math.max(+data, 0.1), 1);
 });
 
 ipcMain.on("setunclickthrough", (event, data) => {

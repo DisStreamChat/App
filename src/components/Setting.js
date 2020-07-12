@@ -47,14 +47,14 @@ const FancySwitch = withStyles({
 
 const Setting = props => {
 	const [value, setValue] = useState(props.value);
-    const [displayName, setDisplayName] = useState();
-    const [addingItem, setAddingItem] = useState(false);
+	const [displayName, setDisplayName] = useState();
+	const [addingItem, setAddingItem] = useState(false);
 	const [valueToBeAdded, setValueToBeAdded] = useState();
 
 	const changeHandler = useCallback(
 		lodash.debounce(v => {
 			props.onChange(props.name, v);
-		}, 1000),
+		}, 500),
 		[props.onChange, props.name]
 	);
 
@@ -71,7 +71,7 @@ const Setting = props => {
 			});
 		}
 	}, [props]);
-    
+
 	return (
 		<div className={`setting ${props.type === "color" ? "color-setting" : "list-setting"} ${props.open && "open"}`}>
 			{props.type === "color" ? (
@@ -107,7 +107,7 @@ const Setting = props => {
 							color: chroma.contrast(chroma(props.default || "#000"), "white") > 2 ? "white" : "black",
 						}}
 						onClick={() => {
-                            setValue(props.default)
+							setValue(props.default);
 							changeHandler(props.default);
 						}}
 						color="primary"
@@ -118,10 +118,17 @@ const Setting = props => {
 			) : props.type === "boolean" ? (
 				<span className="checkbox-setting">
 					<FormControlLabel
-						control={<FancySwitch color="primary" checked={!!value} onChange={e => {
-                            setValue(e.target.checked)
-                            changeHandler(e.target.checked)
-                        }} name={props.name} />}
+						control={
+							<FancySwitch
+								color="primary"
+								checked={!!value}
+								onChange={e => {
+									setValue(e.target.checked);
+									changeHandler(e.target.checked);
+								}}
+								name={props.name}
+							/>
+						}
 						label={displayName}
 					/>
 				</span>
@@ -148,7 +155,7 @@ const Setting = props => {
 						}
 					/>
 				</span>
-			) : (
+			) : props.type === "list" ? (
 				<>
 					<span className="list-header" onClick={() => props.onClick(props.name)}>
 						<KeyboardArrowDownIcon className={`${props.open ? "open" : "closed"} mr-quarter`} />
@@ -210,7 +217,43 @@ const Setting = props => {
 							))}
 						</div>
 					</AnimateHeight>
-				</>)}
+				</>
+			) : (
+				<>
+					<span className="color-header flex" onClick={() => props.onClick(props.name)}>
+						<span>
+							<KeyboardArrowDownIcon className={`${props.open ? "open" : "closed"} mr-quarter`} />
+							<h3>{displayName}</h3>
+						</span>
+						<span>
+							<h3>{value}</h3>
+						</span>
+					</span>
+					<AnimateHeight duration={250} height={!props.open ? 0 : "auto"}>
+						<div className="list-body selector">
+							{props.options
+								?.sort()
+								?.filter(item => item !== value)
+								?.map?.(item => (
+									<div style={{fontFamily: item}} className="item">
+										{item}
+										<button
+											onClick={() => {
+												setValue(prev => {
+													const newValue = item;
+													changeHandler(newValue);
+													return newValue;
+												});
+											}}
+										>
+											<CheckIcon />
+										</button>
+									</div>
+								))}
+						</div>
+					</AnimateHeight>
+				</>
+			)}
 		</div>
 	);
 };

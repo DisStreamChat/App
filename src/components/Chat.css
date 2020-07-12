@@ -1,5 +1,9 @@
 @import url("https://fonts.googleapis.com/css?family=Roboto&display=swap");
-
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Source+Sans+Pro:wght@400;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;500;600;700;800;900&family=Source+Sans+Pro:wght@400;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;500;600;700;800;900&family=Roboto+Mono:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Merriweather:wght@400;700&family=Noto+Sans:wght@400;700&family=Open+Sans:wght@400;700&family=Oswald:wght@400;500;600;700&family=Raleway:wght@400;500;600;700&family=Roboto+Condensed:wght@400;700&family=Roboto+Slab:wght@400;500;600;700&family=Ubuntu:wght@400;700&display=swap');
 :root {
 	--discord-color: #7289da;
 	--twitch-color: #613fa0;
@@ -27,11 +31,15 @@
 }
 
 * {
-	font-family: Montserrat !important;
+	font-family: Montserrat;
 	color: #fff;
 	padding: 0;
 	margin: 0;
 	box-sizing: content-box !important;
+}
+
+.version{
+    font-family: Montserrat !important;
 }
 
 .body {
@@ -217,4 +225,12 @@ h1 {
 
 ._1pKVQ *{
     width: initial !important;
+}
+
+._2WzYd *{
+    font-family: inherit !important;
+}
+
+._2WzYd{
+    /* font-family: "Montserrat", sans-serif !important; */
 }

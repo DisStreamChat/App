@@ -37,7 +37,8 @@ const SettingList = props => {
 							type={value.type}
 							min={value.min}
 							max={value.max}
-							step={value.step}
+                            step={value.step}
+                            options={value.options}
 						/>
 					);
 				})}
@@ -132,8 +133,8 @@ const Header = props => {
 
 	useEffect(() => {
 		(async () => {
-			const settingsRef = await firebase.db.collection("defaults").doc("settings").get();
-			const settingsData = settingsRef.data().settings;
+            const settingsRef = await firebase.db.collection("defaults").doc("settings").get();
+            const settingsData = settingsRef.data().settings;
 			setDefaultSettings(settingsData);
 		})();
 	}, []);

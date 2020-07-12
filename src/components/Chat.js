@@ -296,7 +296,7 @@ function App() {
     }, [messages, search])
 
 	return (
-		<div ref={bodyRef} className="overlay-container">
+		<div style={{fontFamily: settings.Font}} ref={bodyRef} className="overlay-container">
 			<CSSTransition unmountOnExit timeout={400} classNames={"unread-node"} in={unreadMessages}>
 				<div className="unread-notification">
 					<span>You have unread messages</span>

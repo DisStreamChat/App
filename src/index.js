@@ -39,7 +39,7 @@ const App = () => {
 			.onSnapshot(snapshot => {
 				const data = snapshot.data();
 				if (data) {
-					const opacity = data.appSettings.ClickThroughOpacity;
+                    const opacity = data.appSettings.ClickThroughOpacity;
 					ipcRenderer.send("setopacity", opacity);
 				}
 			});
