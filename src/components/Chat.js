@@ -16,6 +16,7 @@ import hasFlag from "../utils/flagFunctions/has"
 import fromFlag from "../utils/flagFunctions/from"
 import platformFlag from "../utils/flagFunctions/platform"
 import isFlag from "../utils/flagFunctions/is"
+import {TransitionGroup} from "react-transition-group"
 
 const flagRegex = /(\s|^)(has|from|platform|is):([^\s]*)/gmi
 
@@ -40,7 +41,7 @@ const handleFlags = (searchString, messages) => {
 
 const Messages = React.memo(props => {
 	return (
-		<>
+		<TransitionGroup>
 			{props.messages.map((msg, i) => (
 				<Message
 					index={msg.id}
@@ -53,7 +54,7 @@ const Messages = React.memo(props => {
 					msg={msg}
 				/>
 			))}
-		</>
+		</TransitionGroup>
 	);
 });
 
@@ -250,7 +251,7 @@ function App() {
 	}, []);
 
 	useEffect(() => {
-		setShowToTop(prev => prev || unreadMessages);
+		setShowToTop(prev => bodyRef.current.scrollTop > 600 || unreadMessages);
 	}, [unreadMessages]);
 
 	const checkReadMessage = useCallback(
@@ -295,8 +296,10 @@ function App() {
     const [flagMatches, setFlagMatches] = useState([])
 
     useEffect(() => {
-        setFlagMatches(handleFlags(search, messages))
+        setFlagMatches(handleFlags(search, messages).filter(msg => !msg.deleted))
     }, [messages, search])
+
+    console.log(flagMatches)
 
 	return (
 		<div style={{fontFamily: settings.Font}} ref={bodyRef} className="overlay-container">

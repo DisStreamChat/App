@@ -58,6 +58,11 @@
 	justify-content: flex-end;
 }
 
+.overlay > div:first-child{
+    display: flex;
+    flex-direction: column-reverse;
+}
+
 .overlay-container {
 	height: calc(100vh - 95px);
 	overflow: auto;
