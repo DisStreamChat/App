@@ -66,7 +66,7 @@ function App() {
 	const { id } = useParams();
 	const [showToTop, setShowToTop] = useState(false);
 	const [unreadMessages, setUnreadMessages] = useState(false);
-	const [showSearch, setShowSearch] = useState(false);
+	const [showSearch, setShowSearch] = useState(true);
 	const bodyRef = useRef();
 	const observerRef = useRef();
 	const currentUser = firebase.auth.currentUser;
