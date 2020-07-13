@@ -12,32 +12,32 @@ import RateReviewIcon from "@material-ui/icons/RateReview";
 import "./Chat.css";
 import "./Message.css";
 import "distwitchchat-componentlib/dist/index.css";
-import hasFlag from "../utils/flagFunctions/has"
-import fromFlag from "../utils/flagFunctions/from"
-import platformFlag from "../utils/flagFunctions/platform"
-import isFlag from "../utils/flagFunctions/is"
-import {TransitionGroup} from "react-transition-group"
+import hasFlag from "../utils/flagFunctions/has";
+import fromFlag from "../utils/flagFunctions/from";
+import platformFlag from "../utils/flagFunctions/platform";
+import isFlag from "../utils/flagFunctions/is";
+import { TransitionGroup } from "react-transition-group";
+import useHotkeys from "use-hotkeys";
 
-const flagRegex = /(\s|^)(has|from|platform|is):([^\s]*)/gmi
+const flagRegex = /(\s|^)(has|from|platform|is):([^\s]*)/gim;
 
 const handleFlags = (searchString, messages) => {
-    const flags = [...searchString.matchAll(flagRegex)].map(([,,flag,parameter]) => ({flag, parameter}))
-    const flaglessSearch = searchString.replace(flagRegex, "").trim()
-    let matchingMessages = [...messages].filter(msg => !flaglessSearch || msg.body.toLowerCase().includes(flaglessSearch.toLowerCase()))
-    flags.forEach(({flag, parameter}) => {
-        if(flag === "has"){
-            matchingMessages = hasFlag(parameter, matchingMessages)
-        }else if(flag === "from"){
-            matchingMessages = fromFlag(parameter, matchingMessages)
-        }else if(flag === "platform"){
-            matchingMessages = platformFlag(parameter, matchingMessages)
-        }else if(flag === "is"){
-            matchingMessages = isFlag(parameter, matchingMessages)
-        }
-    })
-    return matchingMessages
-}
-
+	const flags = [...searchString.matchAll(flagRegex)].map(([, , flag, parameter]) => ({ flag, parameter }));
+	const flaglessSearch = searchString.replace(flagRegex, "").trim();
+	let matchingMessages = [...messages].filter(msg => !flaglessSearch || msg.body.toLowerCase().includes(flaglessSearch.toLowerCase()));
+	flags.forEach(({ flag, parameter }) => {
+		if (flag === "has") {
+			matchingMessages = hasFlag(parameter, matchingMessages);
+		} else if (flag === "from") {
+			matchingMessages = fromFlag(parameter, matchingMessages);
+		} else if (flag === "platform") {
+			matchingMessages = platformFlag(parameter, matchingMessages);
+		} else if (flag === "is") {
+			matchingMessages = isFlag(parameter, matchingMessages);
+		}
+	});
+	return matchingMessages;
+};
 
 const Messages = React.memo(props => {
 	return (
@@ -47,9 +47,9 @@ const Messages = React.memo(props => {
 					index={msg.id}
 					forwardRef={props.unreadMessageHandler}
 					streamerInfo={props.settings}
-                    delete={props.removeMessage}
-                    timeout={props.timeout}
-                    ban={props.ban}
+					delete={props.removeMessage}
+					timeout={props.timeout}
+					ban={props.ban}
 					key={msg.id}
 					msg={msg}
 				/>
@@ -66,6 +66,7 @@ function App() {
 	const { id } = useParams();
 	const [showToTop, setShowToTop] = useState(false);
 	const [unreadMessages, setUnreadMessages] = useState(false);
+	const [showSearch, setShowSearch] = useState(false);
 	const bodyRef = useRef();
 	const observerRef = useRef();
 	const currentUser = firebase.auth.currentUser;
@@ -83,6 +84,14 @@ function App() {
 		};
 	}, [socket]);
 
+	useHotkeys(
+		(key, event, handle) => {
+			setShowSearch(prev => !prev);
+		},
+		["ctrl+f"],
+		[]
+	);
+
 	// this function is passed into the message and will be used for pinning
 	// const pinMessage = useCallback((id, pinned = true) => {
 	// 	setMessages(prev => {
@@ -94,19 +103,25 @@ function App() {
 	// 	});
 	// }, []);
 
-    const ban = useCallback((id, platform) => {
-        if (platform && socket) {
-            const banMsg = messages.find(msg => msg.id === id)
-            socket.emit(`banuser - ${platform}`, banMsg?.displayName);
-        }
-    }, [socket, messages])
+	const ban = useCallback(
+		(id, platform) => {
+			if (platform && socket) {
+				const banMsg = messages.find(msg => msg.id === id);
+				socket.emit(`banuser - ${platform}`, banMsg?.displayName);
+			}
+		},
+		[socket, messages]
+	);
 
-    const timeout = useCallback((id, platform) => {
-        if (platform && socket) {
-            const banMsg = messages.find(msg => msg.id === id)
-            socket.emit(`timeoutuser - ${platform}`, banMsg?.displayName);
-        }
-    }, [socket, messages])
+	const timeout = useCallback(
+		(id, platform) => {
+			if (platform && socket) {
+				const banMsg = messages.find(msg => msg.id === id);
+				socket.emit(`timeoutuser - ${platform}`, banMsg?.displayName);
+			}
+		},
+		[socket, messages]
+	);
 
 	// this is used to delete messages, in certain conditions will also send a message to backend tell it to delete the message from the sent platform
 	const removeMessage = useCallback(
@@ -131,19 +146,19 @@ function App() {
 		if (socket) {
 			socket.removeListener("chatmessage");
 			socket.on("chatmessage", msg => {
-                console.log(msg)
-                msg.body = `<p>${msg.body}</p>`
+				console.log(msg);
+				msg.body = `<p>${msg.body}</p>`;
 				setMessages(m => {
-                    let ignoredMessage = false
-                    if(settings?.IgnoredUsers?.map?.(item => item.value.toLowerCase()).includes(msg.displayName.toLowerCase())){
-                        ignoredMessage = true
-                    }
-                    const _ = settings?.IgnoredCommandPrefixes?.forEach(prefix => {
-                        if(msg.body.startsWith(prefix.value)){
-                            ignoredMessage = true
-                        }
-                    })
-                    if (ignoredMessage) return m
+					let ignoredMessage = false;
+					if (settings?.IgnoredUsers?.map?.(item => item.value.toLowerCase()).includes(msg.displayName.toLowerCase())) {
+						ignoredMessage = true;
+					}
+					const _ = settings?.IgnoredCommandPrefixes?.forEach(prefix => {
+						if (msg.body.startsWith(prefix.value)) {
+							ignoredMessage = true;
+						}
+					});
+					if (ignoredMessage) return m;
 					return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
 				});
 			});
@@ -175,22 +190,22 @@ function App() {
 			socket.on("deletemessage", removeMessage);
 			return () => socket.removeListener("deletemessage");
 		}
-    }, [socket, removeMessage]);
-    
-    useEffect(() => {
+	}, [socket, removeMessage]);
+
+	useEffect(() => {
 		if (socket) {
 			socket.removeListener("updateMessage");
 			socket.on("updateMessage", newMessage => {
-                setMessages(m => {
-                    const copy = [...m]
-                    const messageToUpdate = m.find(msg => msg.id === newMessage.id)
-                    if(!messageToUpdate) return m
-                    const updatedMessage = {...messageToUpdate, body: newMessage.body}
-                    const messageToUpdateIndex = m.findIndex(msg => msg.id === newMessage.id)
-                    copy.splice(messageToUpdateIndex, 1, updatedMessage)
-                    return copy
-                })
-            });
+				setMessages(m => {
+					const copy = [...m];
+					const messageToUpdate = m.find(msg => msg.id === newMessage.id);
+					if (!messageToUpdate) return m;
+					const updatedMessage = { ...messageToUpdate, body: newMessage.body };
+					const messageToUpdateIndex = m.findIndex(msg => msg.id === newMessage.id);
+					copy.splice(messageToUpdateIndex, 1, updatedMessage);
+					return copy;
+				});
+			});
 			return () => socket.removeListener("updateMessage");
 		}
 	}, [socket, removeMessage, setMessages]);
@@ -291,18 +306,18 @@ function App() {
 	const markAsRead = useCallback(() => {
 		setMessages(prev => prev.map(msg => ({ ...msg, read: true })));
 		setUnreadMessages(false);
-    }, [setMessages]);
-    
-    const [flagMatches, setFlagMatches] = useState([])
+	}, [setMessages]);
 
-    useEffect(() => {
-        setFlagMatches(handleFlags(search, messages).filter(msg => !msg.deleted))
-    }, [messages, search])
+	const [flagMatches, setFlagMatches] = useState([]);
 
-    console.log(flagMatches)
+	useEffect(() => {
+		setFlagMatches((showSearch ? handleFlags(search, messages) : messages).filter(msg => !msg.deleted));
+	}, [messages, search, showSearch]);
+
+	console.log(flagMatches);
 
 	return (
-		<div style={{fontFamily: settings.Font}} ref={bodyRef} className="overlay-container">
+		<div style={{ fontFamily: settings.Font }} ref={bodyRef} className="overlay-container">
 			<CSSTransition unmountOnExit timeout={400} classNames={"unread-node"} in={unreadMessages}>
 				<div className="unread-notification">
 					<span>You have unread messages</span>
@@ -314,13 +329,13 @@ function App() {
 					messages={flagMatches
 						// .filter(msg => !search || msg.displayName.toLowerCase().includes(search.toLowerCase()) || msg.body.toLowerCase().includes(search.toLowerCase()))
 						.sort((a, b) => a.sentAt - b.sentAt)}
-                    settings={settings}
-                    timeout={timeout}
-                    removeMessage={removeMessage}
-                    ban={ban}
+					settings={settings}
+					timeout={timeout}
+					removeMessage={removeMessage}
+					ban={ban}
 					unreadMessageHandler={checkReadMessage}
 				/>
-				<SearchBox onChange={handleSearch} placeHolder="Search Messages" />
+				{showSearch && <SearchBox onClick={() => setShowSearch(false)} onChange={handleSearch} placeHolder="Search Messages" />}
 			</div>
 			<CSSTransition unmountOnExit timeout={400} classNames={"to-top-node"} in={showToTop}>
 				<button className="back-to-top-button fade-in" onClick={scrollTop}>
