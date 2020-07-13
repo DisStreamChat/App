@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef, useMemo } from "react";
+import React, { useEffect, useState, useCallback, useRef} from "react";
 import firebase from "../firebase";
 import { useParams } from "react-router-dom";
 import openSocket from "socket.io-client";
@@ -8,7 +8,6 @@ import { AppContext } from "../contexts/AppContext";
 import SearchBox from "./SearchBox";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import { CSSTransition } from "react-transition-group";
-import RateReviewIcon from "@material-ui/icons/RateReview";
 import "./Chat.css";
 import "./Message.css";
 import "distwitchchat-componentlib/dist/index.css";
@@ -86,9 +85,19 @@ function App() {
 
 	useHotkeys(
 		(key, event, handle) => {
-			setShowSearch(prev => !prev);
+            switch(key){
+                case "ctrl+f":
+                    setShowSearch(true);
+                    break;
+                case "esc":
+                    setShowSearch(false)
+                    break;
+                default:
+                    break
+
+            }
 		},
-		["ctrl+f"],
+		["ctrl+f", "esc"],
 		[]
 	);
 
