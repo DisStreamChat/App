@@ -268,9 +268,15 @@
 
 @media screen and (max-width: 340px) {
 	.color-preview {
-		margin-left: -1rem;
 		margin-right: 4rem;
 	}
+}
+
+@media screen and (max-width: 300px){
+    .closeButton{
+        transform: scale(.75);
+        left: 0;
+    }
 }
 
 .stats {

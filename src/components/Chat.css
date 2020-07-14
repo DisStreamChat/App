@@ -236,7 +236,7 @@ h1 {
     color: white;
 }
 
-@media screen and (max-width: 500px){
+@media screen and (max-width: 475px){
     ._jnNsa, ._jnNsa *, ._3VpLd, ._3VpLd *{
         max-width: 18px;
         margin: 0;
