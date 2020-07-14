@@ -1,6 +1,5 @@
 module.exports = (parameter, messages) => {
 	const parameters = parameter.split(",");
-	console.log(parameters);
 	let matchingMessages = [];
 	parameters.forEach(param => {
 		matchingMessages = [
