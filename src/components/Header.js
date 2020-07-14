@@ -13,6 +13,7 @@ import "./Header.scss";
 import compare from "semver-compare";
 import ClearIcon from "@material-ui/icons/Clear";
 import MailTwoToneIcon from "@material-ui/icons/MailTwoTone";
+import { Tooltip } from "@material-ui/core";
 const remote = window.require("electron").remote;
 const customTitlebar = window.require("custom-electron-titlebar");
 
@@ -67,7 +68,7 @@ const Header = props => {
 	const [show, setShow] = useState(true);
 	const currentUser = firebase.auth.currentUser;
 	const id = currentUser?.uid || " ";
-	const { messages } = useContext(AppContext);
+	const { messages, setMessages } = useContext(AppContext);
 	const [viewingUserId, setViewingUserId] = useState();
 	const [viewingUserInfo, setViewingUserInfo] = useState();
 	const [viewingUserStats, setViewingUserStats] = useState();
@@ -78,7 +79,7 @@ const Header = props => {
 	useEffect(() => {
 		(async () => {
 			const currentVersion = remote.app.getVersion();
-            MyTitleBar.updateTitle(`DisStreamChat ${currentVersion}`);
+			MyTitleBar.updateTitle(`DisStreamChat ${currentVersion}`);
 			const response = await fetch("https://api.github.com/repos/disstreamchat/App/releases");
 			const json = await response.json();
 			const latestVersionInfo = json[0];
@@ -207,11 +208,16 @@ const Header = props => {
 					)}
 					{chatHeader ? (
 						<>
-							<div className={`messages-notification ${unreadMessages ? "unread" : ""}`}>
-								{unreadMessages ? (unreadMessages.length > maxDisplayNum ? `${maxDisplayNum}+` : unreadMessages.length) : ""}
-								{unreadMessages ? " " : ""}
-								<MailTwoToneIcon />
-							</div>
+							<Tooltip title={`${unreadMessages ? "Mark as Read" : ""}`} arrow>
+								<div
+									onClick={() => setMessages(prev => prev.map(msg => ({ ...msg, read: true })))}
+									className={`messages-notification ${unreadMessages ? "unread" : ""}`}
+								>
+									{unreadMessages ? (unreadMessages.length > maxDisplayNum ? `${maxDisplayNum}+` : unreadMessages.length) : ""}
+									{unreadMessages ? " " : ""}
+									<MailTwoToneIcon />
+								</div>
+							</Tooltip>
 							<Link to="/channels">
 								<Button variant="contained" color="primary">
 									Channels
