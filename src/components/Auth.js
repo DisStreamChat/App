@@ -50,7 +50,7 @@ const Auth = props => {
 	) : (
 		<div className="Modal-Overlay">
 			<div className="Modal">
-				<h1 className="modal-heading">Login to DisTwitchChat</h1>
+				<h1 className="modal-heading">Login to DisStreamChat</h1>
 				<h2 className="modal-subheading">Connect with:</h2>
 				<div className="modal-buttons">
 					<button onClick={loginWithTwitch} className="modal-button twitch">
