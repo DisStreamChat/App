@@ -20,6 +20,21 @@
     }
 }
 
+.messages-notification{
+    position: relative;
+    &.unread::after{
+        content: "";
+        width: 8px;
+        height: 8px;
+        background: red;
+        border-radius: 50%;
+        display: block;
+        position: absolute;
+        top: 2px;
+        right: -2px;
+    }
+}
+
 .version {
 	position: fixed;
 	top: 6px;
