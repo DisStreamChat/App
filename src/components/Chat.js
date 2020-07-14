@@ -297,8 +297,11 @@ function App() {
 					entries.forEach((entry, i) => {
 						if (entry.isIntersecting) {
 							setMessages(prev => {
-								const copy = [...prev];
-								copy[copy.findIndex(msg => msg.id === entry.target.dataset.idx)].read = true;
+                                const copy = [...prev];
+                                const index = copy.findIndex(msg => msg.id === entry.target.dataset.idx)
+                                if(index !== -1){
+                                    copy[index].read = true;
+                                }
 								return copy;
 							});
 							observerRef.current.unobserve(entry.target);
@@ -320,7 +323,7 @@ function App() {
 	const [flagMatches, setFlagMatches] = useState([]);
 
 	useEffect(() => {
-		setFlagMatches((showSearch ? handleFlags(search, [...messages, ...pinnedMessages]) : messages).filter(msg => !msg.deleted));
+		setFlagMatches((handleFlags(showSearch ? search : "", [...messages, ...pinnedMessages])).filter(msg => !msg.deleted));
 	}, [messages, search, showSearch, pinnedMessages]);
 
 	return (
@@ -337,7 +340,7 @@ function App() {
 					unreadMessageHandler={checkReadMessage}
 					pin={pinMessage}
 				/>
-				{showSearch && <SearchBox onClick={() => setShowSearch(false)} onChange={handleSearch} placeHolder="Search Messages" />}
+				{showSearch && <SearchBox onChange={handleSearch} placeHolder="Search Messages" />}
 			</div>
 			<CSSTransition unmountOnExit timeout={400} classNames={"to-top-node"} in={showToTop}>
 				<button className="back-to-top-button fade-in" onClick={scrollTop}>
