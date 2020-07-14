@@ -11,9 +11,19 @@ import PeopleAltTwoToneIcon from "@material-ui/icons/PeopleAltTwoTone";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import "./Header.scss";
 import compare from "semver-compare";
-import { last } from "lodash";
 import ClearIcon from "@material-ui/icons/Clear";
+import MailTwoToneIcon from "@material-ui/icons/MailTwoTone";
 const remote = window.require("electron").remote;
+const customTitlebar = window.require("custom-electron-titlebar");
+
+let MyTitleBar = new customTitlebar.Titlebar({
+	backgroundColor: customTitlebar.Color.fromHex("#17181ba1"),
+	// shadow: false,
+	// color: "black",
+	menu: null,
+});
+MyTitleBar.updateTitle("DisStreamChat");
+MyTitleBar.setHorizontalAlignment("left");
 
 const SettingList = props => {
 	return (
@@ -37,14 +47,16 @@ const SettingList = props => {
 							type={value.type}
 							min={value.min}
 							max={value.max}
-                            step={value.step}
-                            options={value.options}
+							step={value.step}
+							options={value.options}
 						/>
 					);
 				})}
 		</SettingAccordion>
 	);
 };
+
+const maxDisplayNum = 999;
 
 const Header = props => {
 	const [settingsOpen, setSettingsOpen] = useState(false);
@@ -55,18 +67,18 @@ const Header = props => {
 	const [show, setShow] = useState(true);
 	const currentUser = firebase.auth.currentUser;
 	const id = currentUser?.uid || " ";
-	const { setMessages } = useContext(AppContext);
+	const { messages } = useContext(AppContext);
 	const [viewingUserId, setViewingUserId] = useState();
 	const [viewingUserInfo, setViewingUserInfo] = useState();
 	const [viewingUserStats, setViewingUserStats] = useState();
 	const [updateLink, setUpdateLink] = useState();
 	const { location } = props;
-	const [version, setVersion] = useState();
+	const [unreadMessages, setUnreadMessages] = useState(false);
 
 	useEffect(() => {
 		(async () => {
 			const currentVersion = remote.app.getVersion();
-			setVersion(currentVersion);
+            MyTitleBar.updateTitle(`DisStreamChat ${currentVersion}`);
 			const response = await fetch("https://api.github.com/repos/disstreamchat/App/releases");
 			const json = await response.json();
 			const latestVersionInfo = json[0];
@@ -80,6 +92,13 @@ const Header = props => {
 			}
 		})();
 	}, []);
+
+	useEffect(() => {
+		setTimeout(() => {
+			const filteredMessages = messages.filter(msg => !msg.read && !msg.deleted);
+			setUnreadMessages(filteredMessages.length ? filteredMessages : false);
+		}, 500);
+	}, [messages]);
 
 	useEffect(() => {
 		setViewingUserId(location.pathname.split("/").slice(-1)[0]);
@@ -133,8 +152,8 @@ const Header = props => {
 
 	useEffect(() => {
 		(async () => {
-            const settingsRef = await firebase.db.collection("defaults").doc("settings").get();
-            const settingsData = settingsRef.data().settings;
+			const settingsRef = await firebase.db.collection("defaults").doc("settings").get();
+			const settingsData = settingsRef.data().settings;
 			setDefaultSettings(settingsData);
 		})();
 	}, []);
@@ -174,25 +193,31 @@ const Header = props => {
 		<></>
 	) : (
 		<>
-			<div className="version">DisStreamChat {version}</div>
 			<header className={`header ${settingsOpen && "open"}`}>
 				<nav className="nav">
 					{chatHeader && viewingUserStats && (
 						<div className="stats">
 							<div className={`live-status ${viewingUserStats?.isLive ? "live" : ""}`}></div>
 							<div className="name">{viewingUserStats?.name}</div>
-							<div className={`live-viewers`}>
+							<div className={"live-viewers"}>
 								<PeopleAltTwoToneIcon />
 								{viewingUserStats?.viewers}
 							</div>
 						</div>
 					)}
 					{chatHeader ? (
-						<Link to="/channels">
-							<Button variant="contained" color="primary">
-								Channels
-							</Button>
-						</Link>
+						<>
+							<div className={`messages-notification ${unreadMessages ? "unread" : ""}`}>
+								{unreadMessages ? (unreadMessages.length > maxDisplayNum ? `${maxDisplayNum}+` : unreadMessages.length) : ""}
+								{unreadMessages ? " " : ""}
+								<MailTwoToneIcon />
+							</div>
+							<Link to="/channels">
+								<Button variant="contained" color="primary">
+									Channels
+								</Button>
+							</Link>
+						</>
 					) : (
 						<Button variant="contained" color="primary" onClick={signout}>
 							Sign Out
