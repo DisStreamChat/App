@@ -1,4 +1,4 @@
-module.exports = (parameter, messages) => {
+export default (parameter, messages) => {
 	const parameters = parameter.split(",");
 	let matchingMessages = [];
 	parameters.forEach(param => {
