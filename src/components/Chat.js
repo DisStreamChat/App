@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef} from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import firebase from "../firebase";
 import { useParams } from "react-router-dom";
 import openSocket from "socket.io-client";
@@ -51,6 +51,7 @@ const Messages = React.memo(props => {
 					ban={props.ban}
 					key={msg.id}
 					msg={msg}
+					pin={() => props.pin(msg.id)}
 				/>
 			))}
 		</TransitionGroup>
@@ -59,12 +60,11 @@ const Messages = React.memo(props => {
 
 function App() {
 	const [socket, setSocket] = useState();
-	const { streamerInfo: settings, messages, setMessages } = useContext(AppContext);
+	const { streamerInfo: settings, messages, setMessages, pinnedMessages, setPinnedMessages } = useContext(AppContext);
 	const [channel, setChannel] = useState();
 	const [search, setSearch] = useState("");
 	const { id } = useParams();
 	const [showToTop, setShowToTop] = useState(false);
-	const [unreadMessages, setUnreadMessages] = useState(false);
 	const [showSearch, setShowSearch] = useState(true);
 	const bodyRef = useRef();
 	const observerRef = useRef();
@@ -85,32 +85,48 @@ function App() {
 
 	useHotkeys(
 		(key, event, handle) => {
-            switch(key){
-                case "ctrl+f":
-                    setShowSearch(true);
-                    break;
-                case "esc":
-                    setShowSearch(false)
-                    break;
-                default:
-                    break
-
-            }
+			switch (key) {
+				case "ctrl+f":
+					setShowSearch(true);
+					break;
+				case "esc":
+					setShowSearch(false);
+					break;
+				default:
+					break;
+			}
 		},
 		["ctrl+f", "esc"],
 		[]
 	);
 
 	// this function is passed into the message and will be used for pinning
-	// const pinMessage = useCallback((id, pinned = true) => {
-	// 	setMessages(prev => {
-	// 		let copy = [...prev];
-	// 		let index = copy.findIndex(msg => msg.id === id);
-	// 		if (index === -1) return prev;
-	// 		copy[index].pinned = pinned;
-	// 		return copy;
-	// 	});
-	// }, []);
+	const pinMessage = useCallback(
+		(id, pinned = true) => {
+			const pinning = !!messages.find(msg => msg.id === id);
+			if (pinning) {
+				//move message from messages to pinned messages
+				setMessages(prev => {
+					let copy = [...prev];
+                    let index = copy.findIndex(msg => msg.id === id);
+                    copy[index].pinned = true
+                    const pinnedMessage = copy.splice(index, 1)
+                    setPinnedMessages(prev => [...prev, ...pinnedMessage])
+                    return copy
+				});
+			}else{
+                setPinnedMessages(prev => {
+					let copy = [...prev];
+                    let index = copy.findIndex(msg => msg.id === id);
+                    copy[index].pinned = false
+                    const unPinnedMessage = copy.splice(index, 1)
+                    setMessages(prev => [...prev, ...unPinnedMessage])
+                    return copy
+				});
+            }
+		},
+		[setMessages, setPinnedMessages, messages]
+	);
 
 	const ban = useCallback(
 		(id, platform) => {
@@ -139,7 +155,7 @@ function App() {
 				let copy = [...prev];
 				let index = copy.findIndex(msg => msg.id === id);
 				if (index === -1) return prev;
-				copy[index].deleted = true;
+				copy.splice(index, 1);
 				return copy;
 			});
 
@@ -155,7 +171,6 @@ function App() {
 		if (socket) {
 			socket.removeListener("chatmessage");
 			socket.on("chatmessage", msg => {
-				console.log(msg);
 				msg.body = `<p>${msg.body}</p>`;
 				setMessages(m => {
 					let ignoredMessage = false;
@@ -274,10 +289,6 @@ function App() {
 		});
 	}, []);
 
-	useEffect(() => {
-		setShowToTop(prev => bodyRef.current.scrollTop > 600 || unreadMessages);
-	}, [unreadMessages]);
-
 	const checkReadMessage = useCallback(
 		node => {
 			if (!node) return;
@@ -306,33 +317,14 @@ function App() {
 		[observerRef, setMessages]
 	);
 
-	useEffect(() => {
-		setTimeout(() => {
-			setUnreadMessages(!!messages.find(msg => !msg.read && !msg.deleted));
-		}, 500);
-	}, [messages]);
-
-	const markAsRead = useCallback(() => {
-		setMessages(prev => prev.map(msg => ({ ...msg, read: true })));
-		setUnreadMessages(false);
-	}, [setMessages]);
-
 	const [flagMatches, setFlagMatches] = useState([]);
 
 	useEffect(() => {
-		setFlagMatches((showSearch ? handleFlags(search, messages) : messages).filter(msg => !msg.deleted));
-	}, [messages, search, showSearch]);
-
-	console.log(flagMatches);
+		setFlagMatches((showSearch ? handleFlags(search, [...messages, ...pinnedMessages]) : messages).filter(msg => !msg.deleted));
+	}, [messages, search, showSearch, pinnedMessages]);
 
 	return (
 		<div style={{ fontFamily: settings.Font }} ref={bodyRef} className="overlay-container">
-			<CSSTransition unmountOnExit timeout={400} classNames={"unread-node"} in={unreadMessages}>
-				<div className="unread-notification">
-					<span>You have unread messages</span>
-					<button onClick={markAsRead}>Mark as read</button>
-				</div>
-			</CSSTransition>
 			<div className="overlay">
 				<Messages
 					messages={flagMatches
@@ -343,6 +335,7 @@ function App() {
 					removeMessage={removeMessage}
 					ban={ban}
 					unreadMessageHandler={checkReadMessage}
+					pin={pinMessage}
 				/>
 				{showSearch && <SearchBox onClick={() => setShowSearch(false)} onChange={handleSearch} placeHolder="Search Messages" />}
 			</div>

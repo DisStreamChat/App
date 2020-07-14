@@ -23,11 +23,12 @@ const Channels = () => {
     const currentUser = firebase.auth.currentUser
     const [myChannel, setMyChannel] = useState()
     const [modChannels, setModChannels] = useState([])
-    const {setMessages} = useContext(AppContext)
+    const {setMessages, setPinnedMessages} = useContext(AppContext)
 
     useEffect(() => {
         setMessages([])
-    }, [setMessages])
+        setPinnedMessages([])
+    }, [setMessages, setPinnedMessages])
 
     useEffect(() => {
         const unsub = firebase.db.collection("Streamers").doc(currentUser.uid).onSnapshot(snapshot => {

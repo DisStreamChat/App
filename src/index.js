@@ -17,7 +17,8 @@ const { ipcRenderer } = window.require("electron");
 const App = () => {
 	const [firebaseInit, setFirebaseInit] = useState(false);
 	const [streamerInfo, setStreamerInfo] = useState({});
-	const [messages, setMessages] = useState([]);
+    const [messages, setMessages] = useState([]);
+    const [pinnedMessages, setPinnedMessages] = useState([])
 	const [border, setBorder] = useState(true);
 	const currentUser = firebase.auth.currentUser;
 
@@ -101,7 +102,9 @@ const App = () => {
 				messages,
 				setMessages,
 				streamerInfo,
-				setStreamerInfo,
+                setStreamerInfo,
+                pinnedMessages, 
+                setPinnedMessages
 			}}
 		>
 			<Router>
