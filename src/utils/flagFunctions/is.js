@@ -6,7 +6,7 @@ module.exports = (parameter, messages) => {
 		matchingMessages = [
 			...matchingMessages,
 			...messages?.filter(
-				msg => msg?.messageId?.toLowerCase?.() === param?.toLowerCase?.() || msg?.messageType?.toLowerCase?.() === param.toLowerCase?.()
+				msg => msg?.messageId?.toLowerCase?.() === param?.toLowerCase?.() || msg?.messageType?.toLowerCase?.() === param.toLowerCase?.() || (msg.pinned && param==="pinned")
 			),
 		];
 	});
