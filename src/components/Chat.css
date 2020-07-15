@@ -227,8 +227,9 @@ h1 {
     width: initial !important;
 }
 
-._2WzYd *{
+#root ._2WzYd *{
     font-family: inherit !important;
+    color: inherit !important;
 }
 
 ._jnNsa, ._jnNsa *, ._3VpLd, ._3VpLd *{
