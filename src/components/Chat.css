@@ -229,8 +229,9 @@ h1 {
 
 #root ._2WzYd *{
     font-family: inherit !important;
-    color: inherit !important;
+    color: inherit;
 }
+
 
 ._jnNsa, ._jnNsa *, ._3VpLd, ._3VpLd *{
     max-width: 24px;
