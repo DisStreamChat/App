@@ -142,7 +142,7 @@ function App() {
 		(id, platform) => {
 			if (platform && socket) {
 				const banMsg = messages.find(msg => msg.id === id);
-				socket.emit(`timeoutuser - ${platform}`, banMsg?.displayName);
+				socket.emit(`timeoutuser - ${platform}`, banMsg?.[platform === "discord" ? "userId" : "DisplayName"]);
 			}
 		},
 		[socket, messages]
@@ -239,7 +239,7 @@ function App() {
 		if (socket) {
 			socket.removeListener("purgeuser");
 			socket.on("purgeuser", username => {
-				setMessages(prev => prev.map(msg => ({ ...msg, deleted: msg.deleted || msg.displayName?.toLowerCase() === username })));
+				setMessages(prev => prev.filter(msg => msg.displayName?.toLowerCase() !== username.toLowerCase() ));
 			});
 			return () => socket.removeListener("purgeuser");
 		}
