@@ -183,7 +183,7 @@ function App() {
 						}
 					});
 					if (ignoredMessage) return m;
-					return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }].sort((a, b) => a.sentAt - b.sentAt);
+					return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
 				});
 			});
 			return () => socket.removeListener("chatmessage");

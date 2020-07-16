@@ -31,7 +31,6 @@ const SettingList = props => {
 		<SettingAccordion>
 			{Object.entries(props.defaultSettings || {})
 				.filter(([name]) => (!props.search ? true : name?.toLowerCase()?.includes(props?.search?.toLowerCase())))
-				.sort()
 				.sort((a, b) => {
 					const categoryOrder = a[1].type.localeCompare(b[1].type);
 					const nameOrder = a[0].localeCompare(b[0]);
