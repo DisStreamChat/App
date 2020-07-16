@@ -22,6 +22,7 @@
 
 .messages-notification{
     position: relative;
+    cursor: pointer;
     &.unread::after{
         content: "";
         width: 8px;
