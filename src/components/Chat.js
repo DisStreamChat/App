@@ -120,7 +120,7 @@ function App() {
                     let index = copy.findIndex(msg => msg.id === id);
                     copy[index].pinned = false
                     const unPinnedMessage = copy.splice(index, 1)
-                    setMessages(prev => [...prev, ...unPinnedMessage])
+                    setMessages(prev => [...prev, ...unPinnedMessage].sort((a, b) => a.sentAt - b.sentAt))
                     return copy
 				});
             }
@@ -183,7 +183,7 @@ function App() {
 						}
 					});
 					if (ignoredMessage) return m;
-					return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
+					return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }].sort((a, b) => a.sentAt - b.sentAt);
 				});
 			});
 			return () => socket.removeListener("chatmessage");
