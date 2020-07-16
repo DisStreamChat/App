@@ -204,7 +204,7 @@ function App() {
 	}, [settings, socket, channel]);
 
 	useEffect(() => {
-		setMessages(m => m.slice(-Math.max(settings.MessageLimit, 100)).sort((a, b) => a.sentAt - b.sentAt));
+		setMessages(m => m.slice(-Math.max(settings.MessageLimit, 100)));
 	}, [settings, setMessages]);
 
 	// this is similar to the above useEffect but for adds a listener for when messages are deleted
@@ -227,7 +227,7 @@ function App() {
 					const updatedMessage = { ...messageToUpdate, body: newMessage.body };
 					const messageToUpdateIndex = m.findIndex(msg => msg.id === newMessage.id);
 					copy.splice(messageToUpdateIndex, 1, updatedMessage);
-					return copy.sort((a, b) => a.sentAt - b.sentAt);
+					return copy;
 				});
 			});
 			return () => socket.removeListener("updateMessage");
@@ -239,7 +239,7 @@ function App() {
 		if (socket) {
 			socket.removeListener("purgeuser");
 			socket.on("purgeuser", username => {
-				setMessages(prev => prev.filter(msg => msg.displayName?.toLowerCase() !== username.toLowerCase() ).sort((a, b) => a.sentAt - b.sentAt));
+				setMessages(prev => prev.filter(msg => msg.displayName?.toLowerCase() !== username.toLowerCase() ));
 			});
 			return () => socket.removeListener("purgeuser");
 		}
@@ -302,7 +302,7 @@ function App() {
                                 if(index !== -1){
                                     copy[index].read = true;
                                 }
-								return copy.sort((a, b) => a.sentAt - b.sentAt);
+								return copy;
 							});
 							observerRef.current.unobserve(entry.target);
 						}
