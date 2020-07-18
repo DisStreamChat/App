@@ -1,45 +1,57 @@
 const electron = require("electron");
-const { BrowserWindow, ipcMain, app } = electron;
+const { BrowserWindow, ipcMain, app, globalShortcut } = electron;
 const path = require("path");
 const isDev = require("electron-is-dev");
-const { autoUpdater } = require("electron-updater");
 const windowStateKeeper = require("electron-window-state");
 const contextMenu = require('electron-context-menu');
 
 let mainWindow;
-let loginWindow;
-let clickThroughKey = "a";
-let unclickThroughKey = "b";
+let unfocusKey = "a";
+let focusKey = "b";
 let opacity = 0.5;
 let windows = {}
+const Width = 500;
 
-const width = 650;
-const globalShortcut = electron.globalShortcut;
-
-const sendMessageToWindow = (event, message) => {
-	if (mainWindow) {
-		mainWindow.webContents.send(event, message);
+const sendMessageToWindow = (event, message, window=mainWindow) => {
+	if (window && window.webContents) {
+		window.webContents.send(event, message);
 	}
 };
 
 const focus = () => {
-	sendMessageToWindow("toggle-border", true);
-	mainWindow.setOpacity(1);
-	mainWindow.setIgnoreMouseEvents(false);
+    function focusAction(window){
+        if(window){
+            sendMessageToWindow("toggle-border", true, window);
+            window.setOpacity(1);
+            window.setIgnoreMouseEvents(false);
+        }
+
+    }
+    focusAction(mainWindow)
+    Object.values(windows).forEach(focusAction)
+    
 };
 
 const unfocus = () => {
-    sendMessageToWindow("toggle-border", false);
     console.log(opacity)
-	mainWindow.setOpacity(opacity);
-	mainWindow.setIgnoreMouseEvents(true);
+    function unfocusAction(window){
+        if(window){
+            sendMessageToWindow("toggle-border", false, window);
+            window.setOpacity(opacity);
+            window.setIgnoreMouseEvents(true);
+        }
+    }
+    unfocusAction(mainWindow)
+    Object.values(windows).forEach(unfocusAction)
 };
 
-function windowGenerator({w=width, h=width*1.5, x, y} = {}){
+const baseUrl = () => isDev ? "http://localhost:3005" : `file://${path.join(__dirname, "../build/index.html")}`
+
+function windowGenerator({width=Width, height=Width*1.5, x, y} = {}){
     const options = {
-		width: w, // width of the window
-		height: h, // height of the window
-		minWidth: 275,
+		width: width, // width of the window
+		height: height, // height of the window
+		minWidth: 290,
 		minHeight: 500,
 		frame: false, // whether or not the window has 'frame' or header
 		backgroundColor: "#001e272e", // window background color, first two values set alpha which is set to 0 for transparency
@@ -56,10 +68,13 @@ function windowGenerator({w=width, h=width*1.5, x, y} = {}){
     let window = new BrowserWindow(options)
     window.on("page-title-updated", e => {
 		e.preventDefault();
-	});
+    });
+    window.setAlwaysOnTop(true, "screen-saver");
+    
+    return window
 }
 
-function createWindow() {
+function createMainWindow() {
 
     contextMenu({
         prepend: (defaultActions, params, browserWindow) => [
@@ -75,25 +90,23 @@ function createWindow() {
     });
 
 	let mainWindowState = windowStateKeeper({
-		defaultWidth: width,
-		defaultHeight: width * 1.5,
+		defaultWidth: Width,
+		defaultHeight: Width * 1.5,
     });
 
-	mainWindow = windowGenerator(...mainWindowState)
+	mainWindow = windowGenerator(mainWindowState)
 
 	mainWindowState.manage(mainWindow);
-
-	mainWindow.loadURL(isDev ? "http://localhost:3005" : `file://${path.join(__dirname, "../build/index.html")}`);
-	mainWindow.on("closed", () => (mainWindow = null));
+    mainWindow.loadURL(baseUrl());
+	mainWindow.on("closed", () => mainWindow = null);
 
 	// hotkey for turning on and off clickthrough
-	globalShortcut.register("f6", unfocus);
+	globalShortcut.register(unfocusKey, unfocus);
 
-	globalShortcut.register("f7", focus);
-
-	
-
-	mainWindow.setAlwaysOnTop(true, "screen-saver");
+    globalShortcut.register(focusKey, focus);
+    mainWindow.on("closed", () => {
+        app.quit()
+    })
 }
 
 // this is used to send all links to the users default browser
@@ -112,7 +125,7 @@ app.on("web-contents-created", (e, contents) => {
 	});
 });
 
-app.on("ready", createWindow);
+app.on("ready", createMainWindow);
 app.on("window-all-closed", () => {
 	if (process.platform !== "darwin") {
 		app.quit();
@@ -121,9 +134,19 @@ app.on("window-all-closed", () => {
 
 app.on("activate", () => {
 	if (mainWindow === null) {
-		createWindow();
+		createMainWindow();
 	}
 });
+
+ipcMain.on("popoutChat", (event, data) => {
+    if(windows[data]){
+        windows[data].close()
+    }
+    let popoutWindow = windowGenerator({height: Width*2})
+    popoutWindow.loadURL(`${baseUrl()}/#/chat/${data}`)
+    windows[data] = popoutWindow
+    popoutWindow.on("closed", () => windows[data] = null);
+})
 
 ipcMain.on("setopacity", (event, data) => {
 	opacity = Math.min(Math.max(+data, 0.1), 1);
@@ -131,30 +154,22 @@ ipcMain.on("setopacity", (event, data) => {
 
 ipcMain.on("setunclickthrough", (event, data) => {
 	try {
-		globalShortcut.unregister(clickThroughKey);
-		clickThroughKey = data;
-		globalShortcut.register(data, function () {
-			sendMessageToWindow("toggle-border", true);
-			mainWindow.setOpacity(1);
-			mainWindow.setIgnoreMouseEvents(false);
-		});
+		globalShortcut.unregister(unfocusKey);
+		unfocusKey = data;
+		globalShortcut.register(data, focus);
 	} catch (err) {
-		clickThroughKey = data;
+		unfocusKey = data;
 		console.log(err, data);
 	}
 });
 
 ipcMain.on("setclickthrough", (event, data) => {
 	try {
-		globalShortcut.unregister(unclickThroughKey);
-		unclickThroughKey = data;
-		globalShortcut.register(data, function () {
-			sendMessageToWindow("toggle-border", false);
-			mainWindow.setOpacity(0.5);
-			mainWindow.setIgnoreMouseEvents(true);
-		});
+		globalShortcut.unregister(focusKey);
+		focusKey = data;
+		globalShortcut.register(data, unfocus);
 	} catch (err) {
-		unclickThroughKey = data;
+		focusKey = data;
 		console.log(err, data);
 	}
 });

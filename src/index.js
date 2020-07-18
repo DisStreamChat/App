@@ -24,7 +24,7 @@ const App = () => {
 
 	useEffect(() => {
 		ipcRenderer.send("setclickthrough", "f6");
-		ipcRenderer.send("setunclickthrough", "f7");
+        ipcRenderer.send("setunclickthrough", "f7");
 	}, []);
 
 	useEffect(() => {

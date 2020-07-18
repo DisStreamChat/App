@@ -14,7 +14,7 @@ import compare from "semver-compare";
 import ClearIcon from "@material-ui/icons/Clear";
 import MailTwoToneIcon from "@material-ui/icons/MailTwoTone";
 import { Tooltip } from "@material-ui/core";
-const remote = window.require("electron").remote;
+const {remote} = window.require("electron");
 const customTitlebar = window.require("custom-electron-titlebar");
 
 let MyTitleBar = new customTitlebar.Titlebar({
