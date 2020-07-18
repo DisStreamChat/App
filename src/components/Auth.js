@@ -36,12 +36,12 @@ const Auth = props => {
             const data = snapshot.data()
             if(data){
                 const token = data.authToken
-                await firebase.signInWithCustomToken(token)
+                await firebase.auth.signInWithCustomToken(token)
                 props.history.push("/")
             }
         })
 
-        remote.shell.openExternal("https://id.twitch.tv/oauth2/authorize?client_id=ip3igc72c6wu7j00nqghb24duusmbr&redirect_uri=https://api.distwitchchat.com/oauth/twitch/&response_type=code&scope=openid%20moderation:read%20chat:edit%20chat:read%20channel:moderate%20channel:read:redemptions")
+        remote.shell.openExternal("http://localhost:3200/oauth/twitch/?otc="+id)
 
 	}, [props.history]);
 
