@@ -4,8 +4,9 @@ import { withRouter } from "react-router";
 import { Redirect } from "react-router-dom";
 import YouTubeIcon from "@material-ui/icons/YouTube";
 import "./Auth.css";
+import {v4 as uuidv4} from "uuid"
 
-const { ipcRenderer } = window.require("electron");
+const { ipcRenderer, remote } = window.require("electron");
 
 const Auth = props => {
 	const signInWithGoogle = useCallback(async () => {
@@ -27,22 +28,21 @@ const Auth = props => {
 	}, [props.history]);
 
 	const loginWithTwitch = useCallback(() => {
-		// function that is executed when a message is received
-		async function receiveMessage(event, data) {
-			const json = data;
-			await firebase.auth.signInWithCustomToken(json.token);
-			const { displayName } = json;
-			firebase.auth.currentUser.updateProfile({
-				displayName,
-			});
-			props.history.push("/");
-		}
+        
+        const id = uuidv4()
+        const oneTimeCodeRef = firebase.db.collection("oneTimeCodes").doc(id)
 
-		// listen for a message from the popup window that will send the sign in info
-		ipcRenderer.once("log-me-in", receiveMessage);
+        oneTimeCodeRef.onSnapshot(async snapshot => {
+            const data = snapshot.data()
+            if(data){
+                const token = data.authToken
+                await firebase.signInWithCustomToken(token)
+                props.history.push("/")
+            }
+        })
 
-		// open a popup window to the twitch oauth url
-		ipcRenderer.send("login");
+        remote.shell.openExternal("https://id.twitch.tv/oauth2/authorize?client_id=ip3igc72c6wu7j00nqghb24duusmbr&redirect_uri=https://api.distwitchchat.com/oauth/twitch/&response_type=code&scope=openid%20moderation:read%20chat:edit%20chat:read%20channel:moderate%20channel:read:redemptions")
+
 	}, [props.history]);
 
 	return firebase.auth.currentUser ? (
