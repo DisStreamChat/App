@@ -171,18 +171,18 @@ function App() {
 		if (socket) {
 			socket.removeListener("chatmessage");
 			socket.on("chatmessage", msg => {
-				msg.body = `<p>${msg.body}</p>`;
-				setMessages(m => {
-					let ignoredMessage = false;
+                setMessages(m => {
+                    let ignoredMessage = false;
 					if (settings?.IgnoredUsers?.map?.(item => item.value.toLowerCase()).includes(msg.displayName.toLowerCase())) {
-						ignoredMessage = true;
+                        ignoredMessage = true;
 					}
 					const _ = settings?.IgnoredCommandPrefixes?.forEach(prefix => {
-						if (msg.body.startsWith(prefix.value)) {
-							ignoredMessage = true;
+                        if (msg.body.startsWith(prefix.value)) {
+                            ignoredMessage = true;
 						}
 					});
 					if (ignoredMessage) return m;
+                    msg.body = `<p>${msg.body}</p>`;
 					return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
 				});
 			});
