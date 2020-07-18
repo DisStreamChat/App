@@ -41,7 +41,7 @@ const Auth = props => {
             }
         })
 
-        remote.shell.openExternal("http://localhost:3200/oauth/twitch/?otc="+id)
+        remote.shell.openExternal("https://api.disstreamchat.com/oauth/twitch/?otc="+id)
 
 	}, [props.history]);
 
