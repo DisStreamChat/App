@@ -30,7 +30,7 @@ const SettingList = props => {
 	return (
 		<SettingAccordion>
 			{Object.entries(props.defaultSettings || {})
-				.filter(([name]) => (!props.search ? true : name?.toLowerCase()?.includes(props?.search?.toLowerCase())))
+				.filter(([name, data]) => (!data.discordSetting && (!props.search ? true : name?.toLowerCase()?.includes(props?.search?.toLowerCase()))))
 				.sort((a, b) => {
 					const categoryOrder = a[1].type.localeCompare(b[1].type);
 					const nameOrder = a[0].localeCompare(b[0]);
@@ -153,7 +153,7 @@ const Header = props => {
 	useEffect(() => {
 		(async () => {
 			const settingsRef = await firebase.db.collection("defaults").doc("settings").get();
-            const settingsData = settingsRef.data().settings;
+            const settingsData = settingsRef.data().settings
 			setDefaultSettings(settingsData);
 		})();
 	}, []);
