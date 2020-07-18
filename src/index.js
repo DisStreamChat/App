@@ -17,8 +17,8 @@ const { ipcRenderer } = window.require("electron");
 const App = () => {
 	const [firebaseInit, setFirebaseInit] = useState(false);
 	const [streamerInfo, setStreamerInfo] = useState({});
-    const [messages, setMessages] = useState([]);
-    const [pinnedMessages, setPinnedMessages] = useState([])
+	const [messages, setMessages] = useState([]);
+	const [pinnedMessages, setPinnedMessages] = useState([]);
 	const [border, setBorder] = useState(true);
 	const currentUser = firebase.auth.currentUser;
 
@@ -40,7 +40,7 @@ const App = () => {
 			.onSnapshot(snapshot => {
 				const data = snapshot.data();
 				if (data) {
-                    const opacity = data.appSettings.ClickThroughOpacity;
+					const opacity = data.appSettings.ClickThroughOpacity;
 					ipcRenderer.send("setopacity", opacity);
 				}
 			});
@@ -63,7 +63,10 @@ const App = () => {
 				const profilePictureResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/profilepicture?user=${userData.TwitchName}`);
 				const profilePicture = await profilePictureResponse.json();
 				const modChannelResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/modchannels?user=${userData.TwitchName}`);
-				const ModChannels = await modChannelResponse.json();
+				const NewModChannels = await modChannelResponse.json();
+				const ModChannels = [...NewModChannels, ...userData.ModChannels].filter(
+					(thing, index, self) => index === self.findIndex(t => t.id === thing.id)
+				);
 				firebase.db.collection("Streamers").doc(currentUser.uid).update({
 					profilePicture,
 					ModChannels,
@@ -102,9 +105,9 @@ const App = () => {
 				messages,
 				setMessages,
 				streamerInfo,
-                setStreamerInfo,
-                pinnedMessages, 
-                setPinnedMessages
+				setStreamerInfo,
+				pinnedMessages,
+				setPinnedMessages,
 			}}
 		>
 			<Router>
