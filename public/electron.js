@@ -5,14 +5,13 @@ const isDev = require("electron-is-dev");
 const { autoUpdater } = require("electron-updater");
 const windowStateKeeper = require("electron-window-state");
 const contextMenu = require('electron-context-menu');
- 
-
 
 let mainWindow;
 let loginWindow;
 let clickThroughKey = "a";
 let unclickThroughKey = "b";
 let opacity = 0.5;
+let windows = {}
 
 const width = 650;
 const globalShortcut = electron.globalShortcut;
@@ -36,15 +35,34 @@ const unfocus = () => {
 	mainWindow.setIgnoreMouseEvents(true);
 };
 
+function windowGenerator({w=width, h=width*1.5, x, y} = {}){
+    const options = {
+		width: w, // width of the window
+		height: h, // height of the window
+		minWidth: 275,
+		minHeight: 500,
+		frame: false, // whether or not the window has 'frame' or header
+		backgroundColor: "#001e272e", // window background color, first two values set alpha which is set to 0 for transparency
+		transparent: true, // make window transparent
+		alwaysOnTop: true, // make is so other windows won't go on top of this one
+		webPreferences: {
+			nodeIntegration: true, // integrates the frontend with node, this is used for the custom toolbar
+		},
+    }
+    if(x && y){
+        options.x = x
+        options.y = y
+    }
+    let window = new BrowserWindow(options)
+    window.on("page-title-updated", e => {
+		e.preventDefault();
+	});
+}
+
 function createWindow() {
 
     contextMenu({
         prepend: (defaultActions, params, browserWindow) => [
-            {
-                label: 'Rainbow',
-                // Only show it when right-clicking images
-                visible: params.mediaType === 'image'
-            },
             {
                 label: 'Search Google for “{selection}”',
                 // Only show it when right-clicking text
@@ -61,21 +79,7 @@ function createWindow() {
 		defaultHeight: width * 1.5,
     });
 
-	mainWindow = new BrowserWindow({
-		x: mainWindowState.x,
-		y: mainWindowState.y,
-		width: mainWindowState.width, // width of the window
-		height: mainWindowState.height, // height of the window
-		minWidth: 275,
-		minHeight: 500,
-		frame: false, // whether or not the window has 'frame' or header
-		backgroundColor: "#001e272e", // window background color, first two values set alpha which is set to 0 for transparency
-		transparent: true, // make window transparent
-		alwaysOnTop: true, // make is so other windows won't go on top of this one
-		webPreferences: {
-			nodeIntegration: true, // integrates the frontend with node, this is used for the custom toolbar
-		},
-	});
+	mainWindow = windowGenerator(...mainWindowState)
 
 	mainWindowState.manage(mainWindow);
 
@@ -87,13 +91,7 @@ function createWindow() {
 
 	globalShortcut.register("f7", focus);
 
-	if (!isDev) {
-		autoUpdater.checkForUpdatesAndNotify().catch(err => console.log(`error checking for updates: ${err.message}`));
-	}
-
-	mainWindow.on("page-title-updated", e => {
-		e.preventDefault();
-	});
+	
 
 	mainWindow.setAlwaysOnTop(true, "screen-saver");
 }
@@ -101,13 +99,13 @@ function createWindow() {
 // this is used to send all links to the users default browser
 app.on("web-contents-created", (e, contents) => {
 	contents.on("will-navigate", (event, url) => {
-		if (url.includes("id.twitch") || url.includes("about:blank") || url.includes("localhost")) return;
+		if ( url.includes("localhost")) return;
 		event.preventDefault();
 		electron.shell.openExternal(url);
 		console.log("blocked navigate:", url);
 	});
 	contents.on("new-window", async (event, url) => {
-		if (url.includes("id.twitch") || url.includes("about:blank") || url.includes("localhost")) return;
+		if (url.includes("localhost")) return;
 		event.preventDefault();
 		electron.shell.openExternal(url);
 		console.log("blocked window:", url);
@@ -158,28 +156,5 @@ ipcMain.on("setclickthrough", (event, data) => {
 	} catch (err) {
 		unclickThroughKey = data;
 		console.log(err, data);
-	}
-});
-
-ipcMain.on("login", event => {
-	loginWindow = new BrowserWindow({
-		width: width, // width of the window
-		height: width, // height of the window
-		frame: true, // whether or not the window has 'frame' or header
-		backgroundColor: "#001e272e", // window background color, first two values set alpha which is set to 0 for transparency
-		alwaysOnTop: true, // make is so other windows won't go on top of this one
-		webPreferences: {
-			nodeIntegration: false, // don't allow integration with node
-			preload: path.join(__dirname, "loginWindow.js"),
-		},
-	});
-	loginWindow.loadURL(
-		"https://id.twitch.tv/oauth2/authorize?client_id=ip3igc72c6wu7j00nqghb24duusmbr&redirect_uri=https://api.distwitchchat.com/oauth/twitch/&response_type=code&scope=openid%20moderation:read%20chat:edit%20chat:read%20channel:moderate%20channel:read:redemptions"
-	);
-});
-
-ipcMain.on("login-data", (event, token) => {
-	if (mainWindow) {
-		mainWindow.webContents.send("log-me-in", token);
 	}
 });
