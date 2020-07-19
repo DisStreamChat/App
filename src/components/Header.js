@@ -220,11 +220,11 @@ const Header = props => {
 									<MailTwoToneIcon />
 								</div>
 							</Tooltip>
-							<Link to="/channels">
+							{!isPopoutOut && <Link to="/channels">
 								<Button variant="contained" color="primary">
 									{isPopoutOut ? "Close" : "Channels"}
 								</Button>
-							</Link>
+							</Link>}
 						</>
 					) : (
 						<Button variant="contained" color="primary" onClick={signout}>
