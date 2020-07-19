@@ -71,8 +71,10 @@ const Header = props => {
 	const [viewingUserId, setViewingUserId] = useState();
 	const [viewingUserInfo, setViewingUserInfo] = useState();
 	const [viewingUserStats, setViewingUserStats] = useState();
-	const [updateLink, setUpdateLink] = useState();
-	const { location } = props;
+    const [updateLink, setUpdateLink] = useState();
+    const [isPopoutOut, setIsPopOut] = useState()
+    const { location } = props;
+    const absoluteLocation = window.location
 	const [unreadMessages, setUnreadMessages] = useState(false);
 
 	useEffect(() => {
@@ -147,8 +149,9 @@ const Header = props => {
 
 	useEffect(() => {
 		setChatHeader(location?.pathname?.includes("chat"));
-		setShow(!location?.pathname?.includes("login"));
-	}, [location]);
+        setShow(!location?.pathname?.includes("login"));
+        setIsPopOut(new URLSearchParams(absoluteLocation.search).has("popout"))
+	}, [location, absoluteLocation]);
 
 	useEffect(() => {
 		(async () => {
@@ -219,7 +222,7 @@ const Header = props => {
 							</Tooltip>
 							<Link to="/channels">
 								<Button variant="contained" color="primary">
-									Channels
+									{isPopoutOut ? "Close" : "Channels"}
 								</Button>
 							</Link>
 						</>
