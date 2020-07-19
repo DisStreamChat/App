@@ -1,0 +1,205 @@
+h1 {
+	font-family: Montserrat;
+	font-size: 32px;
+}
+
+hr {
+	width: 90%;
+	border-top: 1px solid;
+}
+
+.my-channels {
+	position: absolute;
+	top: 0;
+	padding-top: 1rem;
+	width: 100%;
+	height: calc(100vh - 111px);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background: linear-gradient(119.36deg, #17181ba1 21.35%, #24252aa1 76.56%);
+}
+
+.channel-item {
+	display: flex;
+	align-items: flex-start;
+	width: 95%;
+	min-height: 100px;
+	margin: 0.5rem 0;
+	border-radius: 0.5rem;
+	background: #2a2c30;
+	box-shadow: 3px 3px 5px -2px #0b0c0e;
+	transition: 0.25s;
+	animation: fade-in 0.5s ease-in-out forwards;
+}
+
+.channel-item:hover {
+	/* transform: translateY(-3px); */
+	box-shadow: 5px 5px 5px -2px #0b0c0e;
+	background: #33363b;
+}
+
+.channel-profile-pic {
+	width: 100px;
+	height: 100px;
+	display: flex;
+	align-items: center;
+	padding: 0 1.5rem;
+}
+
+.channel-profile-pic img {
+	max-width: 100%;
+	/* background: black; */
+	border-radius: 50%;
+}
+
+.channel-info {
+	display: flex;
+	align-items: center;
+	height: 100px;
+	width: 100%;
+	padding-right: 1.5rem;
+	justify-content: space-between;
+}
+
+.channel-name {
+	/* font-size: 2rem; */
+	text-transform: capitalize;
+	padding-right: 0.5rem;
+}
+
+.dashboard-button {
+	background: linear-gradient(283deg, #f9af15, #f95515);
+}
+
+.to-dashboard {
+	padding: 0.75rem;
+	border-radius: 0.25rem;
+	border: none;
+	outline: none;
+	color: white;
+	transition: 0.25s;
+	min-width: 70px;
+	/* width: 128px; */
+}
+
+.channel-buttons {
+	flex: 1;
+	display: flex;
+	justify-content: space-around;
+	* {
+		margin: 0 0.5rem;
+	}
+}
+
+.to-dashboard:not(:disabled) {
+	cursor: pointer;
+}
+
+.to-dashboard:hover:not(:disabled) {
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+.to-dashboard:disabled {
+	font-size: 12px;
+	background: var(--distwitchchat-blue);
+	filter: grayscale(1);
+}
+
+@keyframes fade-in {
+	0% {
+		transform: translateY(-1rem);
+		opacity: 0;
+	}
+	100% {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+
+.channel-div::-webkit-scrollbar {
+	width: 5px;
+	height: 5px;
+}
+
+.channel-div {
+	width: 90%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	overflow-x: hidden;
+}
+
+.modchannels {
+	height: 60vh;
+	overflow-y: auto;
+	margin-bottom: 0.5rem;
+	/* padding-bottom: .5rem; */
+}
+
+.mychannel {
+	min-height: fit-content;
+}
+
+@media screen and (max-width: 525px) {
+	.to-dashboard {
+		font-size: 12px;
+		max-width: 80px;
+		width: fit-content;
+		padding: 0.5rem;
+	}
+
+	.channel-name {
+		font-size: 12px;
+	}
+}
+
+@media screen and (max-width: 400px) {
+	.channel-profile-pic {
+		padding-right: 0.5rem;
+		width: 30px;
+	}
+
+	.channel-profile-pic img {
+		max-width: 30px;
+	}
+}
+
+@media screen and (max-width: 450px) {
+	.channel-profile-pic {
+		width: 0px;
+	}
+
+	.channel-profile-pic img {
+		max-width: 0px;
+    }
+    
+    .channel-buttons{
+        flex-wrap: wrap;
+        align-items: center;
+        flex: 0;
+        *{
+            margin: .25rem;
+        }
+        .to-dashboard{
+            min-width: 100px;
+        }
+    }
+}
+
+@media screen and (max-width: 350px) {
+	.channel-name {
+		margin-left: -0.5rem;
+		font-size: 10px;
+	}
+
+	.to-dashboard {
+		padding: 0.25rem;
+		/* font-size: 10px !important; */
+	}
+
+	.to-dashboard:disabled {
+		font-size: 10px !important;
+	}
+}
