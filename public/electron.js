@@ -142,10 +142,18 @@ ipcMain.on("popoutChat", (event, data) => {
     if(windows[data]){
         windows[data].close()
     }
-    let popoutWindow = windowGenerator({height: Width*2})
-    popoutWindow.loadURL(`${baseUrl()}/#/chat/${data}`)
+    const [width, height] = mainWindow.getSize()
+    let popoutWindow = windowGenerator({width, height})
+    popoutWindow.loadURL(`${baseUrl()}/?popout=${data}#/chat/${data}`)
     windows[data] = popoutWindow
     popoutWindow.on("closed", () => windows[data] = null);
+})
+
+ipcMain.on("closePopout", (event, data) => {
+    if(windows[data]){
+        windows[data].close()
+        windows[data] = null
+    }
 })
 
 ipcMain.on("setopacity", (event, data) => {

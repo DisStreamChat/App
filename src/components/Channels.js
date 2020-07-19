@@ -37,7 +37,14 @@ const Channels = () => {
 	const currentUser = firebase.auth.currentUser;
 	const [myChannel, setMyChannel] = useState();
 	const [modChannels, setModChannels] = useState([]);
-	const { setMessages, setPinnedMessages } = useContext(AppContext);
+    const { setMessages, setPinnedMessages } = useContext(AppContext);
+    
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search)
+        if(params.has("popout")){
+            ipcRenderer.send("closePopout", params.get("popout"))
+        }
+    })
 
 	useEffect(() => {
 		setMessages([]);
