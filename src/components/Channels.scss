@@ -50,7 +50,8 @@ hr {
 .channel-profile-pic img {
 	max-width: 100%;
 	/* background: black; */
-	border-radius: 50%;
+    border-radius: 50%;
+    min-width: 25px;
 }
 
 .channel-info {
@@ -86,7 +87,8 @@ hr {
 .channel-buttons {
 	flex: 1;
 	display: flex;
-	justify-content: space-around;
+    justify-content: space-around;
+    align-items: center;
 	* {
 		margin: 0 0.5rem;
 	}
@@ -142,10 +144,18 @@ hr {
 	min-height: fit-content;
 }
 
+@media screen and (max-width: 550px){
+    .channel-name {
+		font-size: 14px;
+	}
+}
+
 @media screen and (max-width: 525px) {
 	.to-dashboard {
-		font-size: 12px;
-		max-width: 80px;
+        font-size: 12px;
+        &:not(:disabled){
+            max-width: 80px;
+        }
 		width: fit-content;
 		padding: 0.5rem;
 	}
@@ -153,6 +163,12 @@ hr {
 	.channel-name {
 		font-size: 12px;
 	}
+}
+
+@media screen and (max-width: 480px) {
+    .channel-buttons *{
+        margin: 0 .25rem;
+    }
 }
 
 @media screen and (max-width: 400px) {
@@ -172,7 +188,8 @@ hr {
 	}
 
 	.channel-profile-pic img {
-		max-width: 0px;
+        max-width: 0px;
+        min-width: 0px;
     }
     
     .channel-buttons{

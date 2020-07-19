@@ -19,13 +19,14 @@ const ChannelItem = props => {
 							{props.isMember ? !props.moderator ? "Go To Chat" : "Go To ModView" : <>This channel doesn't use DisStreamChat</>}
 						</button>
 					</Link>
-					<button
-						onClick={() => ipcRenderer.send("popoutChat", props.uid)}
-						disabled={!props.isMember}
-						className="to-dashboard dashboard-button"
-					>
-						{props.isMember ? "Popout Chat" : <>This channel doesn't use DisStreamChat</>}
-					</button>
+					{props.isMember && (
+						<button
+							onClick={() => ipcRenderer.send("popoutChat", props.uid)}
+							className="to-dashboard dashboard-button"
+						>
+							{props.isMember ? "Popout Chat" : <>This channel doesn't use DisStreamChat</>}
+						</button>
+					)}
 				</span>
 			</div>
 		</div>
