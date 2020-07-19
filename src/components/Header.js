@@ -150,7 +150,7 @@ const Header = props => {
 	useEffect(() => {
 		setChatHeader(location?.pathname?.includes("chat"));
         setShow(!location?.pathname?.includes("login"));
-        setIsPopOut(new URLSearchParams(absoluteLocation.search).has("popout"))
+        setIsPopOut(new URLSearchParams(location?.search).has("popout"))
 	}, [location, absoluteLocation]);
 
 	useEffect(() => {

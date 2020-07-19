@@ -144,7 +144,10 @@ ipcMain.on("popoutChat", (event, data) => {
     }
     const [width, height] = mainWindow.getSize()
     let popoutWindow = windowGenerator({width, height})
-    popoutWindow.loadURL(`${baseUrl()}/?popout=${data}#/chat/${data}`)
+    popoutWindow.loadURL(baseUrl())
+    setTimeout(() => {
+        popoutWindow.webContents.send("popout", data)
+    }, 1000)
     windows[data] = popoutWindow
     popoutWindow.on("closed", () => windows[data] = null);
 })

@@ -33,18 +33,17 @@ const ChannelItem = props => {
 	);
 };
 
-const Channels = () => {
+const Channels = props => {
 	const currentUser = firebase.auth.currentUser;
 	const [myChannel, setMyChannel] = useState();
 	const [modChannels, setModChannels] = useState([]);
     const { setMessages, setPinnedMessages } = useContext(AppContext);
     
     useEffect(() => {
-        const params = new URLSearchParams(window.location.search)
-        if(params.has("popout")){
-            ipcRenderer.send("closePopout", params.get("popout"))
-        }
-    })
+        ipcRenderer.on("popout", (event, data) => {
+            props.history.push(`/chat/${data}?popout=${data}`)
+        })
+    }, [props.history])
 
 	useEffect(() => {
 		setMessages([]);
