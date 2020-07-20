@@ -12,6 +12,7 @@ import Loader from "react-loader";
 import { AppContext } from "./contexts/AppContext";
 import Channels from "./components/Channels";
 import Header from "./components/Header";
+import Viewers from "./components/Viewers";
 const { ipcRenderer } = window.require("electron");
 
 const App = () => {
@@ -115,6 +116,7 @@ const App = () => {
 				<main className="body">
 					<Switch>
 						<ProtectedRoute exact path="/chat/:id" component={Chat} />
+                        <ProtectedRoute exact path="/viewers/:id" component={Viewers}/>
 						<ProtectedRoute path="/channels" component={Channels} />
 						<Route path="/login" component={Auth} />
 						<Redirect to="/channels" />
