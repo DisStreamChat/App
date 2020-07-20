@@ -122,7 +122,7 @@ const Header = props => {
 		async function getStats() {
 			if (viewingUserInfo) {
 				// const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=instafluff`;
-				const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=${viewingUserInfo.name}`;
+				const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=${viewingUserInfo.name}&new=true`;
 				const response = await fetch(ApiUrl);
 				const data = await response.json();
 				setViewingUserStats(prev => {
@@ -130,7 +130,7 @@ const Header = props => {
 						return {
 							name: viewingUserInfo.displayName,
 							viewers: data.viewer_count,
-							isLive: true,
+							isLive: data.isLive,
 						};
 					} else {
 						return {

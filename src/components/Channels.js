@@ -16,7 +16,7 @@ const ChannelItem = props => {
 				<span className="channel-buttons">
 					<Link className="dashboard-link" to={props.isMember ? `/chat/${props.uid}` : ""}>
 						<button disabled={!props.isMember} className="to-dashboard dashboard-button">
-							{props.isMember ? !props.moderator ? "Go To Chat" : "Go To ModView" : <>This channel doesn't use DisStreamChat</>}
+							{props.isMember ?  "Go To Chat" : <>This channel doesn't use DisStreamChat</>}
 						</button>
 					</Link>
 					{props.isMember && (
