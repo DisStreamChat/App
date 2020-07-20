@@ -1,6 +1,6 @@
 {
   "name": "disstreamchat",
-  "version": "v1.2.12",
+  "version": "v1.2.13",
   "description": "Cross platform stream chat manager",
   "author": "David Snyder",
   "license": "MIT",
@@ -23,7 +23,7 @@
     "chroma-js": "^2.1.0",
     "cross-env": "^6.0.3",
     "custom-electron-titlebar": "^3.2.2-hotfix62",
-    "distwitchchat-componentlib": "^2.1.8",
+    "distwitchchat-componentlib": "^2.1.8-hotfix1",
     "dompurify": "^2.0.10",
     "electron-context-menu": "^2.1.0",
     "electron-is-dev": "^1.1.0",
