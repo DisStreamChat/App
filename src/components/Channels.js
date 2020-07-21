@@ -8,8 +8,9 @@ const { ipcRenderer } = window.require("electron");
 
 const ChannelItem = props => {
 	const [channelName, setChannelName] = useState("");
-    const currentUser = firebase.auth.currentUser;
-    const [error, setError] = useState("")
+	const currentUser = firebase.auth.currentUser;
+	const [error, setError] = useState("");
+	const [loading, setLoading] = useState(false);
 	return (
 		<div className={`channel-item ${props.addChannel ? "add-channel" : ""}`}>
 			{props.addChannel ? (
@@ -19,28 +20,37 @@ const ChannelItem = props => {
 					<form
 						onSubmit={async e => {
 							e.preventDefault();
-							const userData = await (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data();
-							const userName = userData.name;
-							const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/checkmod?channel=${channelName}&user=${userName}`;
-							const res = await fetch(apiUrl);
-                            const json = await res.json();
-                            console.log(json)
-							if (json) {
-								const ModChannels = [...userData.ModChannels, json].filter(
-									(thing, index, self) => index === self.findIndex(t => t.id === thing.id)
-								);
-								await firebase.db.collection("Streamers").doc(currentUser.uid).update({
-									ModChannels,
-								});
-							}else{
-                                setError("You are not a moderator of "+channelName)
-                            }
+							try {
+								setLoading(true);
+								if (!channelName) {
+									setError("Missing Channel Name");
+								} else {
+									const userData = await (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data();
+									const userName = userData.name;
+									const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/checkmod?channel=${channelName}&user=${userName}`;
+									const res = await fetch(apiUrl);
+									const json = await res.json();
+									if (json) {
+										const ModChannels = [...userData.ModChannels, json].filter(
+											(thing, index, self) => index === self.findIndex(t => t.id === thing.id)
+										);
+										await firebase.db.collection("Streamers").doc(currentUser.uid).update({
+											ModChannels,
+										});
+									} else {
+										setError("You are not a moderator for " + channelName);
+									}
+								}
+							} catch (err) {
+								setError("An error occured while fetching " + channelName);
+							}
+							setLoading(false);
 						}}
 					>
 						<SearchBox onClick={() => setError("")} onChange={setChannelName} placeholder="Enter Channel Name" />
-						<button className="dashboard-button to-dashboard">Submit</button>
+						<button className="dashboard-button to-dashboard">{!loading ? "Submit" : "Loading..."}</button>
 					</form>
-                    {error && <p className="error-message">{error}</p>}
+					{error && <p className="error-message">{error}</p>}
 				</>
 			) : (
 				<>
@@ -77,6 +87,9 @@ const Channels = props => {
 	useEffect(() => {
 		ipcRenderer.on("popout", (event, data) => {
 			props.history.push(`/chat/${data}?popout=${data}`);
+        });
+        ipcRenderer.on("popoutViewers", (event, data) => {
+			props.history.push(`/viewers/${data}?popout=${data}`);
 		});
 	}, [props.history]);
 
@@ -104,7 +117,7 @@ const Channels = props => {
 					.doc(currentUser.uid)
 					.onSnapshot(async snapshot => {
 						const data = snapshot.data();
-                        if (!data) return;
+						if (!data) return;
 						const channelsInfo = data.ModChannels;
 						const channelNames = channelsInfo.map(channel => channel.login);
 						const streamerRef = firebase.db.collection("Streamers");

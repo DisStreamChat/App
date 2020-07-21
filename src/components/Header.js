@@ -14,7 +14,7 @@ import compare from "semver-compare";
 import ClearIcon from "@material-ui/icons/Clear";
 import MailTwoToneIcon from "@material-ui/icons/MailTwoTone";
 import { Tooltip } from "@material-ui/core";
-const {remote} = window.require("electron");
+const {remote, ipcRenderer} = window.require("electron");
 const customTitlebar = window.require("custom-electron-titlebar");
 
 let MyTitleBar = new customTitlebar.Titlebar({
@@ -205,7 +205,7 @@ const Header = props => {
 							<div className={`live-status ${viewingUserStats?.isLive ? "live" : ""}`}></div>
 							<div className="name">{viewingUserStats?.name}</div>
 							<div className={"live-viewers"} onClick={() => {
-                                return !viewerPage ? props.history.push(`/viewers/${viewingUserId}?popout=true`) : ""
+                                return !viewerPage ? ipcRenderer.send("popoutViewers", viewingUserId) : ""
                             }}>
 								<PeopleAltTwoToneIcon />
 								{viewingUserStats?.viewers}

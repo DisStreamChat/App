@@ -152,6 +152,21 @@ ipcMain.on("popoutChat", (event, data) => {
     popoutWindow.on("closed", () => windows[data] = null);
 })
 
+ipcMain.on("popoutViewers", (event, data) => {
+    const key = `viewers-${data}`
+    if(windows[key]){
+        windows[key].close()
+    }
+    const [width, height] = mainWindow.getSize()
+    let popoutWindow = windowGenerator({width, height})
+    popoutWindow.loadURL(baseUrl())
+    setTimeout(() => {
+        popoutWindow.webContents.send("popoutViewers", data)
+    }, 1000)
+    windows[key] = popoutWindow
+    popoutWindow.on("closed", () => windows[key] = null);
+})
+
 ipcMain.on("closePopout", (event, data) => {
     if(windows[data]){
         windows[data].close()
