@@ -170,7 +170,7 @@ hr {
 }
 
 .modchannels {
-	height: 60vh;
+	height: 65vh;
 	overflow-y: auto;
 	margin-bottom: 0.5rem;
 	/* padding-bottom: .5rem; */
@@ -183,7 +183,11 @@ hr {
 @media screen and (max-width: 550px){
     .channel-name {
 		font-size: 14px;
-	}
+    }
+    .channel-profile-pic{
+        padding-right: 1rem; 
+        padding-left: 1rem;
+    }
 }
 
 @media screen and (max-width: 525px) {

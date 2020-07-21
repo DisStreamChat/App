@@ -143,7 +143,7 @@ const Channels = props => {
 					{modChannels.map(channel => (
 						<ChannelItem key={channel.id} {...channel} moderator />
 					))}
-					<ChannelItem addChannel />
+					{!!modChannels.length && <ChannelItem addChannel />}
 				</div>
 			</div>
 		</>
