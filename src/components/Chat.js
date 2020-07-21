@@ -180,7 +180,8 @@ function App() {
                         if (msg.body.startsWith(prefix.value)) {
                             ignoredMessage = true;
 						}
-					});
+                    });
+                    if(msg.displayName.toLowerCase() === "disstreamchat") ignoredMessage = false
 					if (ignoredMessage) return m;
                     msg.body = `<p>${msg.body}</p>`;
 					return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
