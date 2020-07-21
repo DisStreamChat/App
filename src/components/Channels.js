@@ -8,7 +8,8 @@ const { ipcRenderer } = window.require("electron");
 
 const ChannelItem = props => {
 	const [channelName, setChannelName] = useState("");
-	const currentUser = firebase.auth.currentUser;
+    const currentUser = firebase.auth.currentUser;
+    const [error, setError] = useState("")
 	return (
 		<div className={`channel-item ${props.addChannel ? "add-channel" : ""}`}>
 			{props.addChannel ? (
@@ -22,7 +23,8 @@ const ChannelItem = props => {
 							const userName = userData.name;
 							const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/checkmod?channel=${channelName}&user=${userName}`;
 							const res = await fetch(apiUrl);
-							const json = await res.json();
+                            const json = await res.json();
+                            console.log(json)
 							if (json) {
 								const ModChannels = [...userData.ModChannels, json].filter(
 									(thing, index, self) => index === self.findIndex(t => t.id === thing.id)
@@ -30,13 +32,15 @@ const ChannelItem = props => {
 								await firebase.db.collection("Streamers").doc(currentUser.uid).update({
 									ModChannels,
 								});
-							}
-							console.log(json);
+							}else{
+                                setError("You are not a moderator of "+channelName)
+                            }
 						}}
 					>
-						<SearchBox onChange={setChannelName} placeholder="Enter Channel Name" />
+						<SearchBox onClick={() => setError("")} onChange={setChannelName} placeholder="Enter Channel Name" />
 						<button className="dashboard-button to-dashboard">Submit</button>
 					</form>
+                    {error && <p className="error-message">{error}</p>}
 				</>
 			) : (
 				<>
@@ -137,7 +141,7 @@ const Channels = props => {
 				<h1>Channels you moderate</h1>
 				<div className="modchannels channel-div">
 					{modChannels.map(channel => (
-						<ChannelItem {...channel} moderator />
+						<ChannelItem key={channel.id} {...channel} moderator />
 					))}
 					<ChannelItem addChannel />
 				</div>

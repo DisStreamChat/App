@@ -25,9 +25,16 @@ hr {
     justify-content: center;
     grid-template-columns: 100%;
     padding: .5rem 0;
+    box-sizing: border-box !important;
+    min-height: fit-content !important;
     h5{
         text-align: center;
         margin: 0;
+    }
+    .error-message{
+        text-align: center;
+        margin-bottom: .5rem;
+        color: #ee4238;
     }
     form{
         display: flex;

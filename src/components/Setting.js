@@ -200,7 +200,7 @@ const Setting = props => {
 								</form>
 							)}
 							{value?.map?.(item => (
-								<div className="item">
+								<div key={item.id} className="item">
 									{item.value}
 									<button
 										onClick={() => {
@@ -235,7 +235,7 @@ const Setting = props => {
 								?.sort()
 								?.filter(item => item !== value)
 								?.map?.(item => (
-									<div style={{fontFamily: item}} className="item">
+									<div key={item} style={{fontFamily: item}} className="item">
 										{item}
 										<button
 											onClick={() => {
