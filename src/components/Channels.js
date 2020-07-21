@@ -3,32 +3,63 @@ import firebase from "../firebase";
 import { AppContext } from "../contexts/AppContext";
 import { Link } from "react-router-dom";
 import "./Channels.scss";
+import SearchBox from "./SearchBox";
 const { ipcRenderer } = window.require("electron");
 
 const ChannelItem = props => {
+	const [channelName, setChannelName] = useState("");
+	const currentUser = firebase.auth.currentUser;
 	return (
-		<div className="channel-item">
-			<div className="channel-profile-pic">
-				<img src={props["profile_image_url"] || props.profilePicture} alt="" />
-			</div>
-			<div className="channel-info">
-				<span className="channel-name">{props.display_name || props.name}</span>
-				<span className="channel-buttons">
-					<Link className="dashboard-link" to={props.isMember ? `/chat/${props.uid}` : ""}>
-						<button disabled={!props.isMember} className="to-dashboard dashboard-button">
-							{props.isMember ?  "Go To Chat" : <>This channel doesn't use DisStreamChat</>}
-						</button>
-					</Link>
-					{props.isMember && (
-						<button
-							onClick={() => ipcRenderer.send("popoutChat", props.uid)}
-							className="to-dashboard dashboard-button"
-						>
-							{props.isMember ? "Popout Chat" : <>This channel doesn't use DisStreamChat</>}
-						</button>
-					)}
-				</span>
-			</div>
+		<div className={`channel-item ${props.addChannel ? "add-channel" : ""}`}>
+			{props.addChannel ? (
+				<>
+					<h5>Add Channel</h5>
+
+					<form
+						onSubmit={async e => {
+							e.preventDefault();
+							const userData = await (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data();
+							const userName = userData.name;
+							const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/checkmod?channel=${channelName}&user=${userName}`;
+							const res = await fetch(apiUrl);
+							const json = await res.json();
+							if (json) {
+								const ModChannels = [...userData.ModChannels, json].filter(
+									(thing, index, self) => index === self.findIndex(t => t.id === thing.id)
+								);
+								await firebase.db.collection("Streamers").doc(currentUser.uid).update({
+									ModChannels,
+								});
+							}
+							console.log(json);
+						}}
+					>
+						<SearchBox onChange={setChannelName} placeholder="Enter Channel Name" />
+						<button className="dashboard-button to-dashboard">Submit</button>
+					</form>
+				</>
+			) : (
+				<>
+					<div className="channel-profile-pic">
+						<img src={props["profile_image_url"] || props.profilePicture} alt="" />
+					</div>
+					<div className="channel-info">
+						<span className="channel-name">{props.display_name || props.name}</span>
+						<span className="channel-buttons">
+							<Link className="dashboard-link" to={props.isMember ? `/chat/${props.uid}` : ""}>
+								<button disabled={!props.isMember} className="to-dashboard dashboard-button">
+									{props.isMember ? "Go To Chat" : <>This channel doesn't use DisStreamChat</>}
+								</button>
+							</Link>
+							{props.isMember && (
+								<button onClick={() => ipcRenderer.send("popoutChat", props.uid)} className="to-dashboard dashboard-button">
+									{props.isMember ? "Popout Chat" : <>This channel doesn't use DisStreamChat</>}
+								</button>
+							)}
+						</span>
+					</div>
+				</>
+			)}
 		</div>
 	);
 };
@@ -37,13 +68,13 @@ const Channels = props => {
 	const currentUser = firebase.auth.currentUser;
 	const [myChannel, setMyChannel] = useState();
 	const [modChannels, setModChannels] = useState([]);
-    const { setMessages, setPinnedMessages } = useContext(AppContext);
-    
-    useEffect(() => {
-        ipcRenderer.on("popout", (event, data) => {
-            props.history.push(`/chat/${data}?popout=${data}`)
-        })
-    }, [props.history])
+	const { setMessages, setPinnedMessages } = useContext(AppContext);
+
+	useEffect(() => {
+		ipcRenderer.on("popout", (event, data) => {
+			props.history.push(`/chat/${data}?popout=${data}`);
+		});
+	}, [props.history]);
 
 	useEffect(() => {
 		setMessages([]);
@@ -64,26 +95,33 @@ const Channels = props => {
 	useEffect(() => {
 		(async () => {
 			if (currentUser) {
-				const channelsInfo = (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data().ModChannels;
-				const channelNames = channelsInfo.map(channel => channel.login);
-				const streamerRef = firebase.db.collection("Streamers");
-				for (const name of channelNames) {
-					const channelData = await streamerRef.where("name", "==", name).get();
-					const idx = channelsInfo.findIndex(channel => channel.login === name);
-					if (!channelData.empty) {
-						channelsInfo[idx].isMember = true;
-						const { uid } = channelData.docs[0].data();
-						channelsInfo[idx].uid = uid;
-					}
-				}
-				setModChannels(
-					channelsInfo
-						.sort()
-						.sort((a, b) => (a.isMember ? -1 : 1))
-						.map(channel => {
-							return { ...channel, modPlatform: "twitch" };
-						})
-				);
+				firebase.db
+					.collection("Streamers")
+					.doc(currentUser.uid)
+					.onSnapshot(async snapshot => {
+						const data = snapshot.data();
+                        if (!data) return;
+						const channelsInfo = data.ModChannels;
+						const channelNames = channelsInfo.map(channel => channel.login);
+						const streamerRef = firebase.db.collection("Streamers");
+						for (const name of channelNames) {
+							const channelData = await streamerRef.where("name", "==", name).get();
+							const idx = channelsInfo.findIndex(channel => channel.login === name);
+							if (!channelData.empty) {
+								channelsInfo[idx].isMember = true;
+								const { uid } = channelData.docs[0].data();
+								channelsInfo[idx].uid = uid;
+							}
+						}
+						setModChannels(
+							channelsInfo
+								.sort()
+								.sort((a, b) => (a.isMember ? -1 : 1))
+								.map(channel => {
+									return { ...channel, modPlatform: "twitch" };
+								})
+						);
+					});
 			}
 		})();
 	}, [currentUser]);
@@ -101,6 +139,7 @@ const Channels = props => {
 					{modChannels.map(channel => (
 						<ChannelItem {...channel} moderator />
 					))}
+					<ChannelItem addChannel />
 				</div>
 			</div>
 		</>

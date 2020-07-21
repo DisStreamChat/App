@@ -20,6 +20,35 @@ hr {
 	background: linear-gradient(119.36deg, #17181ba1 21.35%, #24252aa1 76.56%);
 }
 
+#root .channel-item.add-channel{
+    display: grid;
+    justify-content: center;
+    grid-template-columns: 100%;
+    padding: .5rem 0;
+    h5{
+        text-align: center;
+        margin: 0;
+    }
+    form{
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        button{
+            outline: none !important;
+            margin-right: .5rem;
+        }
+        button:active{
+            transform: scale(.95)
+        }
+        .search-container{
+            width: 70%;
+            .settings--searchbox{
+                width: 100%;
+            }
+        }
+    }
+}
+
 .channel-item {
 	display: flex;
 	align-items: flex-start;
