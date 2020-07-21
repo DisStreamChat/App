@@ -61,7 +61,7 @@ function windowGenerator({width=Width, height=Width*1.5, x, y} = {}){
 			nodeIntegration: true, // integrates the frontend with node, this is used for the custom toolbar
 		},
     }
-    if(x && y){
+    if(x != undefined && y != undefined){
         options.x = x
         options.y = y
     }
