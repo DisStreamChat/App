@@ -6,8 +6,8 @@ const windowStateKeeper = require("electron-window-state");
 const contextMenu = require('electron-context-menu');
 
 let mainWindow;
-let unfocusKey = "a";
-let focusKey = "b";
+let unfocusKey = "f24";
+let focusKey = "f25";
 let opacity = 0.5;
 let windows = {}
 const Width = 500;

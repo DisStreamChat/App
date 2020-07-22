@@ -24,8 +24,10 @@ const App = () => {
 	const currentUser = firebase.auth.currentUser;
 
 	useEffect(() => {
-		ipcRenderer.send("setclickthrough", "f6");
-        ipcRenderer.send("setunclickthrough", "f7");
+        setTimeout(() => {
+            ipcRenderer.send("setclickthrough", "f6");
+            ipcRenderer.send("setunclickthrough", "f7");
+        }, 1000);
 	}, []);
 
 	useEffect(() => {
