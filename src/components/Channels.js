@@ -153,7 +153,7 @@ const Channels = props => {
 				<hr />
 				<h1>Channels you moderate</h1>
 				<div className="modchannels channel-div">
-					{modChannels.map(channel => (
+					{modChannels.sort((a, b) => a.login.localeCompare(b.login)).map(channel => (
 						<ChannelItem key={channel.id} {...channel} moderator />
 					))}
 					{!!modChannels.length && <ChannelItem addChannel />}
