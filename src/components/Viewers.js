@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
 import firebase from "../firebase";
 import { useParams } from "react-router-dom";
-import "./Viewer.scss"
+import "./Viewer.scss";
 
 const ViewerTab = props => {};
 
 const ViewerCard = props => {
-    return (
-        <div>{props.login}</div>
-    )
+	return <div className="viewer-card">{props.login}</div>;
 };
 
 const Viewers = props => {
@@ -28,7 +26,7 @@ const Viewers = props => {
 				if (json && response.ok) {
 					const info = {};
 					for (let [key, value] of Object.entries(json.chatters)) {
-						if (value.length === 0 || key==="broadcaster") continue;
+						if (value.length === 0 || key === "broadcaster") continue;
 						info[key] = await Promise.all(
 							value.map(async name => {
 								const response = await fetch(`${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${name}&platform=twitch`);
@@ -48,16 +46,21 @@ const Viewers = props => {
 	}, [userId]);
 
 	return (
-		<div className="viewers">
-			{Object.entries(chatterInfo).map(([key, value]) => {
-				return (
-					<div className="viewer-type">
-						<h2>{key}</h2>
-						{value.map(user => <ViewerCard {...user}></ViewerCard>)}
-					</div>
-				);
-			})}
-		</div>
+		<main className="viewer-body">
+			<nav className="viewers-header"></nav>
+			<div className="viewers">
+				{Object.entries(chatterInfo).map(([key, value]) => {
+					return (
+						<div className="viewer-type">
+							<h2>{key}</h2>
+							{value.map(user => (
+								<ViewerCard {...user}></ViewerCard>
+							))}
+						</div>
+					);
+				})}
+			</div>
+		</main>
 	);
 };
 

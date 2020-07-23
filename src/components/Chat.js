@@ -87,7 +87,8 @@ function App() {
 		(key, event, handle) => {
 			switch (key) {
 				case "ctrl+f":
-					setShowSearch(true);
+                    setShowSearch(true);
+                    document.getElementById("chat-search").focus()
 					break;
 				case "esc":
 					setShowSearch(false);
@@ -341,7 +342,7 @@ function App() {
 					unreadMessageHandler={checkReadMessage}
 					pin={pinMessage}
 				/>
-				{showSearch && <SearchBox onChange={handleSearch} placeHolder="Search Messages" />}
+				{showSearch && <SearchBox id="chat-search" onChange={handleSearch} placeHolder="Search Messages" />}
 			</div>
 			<CSSTransition unmountOnExit timeout={400} classNames={"to-top-node"} in={showToTop}>
 				<button className="back-to-top-button fade-in" onClick={scrollTop}>

@@ -1,10 +1,23 @@
 .viewer-type{
     width: 100%;
-    outline: solid;
 }
 
 .viewers{
     width: 100%;
     box-sizing: border-box !important;
-    padding: 0 1rem;
+}
+
+.viewer-card{
+    border: .5px solid;
+    padding: 0 .5rem;
+}
+
+.viewers-header{
+    height: 100px;
+    outline: solid;
+}
+
+.viewer-body{
+    width: 100%;
+    padding: 0 .1rem;
 }
