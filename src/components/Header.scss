@@ -340,12 +340,17 @@
     margin-bottom: 1rem;
     .preview{
         border: .5px solid white;
+        color: white;
         padding: .5rem 1rem;
         border-radius: .5rem;
         background: rgba(116,127,141,.1);
         height: calc(40px - 1rem);
         flex: .25;
         text-align: center;
+    }
+    .keybind--disabled{
+        color: #aaa;
+        border: .5px solid #aaa;
     }
     button {
 		border: none;
@@ -357,7 +362,7 @@
         
         transition: 0.05s;
         margin: 0 .5rem;
-        &:hover{
+        &:hover, &:focus {
             background: rgba(116,127,141,.5)
         }
 		svg {

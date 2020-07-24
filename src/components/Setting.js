@@ -310,7 +310,7 @@ const Setting = props => {
 								<button onClick={() => handleKeyBindRecording(true)}>{recording ? "Save" : "Edit Keybind"}</button>
 								{recording && <button onClick={() => handleKeyBindRecording(false)}>Cancel</button>}
 							</div>
-							<div className="preview">{recording ? recorded.join("+") : value}</div>
+							<div className={`preview ${!recording && "keybind--disabled"}`}>{recording ? recorded.join("+") : value}</div>
 						</div>
 					</AnimateHeight>
 				</>
