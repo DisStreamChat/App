@@ -14,7 +14,7 @@ import compare from "semver-compare";
 import ClearIcon from "@material-ui/icons/Clear";
 import MailTwoToneIcon from "@material-ui/icons/MailTwoTone";
 import { Tooltip } from "@material-ui/core";
-const {remote, ipcRenderer} = window.require("electron");
+const { remote, ipcRenderer } = window.require("electron");
 const customTitlebar = window.require("custom-electron-titlebar");
 
 let MyTitleBar = new customTitlebar.Titlebar({
@@ -30,7 +30,9 @@ const SettingList = props => {
 	return (
 		<SettingAccordion>
 			{Object.entries(props.defaultSettings || {})
-				.filter(([name, data]) => (!data.discordSetting && (!props.search ? true : name?.toLowerCase()?.includes(props?.search?.toLowerCase()))))
+				.filter(
+					([name, data]) => !data.discordSetting && (!props.search ? true : name?.toLowerCase()?.includes(props?.search?.toLowerCase()))
+				)
 				.sort((a, b) => {
 					const categoryOrder = a[1].type.localeCompare(b[1].type);
 					const nameOrder = a[0].localeCompare(b[0]);
@@ -64,18 +66,18 @@ const Header = props => {
 	const [defaultSettings, setDefaultSettings] = useState();
 	const [search, setSearch] = useState();
 	const [chatHeader, setChatHeader] = useState(false);
-    const [show, setShow] = useState(true);
-    const [viewerPage, setViewerPage] = useState(false)
+	const [show, setShow] = useState(true);
+	const [viewerPage, setViewerPage] = useState(false);
 	const currentUser = firebase.auth.currentUser;
 	const id = currentUser?.uid || " ";
 	const { messages, setMessages } = useContext(AppContext);
 	const [viewingUserId, setViewingUserId] = useState();
 	const [viewingUserInfo, setViewingUserInfo] = useState();
 	const [viewingUserStats, setViewingUserStats] = useState();
-    const [updateLink, setUpdateLink] = useState();
-    const [isPopoutOut, setIsPopOut] = useState()
-    const { location } = props;
-    const absoluteLocation = window.location
+	const [updateLink, setUpdateLink] = useState();
+	const [isPopoutOut, setIsPopOut] = useState();
+	const { location } = props;
+	const absoluteLocation = window.location;
 	const [unreadMessages, setUnreadMessages] = useState(false);
 
 	useEffect(() => {
@@ -150,15 +152,15 @@ const Header = props => {
 
 	useEffect(() => {
 		setChatHeader(location?.pathname?.includes("chat"));
-        setShow(!location?.pathname?.includes("login"));
-        setIsPopOut(new URLSearchParams(location?.search).has("popout"))
-        setViewerPage(location.pathname.includes("viewers"))
+		setShow(!location?.pathname?.includes("login"));
+		setIsPopOut(new URLSearchParams(location?.search).has("popout"));
+		setViewerPage(location.pathname.includes("viewers"));
 	}, [location, absoluteLocation]);
 
 	useEffect(() => {
 		(async () => {
 			const settingsRef = await firebase.db.collection("defaults").doc("settings").get();
-            const settingsData = settingsRef.data().settings
+			const settingsData = settingsRef.data().settings;
 			setDefaultSettings(settingsData);
 		})();
 	}, []);
@@ -203,32 +205,41 @@ const Header = props => {
 					{(chatHeader || viewerPage) && viewingUserStats && (
 						<div className="stats">
 							<div className={`live-status ${viewingUserStats?.isLive ? "live" : ""}`}></div>
-							<div className="name">{viewingUserStats?.name}</div>
-							<div className={"live-viewers"} onClick={() => {
-                                return !viewerPage ? ipcRenderer.send("popoutViewers", viewingUserId) : ""
-                            }}>
-								<PeopleAltTwoToneIcon />
-								{viewingUserStats?.viewers}
-							</div>
+							<a href={`https://twitch.tv/${viewingUserStats?.name?.toLowerCase?.()}`} className="name">{viewingUserStats?.name}</a>
+							<Tooltip title="Viewers">
+								<div
+									className={"live-viewers"}
+									onClick={() => {
+										return !viewerPage ? ipcRenderer.send("popoutViewers", viewingUserId) : "";
+									}}
+								>
+									<PeopleAltTwoToneIcon />
+									{viewingUserStats?.viewers}
+								</div>
+							</Tooltip>
 						</div>
 					)}
 					{chatHeader || viewerPage ? (
 						<>
-							{<Tooltip title={`${unreadMessages ? "Mark as Read" : ""}`} arrow>
-								<div
-									onClick={() => setMessages(prev => prev.map(msg => ({ ...msg, read: true })))}
-									className={`messages-notification ${unreadMessages ? "unread" : ""}`}
-								>
-									{unreadMessages ? (unreadMessages.length > maxDisplayNum ? `${maxDisplayNum}+` : unreadMessages.length) : ""}
-									{unreadMessages ? " " : ""}
-									<MailTwoToneIcon />
-								</div>
-							</Tooltip>}
-							{!isPopoutOut && <Link to="/channels">
-								<Button variant="contained" color="primary">
-									{isPopoutOut ? "Close" : "Channels"}
-								</Button>
-							</Link>}
+							{
+								<Tooltip title={`${unreadMessages ? "Mark as Read" : ""}`} arrow>
+									<div
+										onClick={() => setMessages(prev => prev.map(msg => ({ ...msg, read: true })))}
+										className={`messages-notification ${unreadMessages ? "unread" : ""}`}
+									>
+										{unreadMessages ? (unreadMessages.length > maxDisplayNum ? `${maxDisplayNum}+` : unreadMessages.length) : ""}
+										{unreadMessages ? " " : ""}
+										<MailTwoToneIcon />
+									</div>
+								</Tooltip>
+							}
+							{!isPopoutOut && (
+								<Link to="/channels">
+									<Button variant="contained" color="primary">
+										{isPopoutOut ? "Close" : "Channels"}
+									</Button>
+								</Link>
+							)}
 						</>
 					) : (
 						<Button variant="contained" color="primary" onClick={signout}>

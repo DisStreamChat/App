@@ -52,7 +52,7 @@ const Viewers = props => {
 				{Object.entries(chatterInfo).map(([key, value]) => {
 					return (
 						<div className="viewer-type">
-							<h2>{key}</h2>
+							<h2 className="viewer-type--header">{key}</h2>
 							{value.map(user => (
 								<ViewerCard {...user}></ViewerCard>
 							))}

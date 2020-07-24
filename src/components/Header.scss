@@ -208,22 +208,22 @@
 }
 
 .nav .MuiButton-contained {
-	background: var(--distwitchchat-blue);
+	background: var(--disstreamchat-blue);
 	transition: 0.25s;
 	color: white !important;
 }
 
 #root .nav .MuiButton-contained:hover {
-	background: var(--distwitchchat-blue);
+	background: var(--disstreamchat-blue);
 	filter: contrast(125%);
 }
 
 #root .nav .MuiButton-containedPrimary:hover {
-	background: var(--distwitchchat-purple);
+	background: var(--disstreamchat-purple);
 }
 
 .nav .MuiButton-containedPrimary {
-	background: var(--distwitchchat-purple);
+	background: var(--disstreamchat-purple);
 }
 
 #root .MuiFormControlLabel-root {
@@ -292,6 +292,10 @@
 	margin: 0 0.25rem;
 	display: flex;
 	align-items: center;
+}
+
+.live-viewers{
+    cursor: pointer;
 }
 
 .live-status {

@@ -68,7 +68,8 @@ function App() {
 	const [showSearch, setShowSearch] = useState(true);
 	const bodyRef = useRef();
 	const observerRef = useRef();
-	const currentUser = firebase.auth.currentUser;
+    const currentUser = firebase.auth.currentUser;
+    
 
 	// this runs once on load, and starts the socket
 	useEffect(() => {
@@ -185,12 +186,15 @@ function App() {
                     if(msg.displayName.toLowerCase() === "disstreamchat") ignoredMessage = false
 					if (ignoredMessage) return m;
                     msg.body = `<p>${msg.body}</p>`;
+                    if(msg.body.includes(currentUser?.displayName?.toLowerCase?.())){
+                        msg.ping = true
+                    }
 					return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
 				});
 			});
 			return () => socket.removeListener("chatmessage");
 		}
-	}, [settings, socket, setMessages]);
+	}, [settings, socket, setMessages, currentUser]);
 
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
 	useEffect(() => {

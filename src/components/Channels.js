@@ -60,15 +60,18 @@ const ChannelItem = props => {
 					<div className="channel-info">
 						<span className="channel-name">{props.display_name || props.name}</span>
 						<span className="channel-buttons">
-							<Link className="dashboard-link" to={props.isMember ? `/chat/${props.uid}` : ""}>
-								<button disabled={!props.isMember} className="to-dashboard dashboard-button">
-									{props.isMember ? "Go To Chat" : <>This channel doesn't use DisStreamChat</>}
-								</button>
-							</Link>
-							{props.isMember && (
-								<button onClick={() => ipcRenderer.send("popoutChat", props.uid)} className="to-dashboard dashboard-button">
-									{props.isMember ? "Popout Chat" : <>This channel doesn't use DisStreamChat</>}
-								</button>
+							{props.popoutChat ? (
+								props.isMember && (
+									<button onClick={() => ipcRenderer.send("popoutChat", props.uid)} className="to-dashboard dashboard-button">
+										{props.isMember ? "Popout Chat" : <>This channel doesn't use DisStreamChat</>}
+									</button>
+								)
+							) : (
+								<Link className="dashboard-link" to={props.isMember ? `/chat/${props.uid}` : ""}>
+									<button disabled={!props.isMember} className="to-dashboard dashboard-button">
+										{props.isMember ? "Go To Chat" : <>This channel doesn't use DisStreamChat</>}
+									</button>
+								</Link>
 							)}
 						</span>
 					</div>
@@ -83,12 +86,13 @@ const Channels = props => {
 	const [myChannel, setMyChannel] = useState();
 	const [modChannels, setModChannels] = useState([]);
 	const { setMessages, setPinnedMessages } = useContext(AppContext);
+	const [popout, setPopout] = useState(false);
 
 	useEffect(() => {
 		ipcRenderer.on("popout", (event, data) => {
 			props.history.push(`/chat/${data}?popout=${data}`);
-        });
-        ipcRenderer.on("popoutViewers", (event, data) => {
+		});
+		ipcRenderer.on("popoutViewers", (event, data) => {
 			props.history.push(`/viewers/${data}?popout=${data}`);
 		});
 	}, [props.history]);
@@ -143,19 +147,40 @@ const Channels = props => {
 		})();
 	}, [currentUser]);
 
+	useEffect(() => {
+		const handleKeyDown = e => {
+			if (e.key === "Control") {
+				setPopout(true);
+			}
+		};
+		const handleKeyUp = e => {
+			setPopout(false);
+		};
+		document.addEventListener("keydown", handleKeyDown);
+        document.addEventListener("keyup", handleKeyUp);
+        document.addEventListener("focusout", handleKeyUp)
+		return () => {
+			document.removeEventListener("keyup", handleKeyUp);
+            document.removeEventListener("keydown", handleKeyDown);
+            document.removeEventListener("focusout", handleKeyUp)
+		};
+	}, []);
+
 	return (
 		<>
 			<div className="my-channels">
 				<div className="mychannel channel-div">
 					<h1>Your Channel</h1>
-					<ChannelItem {...myChannel} />
+					<ChannelItem popoutChat={popout} {...myChannel} />
 				</div>
 				<hr />
 				<h1>Channels you moderate</h1>
 				<div className="modchannels channel-div">
-					{modChannels.sort((a, b) => a.login.localeCompare(b.login)).map(channel => (
-						<ChannelItem key={channel.id} {...channel} moderator />
-					))}
+					{modChannels
+						.sort((a, b) => a.login.localeCompare(b.login))
+						.map(channel => (
+							<ChannelItem popoutChat={popout} key={channel.id} {...channel} moderator />
+						))}
 					{!!modChannels.length && <ChannelItem addChannel />}
 				</div>
 			</div>

@@ -8,16 +8,37 @@
 }
 
 .viewer-card{
-    border: .5px solid;
+    // border: .5px solid;
     padding: 0 .5rem;
+    background: var(--disstreamchat-purple);
+    $background: #462b45;
+    &:hover{
+        background: darken($color: $background, $amount: 5)
+    }
+    padding: .25rem;
+    box-sizing: border-box !important;
+    cursor: pointer;
 }
 
 .viewers-header{
-    height: 100px;
-    outline: solid;
+    height: 50px;
+    position: sticky;
+    top: 0px;
+    background: #17181ba1;
+    width: 100vw;
+}
+
+.viewer-type--header{
+    background: var(--disstreamchat-blue);
+    padding-left: .5rem;
+    padding-bottom: .25rem;
+    margin: 0;
 }
 
 .viewer-body{
     width: 100%;
     padding: 0 .1rem;
+    overflow: auto;
+    overflow-x: hidden;
+    height: calc(100vh - 95px);
 }

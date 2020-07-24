@@ -2,8 +2,8 @@
 :root {
 	--discord-color: #7289da;
 	--twitch-color: #613fa0;
-	--distwitchchat-blue: #2d688d;
-	--distwitchchat-purple: #462b45;
+	--disstreamchat-blue: #2d688d;
+	--disstreamchat-purple: #462b45;
 	--sidebar-color: #2c3e50;
 	--sidebar-accent-color: #32465a;
 	--sidebar-dark-accent: #435f7a;
@@ -164,8 +164,8 @@ h1 {
 	border: none;
 	padding: 0.5rem;
 	border-radius: 0.5rem;
-	background: var(--distwitchchat-purple);
-	border: solid var(--distwitchchat-blue);
+	background: var(--disstreamchat-purple);
+	border: solid var(--disstreamchat-blue);
 }
 
 .back-to-top-button svg {
