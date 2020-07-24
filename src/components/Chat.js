@@ -185,10 +185,8 @@ function App() {
                     });
                     if(msg.displayName.toLowerCase() === "disstreamchat") ignoredMessage = false
 					if (ignoredMessage) return m;
-                    msg.body = `<p>${msg.body}</p>`;
-                    if(msg.body.includes(currentUser?.displayName?.toLowerCase?.())){
-                        msg.ping = true
-                    }
+                    msg.body = `<p>${msg.body.replace(new RegExp(`(${currentUser.displayName}|@${currentUser.displayName})`, "ig"), "<span class='ping'>$&</span>")}</p>`;
+                    
 					return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
 				});
 			});

@@ -69,6 +69,13 @@
 	height: calc(100vh - 30px);
 }
 
+.ping{
+    background: white;
+    color: black !important;
+    padding: .1rem;
+    border-radius: .1rem;
+}
+
 .overlay .search-container {
 	z-index: 0;
 	width: 100vw;

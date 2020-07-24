@@ -178,6 +178,18 @@ ipcMain.on("setopacity", (event, data) => {
 	opacity = Math.min(Math.max(+data, 0.1), 1);
 });
 
+function clearHotKeys(){
+    globalShortcut.unregister(unfocusKey);
+    globalShortcut.unregister(focusKey)
+}
+
+function setHotKeys(){
+    globalShortcut.register(unfocusKey, unfocus);
+    globalShortcut.register(focusKey, focus)
+}
+
+ipcMain.on("clearhotkeys", clearHotKeys)
+
 ipcMain.on("setunclickthrough", (event, data) => {
 	try {
 		globalShortcut.unregister(unfocusKey);
