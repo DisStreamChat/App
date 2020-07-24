@@ -184,6 +184,7 @@ function clearHotKeys(){
 }
 
 function setHotKeys(){
+    console.log(`unfocus: ${unfocusKey}, focus: ${focusKey}`)
     globalShortcut.register(unfocusKey, unfocus);
     globalShortcut.register(focusKey, focus)
 }
@@ -192,22 +193,22 @@ ipcMain.on("clearhotkeys", clearHotKeys)
 
 ipcMain.on("sethotkeys", setHotKeys)
 
-ipcMain.on("setunclickthrough", (event, data) => {
+ipcMain.on("setunFocus", (event, data) => {
 	try {
 		globalShortcut.unregister(unfocusKey);
 		unfocusKey = data;
-		globalShortcut.register(data, focus);
+		globalShortcut.register(data, unfocus);
 	} catch (err) {
 		unfocusKey = data;
 		console.log(err, data);
 	}
 });
 
-ipcMain.on("setclickthrough", (event, data) => {
+ipcMain.on("setFocus", (event, data) => {
 	try {
 		globalShortcut.unregister(focusKey);
 		focusKey = data;
-		globalShortcut.register(data, unfocus);
+		globalShortcut.register(data, focus);
 	} catch (err) {
 		focusKey = data;
 		console.log(err, data);

@@ -15,6 +15,8 @@ import ClearIcon from "@material-ui/icons/Clear";
 import uid from "uid";
 import AddIcon from "@material-ui/icons/Add";
 import AnimateHeight from "react-animate-height";
+import { reset } from "mousetrap";
+const { ipcRenderer } = window.require("electron");
 
 const FancySwitch = withStyles({
 	root: {
@@ -50,6 +52,8 @@ const Setting = props => {
 	const [displayName, setDisplayName] = useState();
 	const [addingItem, setAddingItem] = useState(false);
 	const [valueToBeAdded, setValueToBeAdded] = useState();
+	const [recording, setRecording] = useState(false);
+	const [recorded, setRecorded] = useState([]);
 
 	const changeHandler = useCallback(
 		lodash.debounce(v => {
@@ -71,6 +75,42 @@ const Setting = props => {
 			});
 		}
 	}, [props]);
+
+	const handleKeyBindRecording = useCallback(
+		save => {
+			let resetRecording = false;
+			const listenKeyBind = e => {
+				console.log({ resetRecording });
+				setRecorded(prev => (resetRecording ? [e.key] : [...new Set([...prev, e.key])]));
+				if (resetRecording) {
+					resetRecording = false;
+				}
+			};
+			const listenKeyRelease = () => {
+				resetRecording = true;
+			};
+			if (recording) {
+				setRecording(false);
+				ipcRenderer.send("sethotkeys");
+				try {
+					document.removeEventListener("keyup", listenKeyRelease);
+					document.removeEventListener("keydown", listenKeyBind);
+				} catch (err) {}
+				if (save) {
+                    setValue(recorded.join("+"))
+                    changeHandler(recorded.join("+"))
+				}
+			} else {
+				setRecording(true);
+				ipcRenderer.send("clearhotkeys");
+				try {
+					document.addEventListener("keyup", listenKeyRelease);
+					document.addEventListener("keydown", listenKeyBind);
+				} catch (err) {}
+			}
+		},
+		[recording, recorded, changeHandler]
+	);
 
 	return (
 		<div className={`setting ${props.type === "color" ? "color-setting" : "list-setting"} ${props.open && "open"}`}>
@@ -218,7 +258,7 @@ const Setting = props => {
 						</div>
 					</AnimateHeight>
 				</>
-			) : (
+			) : props.type === "selector" ? (
 				<>
 					<span className="color-header flex" onClick={() => props.onClick(props.name)}>
 						<span>
@@ -235,7 +275,7 @@ const Setting = props => {
 								?.sort()
 								?.filter(item => item !== value)
 								?.map?.(item => (
-									<div key={item} style={{fontFamily: item}} className="item">
+									<div key={item} style={{ fontFamily: item }} className="item">
 										{item}
 										<button
 											onClick={() => {
@@ -250,6 +290,27 @@ const Setting = props => {
 										</button>
 									</div>
 								))}
+						</div>
+					</AnimateHeight>
+				</>
+			) : (
+				<>
+					<span className="color-header flex" onClick={() => props.onClick(props.name)}>
+						<span>
+							<KeyboardArrowDownIcon className={`${recording || props.open ? "open" : "closed"} mr-quarter`} />
+							<h3>{displayName}</h3>
+						</span>
+						<span>
+							<h3>{value}</h3>
+						</span>
+					</span>
+					<AnimateHeight duration={250} height={!props.open && !recording ? 0 : "auto"}>
+						<div className="keybind-body">
+							<div className="buttons">
+								<button onClick={() => handleKeyBindRecording(true)}>{recording ? "Save" : "Edit Keybind"}</button>
+								{recording && <button onClick={() => handleKeyBindRecording(false)}>Cancel</button>}
+							</div>
+							<div className="preview">{recording ? recorded.join("+") : value}</div>
 						</div>
 					</AnimateHeight>
 				</>

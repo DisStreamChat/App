@@ -24,10 +24,10 @@ const App = () => {
 	const currentUser = firebase.auth.currentUser;
 
 	useEffect(() => {
-        setTimeout(() => {
-            ipcRenderer.send("setclickthrough", "f6");
-            ipcRenderer.send("setunclickthrough", "f7");
-        }, 1000);
+        // setTimeout(() => {
+        //     ipcRenderer.send("setFocus", "f7");
+        //     ipcRenderer.send("setunFocus", "f6");
+        // }, 1000);
 	}, []);
 
 	useEffect(() => {
@@ -43,7 +43,11 @@ const App = () => {
 			.onSnapshot(snapshot => {
 				const data = snapshot.data();
 				if (data) {
-					const opacity = data.appSettings.ClickThroughOpacity;
+                    const opacity = data.appSettings.ClickThroughOpacity;
+                    const unfocusKey = data.appSettings.UnfocusKeybind
+                    const focusKey = data.appSettings.FocusKeybind
+                    ipcRenderer.send("setFocus", focusKey || "f7")
+                    ipcRenderer.send("setunFocus", unfocusKey || "f6")
 					ipcRenderer.send("setopacity", opacity);
 				}
 			});

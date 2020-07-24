@@ -333,6 +333,42 @@
 	}
 }
 
+.keybind-body{
+    display: flex;
+    align-items: center;
+    justify-content:  space-around;
+    margin-bottom: 1rem;
+    .preview{
+        border: .5px solid white;
+        padding: .5rem 1rem;
+        border-radius: .5rem;
+        background: rgba(116,127,141,.1);
+        height: calc(40px - 1rem);
+        flex: .25;
+        text-align: center;
+    }
+    button {
+		border: none;
+		outline: none !important;
+        background: rgba(116,127,141,.3);
+        padding: .5rem 1rem;
+        border-radius: .5rem;
+        color: white;
+        
+        transition: 0.05s;
+        margin: 0 .5rem;
+        &:hover{
+            background: rgba(116,127,141,.5)
+        }
+		svg {
+			transform: scale(1.5);
+		}
+		&:active {
+			transform: scale(0.95);
+		}
+	}
+}
+
 .list-body {
 	display: flex;
 	flex-direction: column;
