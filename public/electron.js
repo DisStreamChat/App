@@ -190,6 +190,8 @@ function setHotKeys(){
 
 ipcMain.on("clearhotkeys", clearHotKeys)
 
+ipcMain.on("sethotkeys", setHotKeys)
+
 ipcMain.on("setunclickthrough", (event, data) => {
 	try {
 		globalShortcut.unregister(unfocusKey);
