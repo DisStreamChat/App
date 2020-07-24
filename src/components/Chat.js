@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import firebase from "../firebase";
 import { useParams } from "react-router-dom";
 import openSocket from "socket.io-client";
-import { Message } from "distwitchchat-componentlib";
+import { Message } from "chatbits";
 import { useContext } from "react";
 import { AppContext } from "../contexts/AppContext";
 import SearchBox from "./SearchBox";
@@ -10,7 +10,7 @@ import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import { CSSTransition } from "react-transition-group";
 import "./Chat.css";
 import "./Message.css";
-import "distwitchchat-componentlib/dist/index.css";
+import "chatbits/dist/index.css";
 import hasFlag from "../utils/flagFunctions/has";
 import fromFlag from "../utils/flagFunctions/from";
 import platformFlag from "../utils/flagFunctions/platform";
@@ -184,7 +184,7 @@ function App() {
 						}
                     });
                     if(msg.displayName.toLowerCase() === "disstreamchat") ignoredMessage = false
-					if (ignoredMessage) return m;
+                    if (ignoredMessage) return m;
                     msg.body = `<p>${msg.body.replace(new RegExp(`(${currentUser.displayName}|@${currentUser.displayName})`, "ig"), "<span class='ping'>$&</span>")}</p>`;
                     
 					return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
