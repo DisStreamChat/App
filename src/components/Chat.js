@@ -190,7 +190,7 @@ function App() {
 					)}</p>`;
 					msg.moddable =
 						msg?.displayName?.toLowerCase?.() !== currentUser?.displayName?.toLowerCase?.() &&
-                        (!Object.keys(msg.badges).includes("moderator") || Object.keys(msg.badges).includes("broadcaster"));
+                        (!Object.keys(msg.badges).includes("moderator") && !Object.keys(msg.badges).includes("broadcaster"));
                     return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
                     
 				});
