@@ -173,24 +173,40 @@ function App() {
 			socket.removeListener("chatmessage");
 			socket.on("chatmessage", msg => {
 				setMessages(m => {
-					let ignoredMessage = false;
+                    // by default we don't ignore messages
+                    let ignoredMessage = false;
+
+                    // check if we should ignore this user
 					if (settings?.IgnoredUsers?.map?.(item => item.value.toLowerCase()).includes(msg.displayName.toLowerCase())) {
 						ignoredMessage = true;
-					}
+                    }
+                    
+                    // check if the message is a command
 					const _ = settings?.IgnoredCommandPrefixes?.forEach(prefix => {
 						if (msg.body.startsWith(prefix.value)) {
 							ignoredMessage = true;
 						}
-					});
-					if (msg.displayName.toLowerCase() === "disstreamchat") ignoredMessage = false;
-					if (ignoredMessage) return m;
+                    });
+                    
+                    // don't allow ignoring of notifications from 'disstreamchat'
+                    if (msg.displayName.toLowerCase() === "disstreamchat") ignoredMessage = false;
+                    
+                    // if ignored don't add the message
+                    if (ignoredMessage) return m;
+                    
+                    // add a <p></p> around the message to make formatting work properly also hightlight pings
 					msg.body = `<p>${msg.body.replace(
 						new RegExp(`(${currentUser.displayName}|@${currentUser.displayName})`, "ig"),
 						"<span class='ping'>$&</span>"
-					)}</p>`;
+                    )}</p>`;
+                    
+                    // check if the message can have mod actions done on it
 					msg.moddable =
 						msg?.displayName?.toLowerCase?.() !== currentUser?.displayName?.toLowerCase?.() &&
                         (!Object.keys(msg.badges).includes("moderator") && !Object.keys(msg.badges).includes("broadcaster"));
+
+                    // all discord messages can have mod actions done on them
+                    if(msg.platform === "discord") msg.moddable = true
                     return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
                     
 				});
