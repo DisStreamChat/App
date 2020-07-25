@@ -68,8 +68,7 @@ function App() {
 	const [showSearch, setShowSearch] = useState(true);
 	const bodyRef = useRef();
 	const observerRef = useRef();
-    const currentUser = firebase.auth.currentUser;
-    
+	const currentUser = firebase.auth.currentUser;
 
 	// this runs once on load, and starts the socket
 	useEffect(() => {
@@ -88,8 +87,8 @@ function App() {
 		(key, event, handle) => {
 			switch (key) {
 				case "ctrl+f":
-                    setShowSearch(true);
-                    document.getElementById("chat-search").focus()
+					setShowSearch(true);
+					document.getElementById("chat-search").focus();
 					break;
 				case "esc":
 					setShowSearch(false);
@@ -110,22 +109,22 @@ function App() {
 				//move message from messages to pinned messages
 				setMessages(prev => {
 					let copy = [...prev];
-                    let index = copy.findIndex(msg => msg.id === id);
-                    copy[index].pinned = true
-                    const pinnedMessage = copy.splice(index, 1)
-                    setPinnedMessages(prev => [...prev, ...pinnedMessage])
-                    return copy
+					let index = copy.findIndex(msg => msg.id === id);
+					copy[index].pinned = true;
+					const pinnedMessage = copy.splice(index, 1);
+					setPinnedMessages(prev => [...prev, ...pinnedMessage]);
+					return copy;
 				});
-			}else{
-                setPinnedMessages(prev => {
+			} else {
+				setPinnedMessages(prev => {
 					let copy = [...prev];
-                    let index = copy.findIndex(msg => msg.id === id);
-                    copy[index].pinned = false
-                    const unPinnedMessage = copy.splice(index, 1)
-                    setMessages(prev => [...prev, ...unPinnedMessage].sort((a, b) => a.sentAt - b.sentAt))
-                    return copy
+					let index = copy.findIndex(msg => msg.id === id);
+					copy[index].pinned = false;
+					const unPinnedMessage = copy.splice(index, 1);
+					setMessages(prev => [...prev, ...unPinnedMessage].sort((a, b) => a.sentAt - b.sentAt));
+					return copy;
 				});
-            }
+			}
 		},
 		[setMessages, setPinnedMessages, messages]
 	);
@@ -173,21 +172,27 @@ function App() {
 		if (socket) {
 			socket.removeListener("chatmessage");
 			socket.on("chatmessage", msg => {
-                setMessages(m => {
-                    let ignoredMessage = false;
+				setMessages(m => {
+					let ignoredMessage = false;
 					if (settings?.IgnoredUsers?.map?.(item => item.value.toLowerCase()).includes(msg.displayName.toLowerCase())) {
-                        ignoredMessage = true;
+						ignoredMessage = true;
 					}
 					const _ = settings?.IgnoredCommandPrefixes?.forEach(prefix => {
-                        if (msg.body.startsWith(prefix.value)) {
-                            ignoredMessage = true;
+						if (msg.body.startsWith(prefix.value)) {
+							ignoredMessage = true;
 						}
-                    });
-                    if(msg.displayName.toLowerCase() === "disstreamchat") ignoredMessage = false
-                    if (ignoredMessage) return m;
-                    msg.body = `<p>${msg.body.replace(new RegExp(`(${currentUser.displayName}|@${currentUser.displayName})`, "ig"), "<span class='ping'>$&</span>")}</p>`;
+					});
+					if (msg.displayName.toLowerCase() === "disstreamchat") ignoredMessage = false;
+					if (ignoredMessage) return m;
+					msg.body = `<p>${msg.body.replace(
+						new RegExp(`(${currentUser.displayName}|@${currentUser.displayName})`, "ig"),
+						"<span class='ping'>$&</span>"
+					)}</p>`;
+					msg.moddable =
+						msg?.displayName?.toLowerCase?.() !== currentUser?.displayName?.toLowerCase?.() &&
+                        (!Object.keys(msg.badges).includes("moderator") || Object.keys(msg.badges).includes("broadcaster"));
+                    return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
                     
-					return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
 				});
 			});
 			return () => socket.removeListener("chatmessage");
@@ -243,7 +248,7 @@ function App() {
 		if (socket) {
 			socket.removeListener("purgeuser");
 			socket.on("purgeuser", username => {
-				setMessages(prev => prev.filter(msg => msg.displayName?.toLowerCase() !== username.toLowerCase() ));
+				setMessages(prev => prev.filter(msg => msg.displayName?.toLowerCase() !== username.toLowerCase()));
 			});
 			return () => socket.removeListener("purgeuser");
 		}
@@ -301,11 +306,11 @@ function App() {
 					entries.forEach((entry, i) => {
 						if (entry.isIntersecting) {
 							setMessages(prev => {
-                                const copy = [...prev];
-                                const index = copy.findIndex(msg => msg.id === entry.target.dataset.idx)
-                                if(index !== -1){
-                                    copy[index].read = true;
-                                }
+								const copy = [...prev];
+								const index = copy.findIndex(msg => msg.id === entry.target.dataset.idx);
+								if (index !== -1) {
+									copy[index].read = true;
+								}
 								return copy;
 							});
 							observerRef.current.unobserve(entry.target);
@@ -327,7 +332,7 @@ function App() {
 	const [flagMatches, setFlagMatches] = useState([]);
 
 	useEffect(() => {
-		setFlagMatches((handleFlags(showSearch ? search : "", [...messages, ...pinnedMessages])).filter(msg => !msg.deleted));
+		setFlagMatches(handleFlags(showSearch ? search : "", [...messages, ...pinnedMessages]).filter(msg => !msg.deleted));
 	}, [messages, search, showSearch, pinnedMessages]);
 
 	return (
