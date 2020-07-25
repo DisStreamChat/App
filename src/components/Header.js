@@ -206,7 +206,7 @@ const Header = props => {
 						<div className="stats">
 							<div className={`live-status ${viewingUserStats?.isLive ? "live" : ""}`}></div>
 							<a href={`https://twitch.tv/${viewingUserStats?.name?.toLowerCase?.()}`} className="name">{viewingUserStats?.name}</a>
-							<Tooltip title="Viewers">
+							<Tooltip arrow title="Viewers in Chat">
 								<div
 									className={"live-viewers"}
 									onClick={() => {

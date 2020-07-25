@@ -296,6 +296,14 @@
 
 .live-viewers{
     cursor: pointer;
+    svg.MuiSvgIcon-root{
+        padding: .25rem;
+        border-radius: .25rem;
+        transition: .5s;
+        &:hover{
+            background: #ffffff26
+        }
+    }
 }
 
 .live-status {
@@ -373,6 +381,8 @@
 		}
 	}
 }
+
+
 
 .list-body {
 	display: flex;
