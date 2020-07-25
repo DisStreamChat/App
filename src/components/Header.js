@@ -219,7 +219,7 @@ const Header = props => {
 							</Tooltip>
 						</div>
 					)}
-					{chatHeader || viewerPage ? (
+					{chatHeader ? (
 						<>
 							{
 								<Tooltip title={`${unreadMessages ? "Mark as Read" : ""}`} arrow>
@@ -241,11 +241,11 @@ const Header = props => {
 								</Link>
 							)}
 						</>
-					) : (
+					) : !viewerPage ? (
 						<Button variant="contained" color="primary" onClick={signout}>
 							Sign Out
 						</Button>
-					)}
+					):<></>}
 					{updateLink && (
 						<a href={updateLink}>
 							<GetAppIcon></GetAppIcon>
