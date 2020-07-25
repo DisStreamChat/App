@@ -133,7 +133,7 @@ function App() {
 		(id, platform) => {
 			if (platform && socket) {
 				const banMsg = messages.find(msg => msg.id === id);
-				socket.emit(`banuser - ${platform}`, banMsg?.displayName);
+				socket.emit(`banuser - ${platform}`, banMsg?.[platform === "discord" ? "userId" : "DisplayName"]);
 			}
 		},
 		[socket, messages]
@@ -142,7 +142,8 @@ function App() {
 	const timeout = useCallback(
 		(id, platform) => {
 			if (platform && socket) {
-				const banMsg = messages.find(msg => msg.id === id);
+                const banMsg = messages.find(msg => msg.id === id);
+                // on discord we delete by userId and on twitch we delete by username
 				socket.emit(`timeoutuser - ${platform}`, banMsg?.[platform === "discord" ? "userId" : "DisplayName"]);
 			}
 		},
