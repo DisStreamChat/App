@@ -162,10 +162,10 @@ function App() {
 			});
 
 			if (platform && socket) {
-				socket.emit(`deletemsg - ${platform}`, id);
+				socket.emit(`deletemsg - ${platform}`, {id, modName: currentUser?.displayName?.toLowerCase?.()});
 			}
 		},
-		[socket, setMessages]
+		[socket, setMessages, currentUser]
 	);
 
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
