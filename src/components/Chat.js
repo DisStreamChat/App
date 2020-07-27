@@ -202,13 +202,13 @@ function App() {
 						"<span class='ping'>$&</span>"
                     )}</p>`;
                     
+                    console.log(msg.badges)
                     // check if the message can have mod actions done on it
 					msg.moddable =
 						msg?.displayName?.toLowerCase?.() !== currentUser?.displayName?.toLowerCase?.() &&
                         (!Object.keys(msg.badges).includes("moderator") && !Object.keys(msg.badges).includes("broadcaster"));
 
-                    // all discord messages can have mod actions done on them
-                    if(msg.platform === "discord" || (msg?.displayName?.toLowerCase?.() !== currentUser?.displayName?.toLowerCase?.() && channel?.TwitchName?.toLowerCase?.() === currentUser?.displayName?.toLowerCase?.())) msg.moddable = true
+                    if(msg.platform !== "discord" && msg?.displayName?.toLowerCase?.() !== currentUser?.displayName?.toLowerCase?.() && channel?.TwitchName?.toLowerCase?.() === currentUser?.displayName?.toLowerCase?.()) msg.moddable = true
                     return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
                     
 				});
