@@ -202,7 +202,6 @@ function App() {
 						"<span class='ping'>$&</span>"
                     )}</p>`;
                     
-                    console.log(msg.badges)
                     // check if the message can have mod actions done on it
 					msg.moddable =
 						msg?.displayName?.toLowerCase?.() !== currentUser?.displayName?.toLowerCase?.() &&
