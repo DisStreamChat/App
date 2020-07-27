@@ -134,10 +134,10 @@ function App() {
 		(id, platform) => {
 			if (platform && socket) {
 				const banMsg = messages.find(msg => msg.id === id);
-				socket.emit(`banuser - ${platform}`, banMsg?.[platform === "discord" ? "userId" : "displayName"]);
+				socket.emit(`banuser - ${platform}`, {modName: currentUser?.displayName?.toLowerCase?.(), user: banMsg?.[platform === "discord" ? "userId" : "displayName"]});
 			}
 		},
-		[socket, messages]
+		[socket, messages,currentUser]
 	);
 
 	const timeout = useCallback(
@@ -145,7 +145,6 @@ function App() {
 			if (platform && socket) {
                 const banMsg = messages.find(msg => msg.id === id);
                 // on discord we delete by userId and on twitch we delete by username
-                console.log(banMsg["displayName"])
 				socket.emit(`timeoutuser - ${platform}`, {modName: currentUser?.displayName?.toLowerCase?.(), user: banMsg?.[platform === "discord" ? "userId" : "displayName"]});
 			}
 		},
@@ -199,7 +198,7 @@ function App() {
                     
                     // add a <p></p> around the message to make formatting work properly also hightlight pings
 					msg.body = `<p>${msg.body.replace(
-						new RegExp(`(${currentUser.displayName}|@${currentUser.displayName})`, "ig"),
+						new RegExp(`(?<=\s|^)(${currentUser.displayName}|@${currentUser.displayName})`, "ig"),
 						"<span class='ping'>$&</span>"
                     )}</p>`;
                     
@@ -209,14 +208,14 @@ function App() {
                         (!Object.keys(msg.badges).includes("moderator") && !Object.keys(msg.badges).includes("broadcaster"));
 
                     // all discord messages can have mod actions done on them
-                    if(msg.platform === "discord") msg.moddable = true
+                    if(msg.platform === "discord" || (msg?.displayName?.toLowerCase?.() !== currentUser?.displayName?.toLowerCase?.() && channel?.TwitchName?.toLowerCase?.() === currentUser?.displayName?.toLowerCase?.())) msg.moddable = true
                     return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
                     
 				});
 			});
 			return () => socket.removeListener("chatmessage");
 		}
-	}, [settings, socket, setMessages, currentUser]);
+	}, [settings, socket, setMessages, currentUser, channel]);
 
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
 	useEffect(() => {
