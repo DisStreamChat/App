@@ -17,6 +17,7 @@ import platformFlag from "../utils/flagFunctions/platform";
 import isFlag from "../utils/flagFunctions/is";
 import { TransitionGroup } from "react-transition-group";
 import useHotkeys from "use-hotkeys";
+import Viewers from "./Viewers";
 
 const flagRegex = /(\s|^)(has|from|platform|is):([^\s]*)/gim;
 
@@ -60,7 +61,7 @@ const Messages = React.memo(props => {
 
 function App() {
 	const [socket, setSocket] = useState();
-	const { streamerInfo: settings, messages, setMessages, pinnedMessages, setPinnedMessages } = useContext(AppContext);
+	const { streamerInfo: settings, messages, setMessages, pinnedMessages, setPinnedMessages, showViewers } = useContext(AppContext);
 	const [channel, setChannel] = useState();
 	const [search, setSearch] = useState("");
 	const { id } = useParams();
@@ -352,7 +353,7 @@ function App() {
 		setFlagMatches(handleFlags(showSearch ? search : "", [...messages, ...pinnedMessages]).filter(msg => !msg.deleted));
 	}, [messages, search, showSearch, pinnedMessages]);
 
-	return (
+	return showViewers ? <Viewers/> : (
 		<div style={{ fontFamily: settings.Font }} ref={bodyRef} className="overlay-container">
 			<div className="overlay">
 				<Messages

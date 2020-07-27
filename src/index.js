@@ -20,15 +20,9 @@ const App = () => {
 	const [streamerInfo, setStreamerInfo] = useState({});
 	const [messages, setMessages] = useState([]);
 	const [pinnedMessages, setPinnedMessages] = useState([]);
-	const [border, setBorder] = useState(true);
+    const [border, setBorder] = useState(true);
+    const [showViewers, setShowViewers] = useState(false)
 	const currentUser = firebase.auth.currentUser;
-
-	useEffect(() => {
-        // setTimeout(() => {
-        //     ipcRenderer.send("setFocus", "f7");
-        //     ipcRenderer.send("setunFocus", "f6");
-        // }, 1000);
-	}, []);
 
 	useEffect(() => {
 		ipcRenderer.on("toggle-border", (event, text) => {
@@ -114,7 +108,9 @@ const App = () => {
 				streamerInfo,
 				setStreamerInfo,
 				pinnedMessages,
-				setPinnedMessages,
+                setPinnedMessages,
+                showViewers,
+                setShowViewers
 			}}
 		>
 			<Router>

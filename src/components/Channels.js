@@ -85,7 +85,7 @@ const Channels = props => {
 	const currentUser = firebase.auth.currentUser;
 	const [myChannel, setMyChannel] = useState();
 	const [modChannels, setModChannels] = useState([]);
-	const { setMessages, setPinnedMessages } = useContext(AppContext);
+	const { setMessages, setPinnedMessages, setShowViewers } = useContext(AppContext);
 	const [popout, setPopout] = useState(false);
 
 	useEffect(() => {
@@ -99,8 +99,9 @@ const Channels = props => {
 
 	useEffect(() => {
 		setMessages([]);
-		setPinnedMessages([]);
-	}, [setMessages, setPinnedMessages]);
+        setPinnedMessages([]);
+        setShowViewers(false)
+	}, [setMessages, setPinnedMessages, setShowViewers]);
 
 	useEffect(() => {
 		const unsub = firebase.db

@@ -67,10 +67,10 @@ const Header = props => {
 	const [search, setSearch] = useState();
 	const [chatHeader, setChatHeader] = useState(false);
 	const [show, setShow] = useState(true);
-	const [viewerPage, setViewerPage] = useState(false);
+	const [, set] = useState(false);
 	const currentUser = firebase.auth.currentUser;
 	const id = currentUser?.uid || " ";
-	const { messages, setMessages } = useContext(AppContext);
+	const { messages, setMessages, showViewers, setShowViewers } = useContext(AppContext);
 	const [viewingUserId, setViewingUserId] = useState();
 	const [viewingUserInfo, setViewingUserInfo] = useState();
 	const [viewingUserStats, setViewingUserStats] = useState();
@@ -112,14 +112,14 @@ const Header = props => {
 
 	useEffect(() => {
 		(async () => {
-			if ((chatHeader || viewerPage) && show) {
+			if (chatHeader && show) {
 				const userRef = firebase.db.collection("Streamers").doc(viewingUserId || " ");
 				const userDoc = await userRef.get();
 				const userData = userDoc.data();
 				setViewingUserInfo(userData);
 			}
 		})();
-	}, [chatHeader, show, viewingUserId, viewerPage]);
+	}, [chatHeader, show, viewingUserId, ]);
 
 	useEffect(() => {
 		async function getStats() {
@@ -154,7 +154,7 @@ const Header = props => {
 		setChatHeader(location?.pathname?.includes("chat"));
 		setShow(!location?.pathname?.includes("login"));
 		setIsPopOut(new URLSearchParams(location?.search).has("popout"));
-		setViewerPage(location.pathname.includes("viewers"));
+		set(location.pathname.includes("viewers"));
 	}, [location, absoluteLocation]);
 
 	useEffect(() => {
@@ -202,16 +202,14 @@ const Header = props => {
 		<>
 			<header className={`header ${settingsOpen && "open"}`}>
 				<nav className="nav">
-					{(chatHeader || viewerPage) && viewingUserStats && (
+					{chatHeader && viewingUserStats && (
 						<div className="stats">
 							<div className={`live-status ${viewingUserStats?.isLive ? "live" : ""}`}></div>
 							<a href={`https://twitch.tv/${viewingUserStats?.name?.toLowerCase?.()}`} className="name">{viewingUserStats?.name}</a>
 							<Tooltip arrow title="Viewers in Chat">
 								<div
 									className={"live-viewers"}
-									onClick={() => {
-										return !viewerPage ? ipcRenderer.send("popoutViewers", viewingUserId) : "";
-									}}
+									onClick={() => setShowViewers(true)}
 								>
 									<PeopleAltTwoToneIcon />
 									{viewingUserStats?.viewers}
@@ -222,7 +220,7 @@ const Header = props => {
 					{chatHeader ? (
 						<>
 							{
-								<Tooltip title={`${unreadMessages ? "Mark as Read" : ""}`} arrow>
+								<Tooltip title={`${unreadMessages ? "Mark as Read" : "No unread Messages"}`} arrow>
 									<div
 										onClick={() => setMessages(prev => prev.map(msg => ({ ...msg, read: true })))}
 										className={`messages-notification ${unreadMessages ? "unread" : ""}`}
@@ -241,11 +239,11 @@ const Header = props => {
 								</Link>
 							)}
 						</>
-					) : !viewerPage ? (
+					) : (
 						<Button variant="contained" color="primary" onClick={signout}>
 							Sign Out
 						</Button>
-					):<></>}
+					)}
 					{updateLink && (
 						<a href={updateLink}>
 							<GetAppIcon></GetAppIcon>

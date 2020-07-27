@@ -177,11 +177,11 @@
 	position: absolute;
 	top: 65px;
 	left: 0px;
-	opacity: 0;
 	font-size: 2rem !important;
-	transition: 0.5s !important;
-	&.open {
-		opacity: 1;
+    transition: 0.5s !important;
+	&:not(.open) {
+        opacity: 0;
+		display: none;
 	}
 }
 
