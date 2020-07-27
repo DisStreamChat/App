@@ -134,7 +134,7 @@ function App() {
 		(id, platform) => {
 			if (platform && socket) {
 				const banMsg = messages.find(msg => msg.id === id);
-				socket.emit(`banuser - ${platform}`, banMsg?.[platform === "discord" ? "userId" : "DisplayName"]);
+				socket.emit(`banuser - ${platform}`, banMsg?.[platform === "discord" ? "userId" : "displayName"]);
 			}
 		},
 		[socket, messages]
@@ -145,10 +145,11 @@ function App() {
 			if (platform && socket) {
                 const banMsg = messages.find(msg => msg.id === id);
                 // on discord we delete by userId and on twitch we delete by username
-				socket.emit(`timeoutuser - ${platform}`, banMsg?.[platform === "discord" ? "userId" : "DisplayName"]);
+                console.log(banMsg["displayName"])
+				socket.emit(`timeoutuser - ${platform}`, {modName: currentUser?.displayName?.toLowerCase?.(), user: banMsg?.[platform === "discord" ? "userId" : "displayName"]});
 			}
 		},
-		[socket, messages]
+		[socket, messages, currentUser]
 	);
 
 	// this is used to delete messages, in certain conditions will also send a message to backend tell it to delete the message from the sent platform
