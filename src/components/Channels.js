@@ -17,18 +17,21 @@ const ChannelItem = props => {
 		setChannelName(props.display_name || props.name);
 	}, [props]);
 
-	console.log(channelName);
+
+    async function getLive() {
+        if (channelName) {
+            const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=${channelName}&new=true`;
+            const response = await fetch(ApiUrl);
+            const data = await response.json();
+            setIsLive(() => data?.isLive && channelName);
+        }
+    }
 
 	useEffect(() => {
-		async function getLive() {
-			const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=${channelName}&new=true`;
-			const response = await fetch(ApiUrl);
-			const data = await response.json();
-			setIsLive(() => !!data && channelName);
-        }
-        getLive()
-        const id = setInterval(getLive, 45000)
-        return () => clearInterval(id)
+		getLive();
+		const id = setInterval(getLive, 45000);
+		return () => clearInterval(id);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [channelName]);
 
 	return (
@@ -78,19 +81,19 @@ const ChannelItem = props => {
 					</div>
 					<div className="channel-info">
 						<span className="channel-name">{channelName}</span>
-							{props.popoutChat ? (
-								props.isMember && (
-									<button onClick={() => ipcRenderer.send("popoutChat", props.uid)} className="to-dashboard dashboard-button">
-										{props.isMember ? "Popout Chat" : <>This channel doesn't use DisStreamChat</>}
-									</button>
-								)
-							) : (
-								<Link className="dashboard-link" to={props.isMember ? `/chat/${props.uid}` : ""}>
-									<button disabled={!props.isMember} className="to-dashboard dashboard-button">
-										{props.isMember ? "Go To Chat" : <>This channel doesn't use DisStreamChat</>}
-									</button>
-								</Link>
-							)}
+						{props.popoutChat ? (
+							props.isMember && (
+								<button onClick={() => ipcRenderer.send("popoutChat", props.uid)} className="to-dashboard dashboard-button">
+									{props.isMember ? "Popout Chat" : <>This channel doesn't use DisStreamChat</>}
+								</button>
+							)
+						) : (
+							<Link className="dashboard-link" to={props.isMember ? `/chat/${props.uid}` : ""}>
+								<button disabled={!props.isMember} className="to-dashboard dashboard-button">
+									{props.isMember ? "Go To Chat" : <>This channel doesn't use DisStreamChat</>}
+								</button>
+							</Link>
+						)}
 					</div>
 				</>
 			)}
