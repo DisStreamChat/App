@@ -8,15 +8,34 @@ const { ipcRenderer } = window.require("electron");
 
 const ChannelItem = props => {
 	const [channelName, setChannelName] = useState("");
-	const currentUser = firebase.auth.currentUser;
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
+	const [isLive, setIsLive] = useState(false);
+	const currentUser = firebase.auth.currentUser;
+
+	useEffect(() => {
+		setChannelName(props.display_name || props.name);
+	}, [props]);
+
+	console.log(channelName);
+
+	useEffect(() => {
+		async function getLive() {
+			const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=${channelName}&new=true`;
+			const response = await fetch(ApiUrl);
+			const data = await response.json();
+			setIsLive(() => !!data && channelName);
+        }
+        getLive()
+        const id = setInterval(getLive, 45000)
+        return () => clearInterval(id)
+	}, [channelName]);
+
 	return (
 		<div className={`channel-item ${props.addChannel ? "add-channel" : ""}`}>
 			{props.addChannel ? (
 				<>
 					<h5>Add Channel</h5>
-
 					<form
 						onSubmit={async e => {
 							e.preventDefault();
@@ -54,12 +73,11 @@ const ChannelItem = props => {
 				</>
 			) : (
 				<>
-					<div className="channel-profile-pic">
+					<div className={`channel-profile-pic ${isLive ? "live" : ""}`}>
 						<img src={props["profile_image_url"] || props.profilePicture} alt="" />
 					</div>
 					<div className="channel-info">
-						<span className="channel-name">{props.display_name || props.name}</span>
-						<span className="channel-buttons">
+						<span className="channel-name">{channelName}</span>
 							{props.popoutChat ? (
 								props.isMember && (
 									<button onClick={() => ipcRenderer.send("popoutChat", props.uid)} className="to-dashboard dashboard-button">
@@ -73,7 +91,6 @@ const ChannelItem = props => {
 									</button>
 								</Link>
 							)}
-						</span>
 					</div>
 				</>
 			)}
@@ -99,8 +116,8 @@ const Channels = props => {
 
 	useEffect(() => {
 		setMessages([]);
-        setPinnedMessages([]);
-        setShowViewers(false)
+		setPinnedMessages([]);
+		setShowViewers(false);
 	}, [setMessages, setPinnedMessages, setShowViewers]);
 
 	useEffect(() => {
@@ -158,12 +175,12 @@ const Channels = props => {
 			setPopout(false);
 		};
 		document.addEventListener("keydown", handleKeyDown);
-        document.addEventListener("keyup", handleKeyUp);
-        document.addEventListener("focusout", handleKeyUp)
+		document.addEventListener("keyup", handleKeyUp);
+		document.addEventListener("focusout", handleKeyUp);
 		return () => {
 			document.removeEventListener("keyup", handleKeyUp);
-            document.removeEventListener("keydown", handleKeyDown);
-            document.removeEventListener("focusout", handleKeyUp)
+			document.removeEventListener("keydown", handleKeyDown);
+			document.removeEventListener("focusout", handleKeyUp);
 		};
 	}, []);
 
