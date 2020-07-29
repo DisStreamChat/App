@@ -20,7 +20,7 @@ const ChannelItem = props => {
 
     async function getLive() {
         if (channelName) {
-            const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=${channelName}&new=true`;
+            const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=${channelName?.toLowerCase?.()}&new=true`;
             const response = await fetch(ApiUrl);
             const data = await response.json();
             setIsLive(() => data?.isLive && channelName);
