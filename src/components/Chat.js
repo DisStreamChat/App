@@ -8,7 +8,7 @@ import { AppContext } from "../contexts/AppContext";
 import SearchBox from "./SearchBox";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import { CSSTransition } from "react-transition-group";
-import "./Chat.css";
+import "./Chat.scss";
 import "./Message.css";
 import "chatbits/dist/index.css";
 import hasFlag from "../utils/flagFunctions/has";
@@ -66,7 +66,8 @@ function App() {
 	const [search, setSearch] = useState("");
 	const { id } = useParams();
 	const [showToTop, setShowToTop] = useState(false);
-	const [showSearch, setShowSearch] = useState(true);
+    const [showSearch, setShowSearch] = useState(true);
+    const [chatValue, setChatValue] = useState("")
 	const bodyRef = useRef();
 	const observerRef = useRef();
 	const currentUser = firebase.auth.currentUser;
@@ -134,18 +135,24 @@ function App() {
 		(id, platform) => {
 			if (platform && socket) {
 				const banMsg = messages.find(msg => msg.id === id);
-				socket.emit(`banuser - ${platform}`, {modName: currentUser?.displayName?.toLowerCase?.(), user: banMsg?.[platform === "discord" ? "userId" : "displayName"]});
+				socket.emit(`banuser - ${platform}`, {
+					modName: currentUser?.displayName?.toLowerCase?.(),
+					user: banMsg?.[platform === "discord" ? "userId" : "displayName"],
+				});
 			}
 		},
-		[socket, messages,currentUser]
+		[socket, messages, currentUser]
 	);
 
 	const timeout = useCallback(
 		(id, platform) => {
 			if (platform && socket) {
-                const banMsg = messages.find(msg => msg.id === id);
-                // on discord we delete by userId and on twitch we delete by username
-				socket.emit(`timeoutuser - ${platform}`, {modName: currentUser?.displayName?.toLowerCase?.(), user: banMsg?.[platform === "discord" ? "userId" : "displayName"]});
+				const banMsg = messages.find(msg => msg.id === id);
+				// on discord we delete by userId and on twitch we delete by username
+				socket.emit(`timeoutuser - ${platform}`, {
+					modName: currentUser?.displayName?.toLowerCase?.(),
+					user: banMsg?.[platform === "discord" ? "userId" : "displayName"],
+				});
 			}
 		},
 		[socket, messages, currentUser]
@@ -163,7 +170,7 @@ function App() {
 			});
 
 			if (platform && socket) {
-				socket.emit(`deletemsg - ${platform}`, {id, modName: currentUser?.displayName?.toLowerCase?.()});
+				socket.emit(`deletemsg - ${platform}`, { id, modName: currentUser?.displayName?.toLowerCase?.() });
 			}
 		},
 		[socket, setMessages, currentUser]
@@ -175,41 +182,46 @@ function App() {
 			socket.removeListener("chatmessage");
 			socket.on("chatmessage", msg => {
 				setMessages(m => {
-                    // by default we don't ignore messages
-                    let ignoredMessage = false;
+					// by default we don't ignore messages
+					let ignoredMessage = false;
 
-                    // check if we should ignore this user
+					// check if we should ignore this user
 					if (settings?.IgnoredUsers?.map?.(item => item.value.toLowerCase()).includes(msg.displayName.toLowerCase())) {
 						ignoredMessage = true;
-                    }
-                    
-                    // check if the message is a command
+					}
+
+					// check if the message is a command
 					const _ = settings?.IgnoredCommandPrefixes?.forEach(prefix => {
 						if (msg.body.startsWith(prefix.value)) {
 							ignoredMessage = true;
 						}
-                    });
-                    
-                    // don't allow ignoring of notifications from 'disstreamchat'
-                    if (msg.displayName.toLowerCase() === "disstreamchat") ignoredMessage = false;
-                    
-                    // if ignored don't add the message
-                    if (ignoredMessage) return m;
-                    
-                    // add a <p></p> around the message to make formatting work properly also hightlight pings
+					});
+
+					// don't allow ignoring of notifications from 'disstreamchat'
+					if (msg.displayName.toLowerCase() === "disstreamchat") ignoredMessage = false;
+
+					// if ignored don't add the message
+					if (ignoredMessage) return m;
+
+					// add a <p></p> around the message to make formatting work properly also hightlight pings
 					msg.body = `<p>${msg.body.replace(
 						new RegExp(`(?<=\s|^)(${currentUser.displayName}|@${currentUser.displayName})`, "ig"),
 						"<span class='ping'>$&</span>"
-                    )}</p>`;
-                    
-                    // check if the message can have mod actions done on it
+					)}</p>`;
+
+					// check if the message can have mod actions done on it
 					msg.moddable =
 						msg?.displayName?.toLowerCase?.() !== currentUser?.displayName?.toLowerCase?.() &&
-                        (!Object.keys(msg.badges).includes("moderator") && !Object.keys(msg.badges).includes("broadcaster"));
+						!Object.keys(msg.badges).includes("moderator") &&
+						!Object.keys(msg.badges).includes("broadcaster");
 
-                    if(msg.platform !== "discord" && msg?.displayName?.toLowerCase?.() !== currentUser?.displayName?.toLowerCase?.() && channel?.TwitchName?.toLowerCase?.() === currentUser?.displayName?.toLowerCase?.()) msg.moddable = true
-                    return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
-                    
+					if (
+						msg.platform !== "discord" &&
+						msg?.displayName?.toLowerCase?.() !== currentUser?.displayName?.toLowerCase?.() &&
+						channel?.TwitchName?.toLowerCase?.() === currentUser?.displayName?.toLowerCase?.()
+					)
+						msg.moddable = true;
+					return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
 				});
 			});
 			return () => socket.removeListener("chatmessage");
@@ -350,11 +362,38 @@ function App() {
 
 	useEffect(() => {
 		setFlagMatches(handleFlags(showSearch ? search : "", [...messages, ...pinnedMessages]).filter(msg => !msg.deleted));
-	}, [messages, search, showSearch, pinnedMessages]);
+    }, [messages, search, showSearch, pinnedMessages]);
+    
+    const sendMessage = useCallback(() => {
+        if(socket){
+            socket.emit("sendchat", {
+                sender: currentUser?.displayName?.toLowerCase?.(),
+                message: chatValue
+            })
+        }
+    }, [socket, chatValue, currentUser])
 
-	return showViewers ? <Viewers/> : (
+	return showViewers ? (
+		<Viewers />
+	) : (
 		<div style={{ fontFamily: settings.Font }} ref={bodyRef} className="overlay-container">
 			<div className="overlay">
+				<textarea
+					onKeyPress={e => {
+						if (e.which === 13 && !e.shiftKey) {
+                            sendMessage()
+                            setChatValue("")
+							e.preventDefault();
+						}
+					}}
+					name="chat-input"
+					id="chat-input"
+                    rows="4"
+                    value={chatValue}
+                    onChange={e => {
+                        setChatValue(e.target.value)
+                    }}
+				></textarea>
 				<Messages
 					messages={flagMatches
 						// .filter(msg => !search || msg.displayName.toLowerCase().includes(search.toLowerCase()) || msg.body.toLowerCase().includes(search.toLowerCase()))
