@@ -111,7 +111,7 @@ function createMainWindow() {
 	mainWindow.setThumbarButtons([
 		{
 			tooltip: "Toggle Focus",
-			icon: path.join(__dirname, "icon.png"),
+			icon: path.join(__dirname, "focus.png"),
 			click() {
                 if(focused)unfocus()
                 else focus()
