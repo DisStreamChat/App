@@ -44,7 +44,7 @@ const Viewers = props => {
 				}
 			};
 			getChatters();
-			id = setInterval(getChatters, 45000);
+			id = setInterval(getChatters, 60000);
 		})();
 		return () => clearInterval(id);
 	}, [userId]);

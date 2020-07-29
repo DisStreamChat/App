@@ -146,7 +146,7 @@ const Header = props => {
 			}
 		}
 		getStats();
-		const id = setInterval(getStats, 45000);
+		const id = setInterval(getStats, 60000);
 		return () => clearInterval(id);
 	}, [viewingUserInfo]);
 

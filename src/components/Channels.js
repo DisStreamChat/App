@@ -29,7 +29,7 @@ const ChannelItem = props => {
 
 	useEffect(() => {
 		getLive();
-		const id = setInterval(getLive, 45000);
+		const id = setInterval(getLive, 60000);
 		return () => clearInterval(id);
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [channelName]);
