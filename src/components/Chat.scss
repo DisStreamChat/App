@@ -1,0 +1,362 @@
+@import url("https://api.disstreamchat.com/fonts");
+:root {
+	--discord-color: #7289da;
+	--twitch-color: #613fa0;
+	--disstreamchat-blue: #2d688d;
+	--disstreamchat-purple: #462b45;
+	--sidebar-color: #2c3e50;
+	--sidebar-accent-color: #32465a;
+	--sidebar-dark-accent: #435f7a;
+	--grey: rgb(51, 51, 51);
+	--youtube-background: linear-gradient(320.75deg, rgb(255, 0, 0) 8.4%, rgb(182, 0, 52) 100.11%);
+	--twitch-background: linear-gradient(198.87deg, rgb(162, 58, 195) -17.84%, rgb(106, 69, 173) 114.96%);
+}
+
+.App {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100vh;
+	font-family: Montserrat;
+	color: #fff;
+}
+
+.container-after-titlebar {
+	overflow-x: hidden !important;
+}
+
+* {
+	font-family: Montserrat;
+	color: #fff;
+	padding: 0;
+	margin: 0;
+	box-sizing: content-box !important;
+}
+
+.version {
+	font-family: Montserrat !important;
+}
+
+.body {
+	display: flex;
+	justify-content: center;
+	position: absolute;
+	top: 65px;
+	width: 100vw;
+}
+
+.overlay {
+	width: fit-content;
+	display: flex;
+	flex-direction: column-reverse;
+	align-items: flex-end;
+	justify-content: flex-end;
+}
+
+.overlay > div:nth-of-type(2) {
+	display: flex;
+	flex-direction: column-reverse;
+}
+
+#chat-input--container{
+    & > img{
+        // position: absolute;
+        // right: 1rem;
+        // top: 50%;
+        // transform: translateY(-50%);
+        margin: 0 1rem;
+        width: 30px;
+        transition: .025s;
+        filter:grayscale(1);
+        cursor: default;
+        &:hover{
+            filter: none;
+        }
+    }
+    &:focus-within {
+		box-shadow: 0 0 0 1px #137cbd, 0 0 0 1px #137cbd, 0 0 0 3px rgba(19, 124, 189, 0.3), inset 0 0 0 1px rgba(16, 22, 26, 0.3),
+			inset 0 1px 1px rgba(16, 22, 26, 0.4);
+    }
+    cursor: text;
+    position: absolute;
+	bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 95%;
+    height: 75px;
+    background: #212121;
+	border-radius: 0.5rem;
+    color: white;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.overlay-container {
+	height: calc(100vh - 95px);
+	overflow: auto;
+	width: fit-content;
+	overflow-x: hidden;
+}
+
+.full-body {
+	height: calc(100vh - 30px);
+}
+
+.ping {
+	background: white;
+	color: black !important;
+	padding: 0.1rem;
+	border-radius: 0.1rem;
+}
+
+.overlay .search-container {
+	z-index: 0;
+	width: 100vw;
+}
+
+/* width */
+::-webkit-scrollbar {
+	width: 0px;
+	height: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+	background: #f1f1f100;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+	background: #888;
+	border-radius: 15px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+	background: #555;
+}
+
+p,
+h1 {
+	margin: 0 !important;
+}
+
+h1 {
+	text-align: center;
+}
+
+#root a {
+	color: white !important;
+}
+
+._3603H {
+	padding-bottom: 3px;
+}
+
+._3VpLd {
+	position: relative;
+	top: -2px;
+	left: -1px;
+	transform: scale(0.75);
+	height: fit-content;
+}
+
+._2WLY1 {
+	margin: 0.125rem 0 !important;
+}
+
+.ml-1r {
+	margin-left: 1rem !important;
+}
+
+._1qxYA {
+	will-change: transform, opacity;
+}
+
+#chat-input {
+    // width: 86%;
+    flex: 1;
+	resize: none;
+	outline: none;
+	border: none;
+	color: white;
+	padding: 0.75rem;
+	height: 75px;
+	align-self: center;
+	border-radius: 0.5rem;
+	background: #212121;
+    box-sizing: border-box !important;
+    z-index: 10000;
+	
+	// min-height: fit-content;
+	&::-webkit-scrollbar {
+		width: 0px;
+	}
+
+	/* Track */
+	&::-webkit-scrollbar-track {
+		background: #f1f1f1;
+	}
+
+	/* Handle */
+	&::-webkit-scrollbar-thumb {
+		background: #888;
+	}
+
+	/* Handle on hover */
+	&::-webkit-scrollbar-thumb:hover {
+		background: #555;
+	}
+}
+
+.unread-notification {
+	box-sizing: border-box !important;
+	position: absolute;
+	z-index: 100;
+	display: flex;
+	justify-content: space-between;
+	padding: 0.5rem 1rem;
+	width: 95%;
+	left: 50%;
+	transform: translateX(-50%);
+	background: #4f545caa;
+	border-radius: 2rem;
+	margin-top: 0.75rem;
+}
+
+.unread-notification button {
+	background: none;
+	outline: none !important;
+	border: none;
+	text-decoration: underline;
+}
+
+.back-to-top-button {
+	position: fixed;
+	bottom: 1rem;
+	right: 1rem;
+	outline: none !important;
+	border: none;
+	padding: 0.5rem;
+	border-radius: 0.5rem;
+	background: var(--disstreamchat-purple);
+	border: solid var(--disstreamchat-blue);
+}
+
+.back-to-top-button svg {
+	transform: scale(2);
+}
+
+.to-top-node-enter {
+	opacity: 0;
+	transform: translateY(100%);
+}
+.to-top-node-enter-active {
+	opacity: 1;
+	transform: translateY(0);
+	transition: 400ms;
+}
+.to-top-node-exit {
+	transform: translateY(0);
+	opacity: 1;
+}
+.to-top-node-exit-active {
+	opacity: 0;
+	transform: translateY(100%);
+	transition: 400ms;
+}
+
+.unread-node-enter {
+	opacity: 0;
+	transform: translate(-50%, -100%);
+}
+.unread-node-enter-active {
+	opacity: 1;
+	transform: translate(-50%, 0);
+	transition: 400ms;
+}
+.unread-node-exit {
+	transform: translate(-50%, 0);
+	opacity: 1;
+}
+.unread-node-exit-active {
+	opacity: 0;
+	transform: translate(-50%, -100%);
+	transition: 400ms;
+}
+
+.rah-static {
+	overflow: hidden !important;
+}
+
+._jnNsa {
+	margin: 0 0.1rem;
+}
+
+._1pKVQ * {
+	width: initial !important;
+}
+
+#root ._2WzYd * {
+	font-family: inherit !important;
+	color: inherit;
+}
+
+._jnNsa,
+._jnNsa *,
+._3VpLd,
+._3VpLd * {
+	max-width: 24px;
+	color: white;
+}
+
+@media screen and (max-width: 475px) {
+	._jnNsa,
+	._jnNsa *,
+	._3VpLd,
+	._3VpLd * {
+		max-width: 18px;
+		margin: 0;
+	}
+
+	._2WzYd {
+		font-size: 1.5rem !important;
+	}
+
+	._17Vfh {
+		margin-left: 0.25rem !important;
+	}
+	._1Zsx4 {
+		margin-right: 0.25rem !important;
+	}
+}
+
+@media screen and (max-width: 420px) {
+	._2WzYd {
+		font-size: 1rem !important;
+	}
+}
+
+@media screen and (max-width: 360px) {
+	._2WzYd {
+		font-size: 0.85rem !important;
+	}
+
+	._jnNsa {
+		transform: scale(0.75);
+	}
+	._17Vfh {
+		max-width: 16px !important;
+	}
+	._YOO2f {
+		margin-left: 0.15rem !important;
+	}
+}
+
+@media screen and (max-width: 315px) {
+	._2WzYd {
+		font-size: 0.7rem !important;
+	}
+}
