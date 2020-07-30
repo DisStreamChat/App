@@ -415,7 +415,8 @@ function App() {
 								setChatValue(e.target.value);
 							}}
 						></textarea>
-						<Tooltip title="Emote Picker" arrow>
+                        {/* will be used in the future */}
+						{/* <Tooltip title="Emote Picker" arrow>
 							<img
 								src={displayMotes[emoteIndex]}
 								onMouseEnter={() => {
@@ -423,7 +424,7 @@ function App() {
 								}}
 								alt=""
 							/>
-						</Tooltip>
+						</Tooltip> */}
 					</div>
 				)}
 
