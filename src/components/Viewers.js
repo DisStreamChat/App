@@ -9,14 +9,19 @@ import Loader from "react-loader";
 const ViewerTab = props => {};
 
 const ViewerCard = props => {
-	return <div className="viewer-card">{props.login}</div>;
+	return (
+		<div>
+			<a href={`https://www.twitch.tv/popout/${props.streamer}/viewercard/${props.login}?popout=`} className="viewer-card">
+				{props.login}
+			</a>
+		</div>
+	);
 };
 
-const Viewers = ({chatterInfo, chatterCount} )=> {
-
+const Viewers = ({ chatterInfo, chatterCount }) => {
 	const [tab, setTab] = useState("twitch");
 	const { setShowViewers } = useContext(AppContext);
-	
+	const currentUser = firebase.auth.currentUser;
 
 	return (
 		<main className="viewer-body">
@@ -51,7 +56,7 @@ const Viewers = ({chatterInfo, chatterCount} )=> {
 								<div className="viewer-type">
 									<h2 className="viewer-type--header">{key}</h2>
 									{value.map(user => (
-										<ViewerCard {...user}></ViewerCard>
+										<ViewerCard streamer={currentUser?.displayName?.toLowerCase?.()} {...user}></ViewerCard>
 									))}
 								</div>
 							);
