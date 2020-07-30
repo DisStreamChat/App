@@ -82,6 +82,7 @@ function App() {
 	const observerRef = useRef();
 	const currentUser = firebase.auth.currentUser;
 	const [emoteIndex, setEmoteIndex] = useState(0);
+	const [focused, setFocused] = useState(true);
 
 	// this runs once on load, and starts the socket
 	useEffect(() => {
@@ -385,43 +386,46 @@ function App() {
 	}, [socket, chatValue, currentUser]);
 
 	return showViewers ? (
-        <span style={{ fontFamily: settings.Font }}>
-            <Viewers />
-        </span>
+		<span style={{ fontFamily: settings.Font }}>
+			<Viewers />
+		</span>
 	) : (
 		<div style={{ fontFamily: settings.Font }} ref={bodyRef} className="overlay-container">
 			<div className="overlay">
-				<div id="chat-input--container" onClick={() => {
-                    document.getElementById("chat-input").focus()
-                }}>
-					
-
-					<textarea
-						onKeyPress={e => {
-							if (e.which === 13 && !e.shiftKey) {
-								sendMessage();
-								setChatValue("");
-								e.preventDefault();
-							}
+				{(
+					<div
+						id="chat-input--container"
+						onClick={() => {
+							document.getElementById("chat-input").focus();
 						}}
-						name="chat-input"
-						id="chat-input"
-						rows="4"
-						value={chatValue}
-						onChange={e => {
-							setChatValue(e.target.value);
-						}}
-					></textarea>
-                    <Tooltip title="Emote Picker" arrow>
-						<img
-							src={displayMotes[emoteIndex]}
-							onMouseEnter={() => {
-								setEmoteIndex(Math.floor(Math.random() * displayMotes.length));
+					>
+						<textarea
+							onKeyPress={e => {
+								if (e.which === 13 && !e.shiftKey) {
+									sendMessage();
+									setChatValue("");
+									e.preventDefault();
+								}
 							}}
-							alt=""
-						/>
-					</Tooltip>
-				</div>
+							name="chat-input"
+							id="chat-input"
+							rows="4"
+							value={chatValue}
+							onChange={e => {
+								setChatValue(e.target.value);
+							}}
+						></textarea>
+						<Tooltip title="Emote Picker" arrow>
+							<img
+								src={displayMotes[emoteIndex]}
+								onMouseEnter={() => {
+									setEmoteIndex(Math.floor(Math.random() * displayMotes.length));
+								}}
+								alt=""
+							/>
+						</Tooltip>
+					</div>
+				)}
 
 				<Messages
 					messages={flagMatches
