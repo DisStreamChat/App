@@ -15,6 +15,7 @@ import Header from "./components/Header";
 import Viewers from "./components/Viewers";
 const { ipcRenderer } = window.require("electron");
 
+
 const App = () => {
 	const [firebaseInit, setFirebaseInit] = useState(false);
 	const [streamerInfo, setStreamerInfo] = useState({});

@@ -78,7 +78,12 @@ const Header = props => {
 	const [isPopoutOut, setIsPopOut] = useState();
 	const { location } = props;
 	const absoluteLocation = window.location;
-	const [unreadMessages, setUnreadMessages] = useState(false);
+    const [unreadMessages, setUnreadMessages] = useState(false);
+    const [platform, setPlatform] = useState("")
+
+    useEffect(() => {
+        ipcRenderer.on("send-platform", (event, data) => setPlatform(data))
+    }, [])
 
 	useEffect(() => {
 		(async () => {
@@ -90,13 +95,20 @@ const Header = props => {
 			const latestVersion = latestVersionInfo.tag_name;
 			const updateable = compare(latestVersion, currentVersion) > 0;
 			if (updateable) {
-				// add cross platform url
-				const windowsDownloadAsset = latestVersionInfo.assets[0];
-				const windowsDownloadUrl = windowsDownloadAsset.browser_download_url;
-				setUpdateLink(windowsDownloadUrl);
+                // add cross platform url
+                let downLoadUrl
+                if(platform === "win32"){
+                    const windowsDownloadAsset = latestVersionInfo.assets[0];
+                    downLoadUrl = windowsDownloadAsset.browser_download_url;
+                }else if(platform === "linux"){
+                    downLoadUrl = "https://i.lungers.com/disstreamchat/linux"
+                }else if(platform === "darwin"){
+                    downLoadUrl = "https://i.lungers.com/disstreamchat/darwin"
+                }
+				setUpdateLink(downLoadUrl);
 			}
 		})();
-	}, []);
+	}, [platform]);
 
 	useEffect(() => {
 		setTimeout(() => {

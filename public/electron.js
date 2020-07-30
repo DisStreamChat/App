@@ -117,7 +117,10 @@ function createMainWindow() {
                 else focus()
 			},
 		},
-	]);
+    ]);
+    setTimeout(() => {
+        mainWindow.webContents.send("send-platform", process.platform)
+    }, 10000);
 }
 
 // this is used to send all links to the users default browser
