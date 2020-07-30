@@ -12,20 +12,18 @@ import Loader from "react-loader";
 import { AppContext } from "./contexts/AppContext";
 import Channels from "./components/Channels";
 import Header from "./components/Header";
+import Viewers from "./components/Viewers";
 const { ipcRenderer } = window.require("electron");
+
 
 const App = () => {
 	const [firebaseInit, setFirebaseInit] = useState(false);
 	const [streamerInfo, setStreamerInfo] = useState({});
 	const [messages, setMessages] = useState([]);
 	const [pinnedMessages, setPinnedMessages] = useState([]);
-	const [border, setBorder] = useState(true);
+    const [border, setBorder] = useState(true);
+    const [showViewers, setShowViewers] = useState(false)
 	const currentUser = firebase.auth.currentUser;
-
-	useEffect(() => {
-		ipcRenderer.send("setclickthrough", "f6");
-		ipcRenderer.send("setunclickthrough", "f7");
-	}, []);
 
 	useEffect(() => {
 		ipcRenderer.on("toggle-border", (event, text) => {
@@ -40,7 +38,11 @@ const App = () => {
 			.onSnapshot(snapshot => {
 				const data = snapshot.data();
 				if (data) {
-					const opacity = data.appSettings.ClickThroughOpacity;
+                    const opacity = data.appSettings.ClickThroughOpacity;
+                    const unfocusKey = data.appSettings.UnfocusKeybind
+                    const focusKey = data.appSettings.FocusKeybind
+                    ipcRenderer.send("setFocus", focusKey || "f7")
+                    ipcRenderer.send("setunFocus", unfocusKey || "f6")
 					ipcRenderer.send("setopacity", opacity);
 				}
 			});
@@ -107,7 +109,9 @@ const App = () => {
 				streamerInfo,
 				setStreamerInfo,
 				pinnedMessages,
-				setPinnedMessages,
+                setPinnedMessages,
+                showViewers,
+                setShowViewers
 			}}
 		>
 			<Router>
@@ -115,6 +119,7 @@ const App = () => {
 				<main className="body">
 					<Switch>
 						<ProtectedRoute exact path="/chat/:id" component={Chat} />
+                        <ProtectedRoute exact path="/viewers/:id" component={Viewers}/>
 						<ProtectedRoute path="/channels" component={Channels} />
 						<Route path="/login" component={Auth} />
 						<Redirect to="/channels" />

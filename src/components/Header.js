@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect, useContext } from "react";
-import { withRouter, Link } from "react-router-dom";
+import { withRouter, Link, useParams } from "react-router-dom";
 import { AppContext } from "../contexts/AppContext";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import SettingAccordion from "./SettingsAccordion";
@@ -14,7 +14,7 @@ import compare from "semver-compare";
 import ClearIcon from "@material-ui/icons/Clear";
 import MailTwoToneIcon from "@material-ui/icons/MailTwoTone";
 import { Tooltip } from "@material-ui/core";
-const remote = window.require("electron").remote;
+const { remote, ipcRenderer } = window.require("electron");
 const customTitlebar = window.require("custom-electron-titlebar");
 
 let MyTitleBar = new customTitlebar.Titlebar({
@@ -30,7 +30,9 @@ const SettingList = props => {
 	return (
 		<SettingAccordion>
 			{Object.entries(props.defaultSettings || {})
-				.filter(([name, data]) => (!data.discordSetting && (!props.search ? true : name?.toLowerCase()?.includes(props?.search?.toLowerCase()))))
+				.filter(
+					([name, data]) => !data.discordSetting && (!props.search ? true : name?.toLowerCase()?.includes(props?.search?.toLowerCase()))
+				)
 				.sort((a, b) => {
 					const categoryOrder = a[1].type.localeCompare(b[1].type);
 					const nameOrder = a[0].localeCompare(b[0]);
@@ -65,15 +67,23 @@ const Header = props => {
 	const [search, setSearch] = useState();
 	const [chatHeader, setChatHeader] = useState(false);
 	const [show, setShow] = useState(true);
+	const [, set] = useState(false);
 	const currentUser = firebase.auth.currentUser;
 	const id = currentUser?.uid || " ";
-	const { messages, setMessages } = useContext(AppContext);
+	const { messages, setMessages, showViewers, setShowViewers } = useContext(AppContext);
 	const [viewingUserId, setViewingUserId] = useState();
 	const [viewingUserInfo, setViewingUserInfo] = useState();
 	const [viewingUserStats, setViewingUserStats] = useState();
 	const [updateLink, setUpdateLink] = useState();
+	const [isPopoutOut, setIsPopOut] = useState();
 	const { location } = props;
-	const [unreadMessages, setUnreadMessages] = useState(false);
+	const absoluteLocation = window.location;
+    const [unreadMessages, setUnreadMessages] = useState(false);
+    const [platform, setPlatform] = useState("")
+
+    useEffect(() => {
+        ipcRenderer.on("send-platform", (event, data) => setPlatform(data))
+    }, [])
 
 	useEffect(() => {
 		(async () => {
@@ -85,13 +95,20 @@ const Header = props => {
 			const latestVersion = latestVersionInfo.tag_name;
 			const updateable = compare(latestVersion, currentVersion) > 0;
 			if (updateable) {
-				// add cross platform url
-				const windowsDownloadAsset = latestVersionInfo.assets[0];
-				const windowsDownloadUrl = windowsDownloadAsset.browser_download_url;
-				setUpdateLink(windowsDownloadUrl);
+                // add cross platform url
+                let downLoadUrl
+                if(platform === "win32"){
+                    const windowsDownloadAsset = latestVersionInfo.assets[0];
+                    downLoadUrl = windowsDownloadAsset.browser_download_url;
+                }else if(platform === "linux"){
+                    downLoadUrl = "https://i.lungers.com/disstreamchat/linux"
+                }else if(platform === "darwin"){
+                    downLoadUrl = "https://i.lungers.com/disstreamchat/darwin"
+                }
+				setUpdateLink(downLoadUrl);
 			}
 		})();
-	}, []);
+	}, [platform]);
 
 	useEffect(() => {
 		setTimeout(() => {
@@ -114,13 +131,13 @@ const Header = props => {
 				setViewingUserInfo(userData);
 			}
 		})();
-	}, [chatHeader, show, viewingUserId]);
+	}, [chatHeader, show, viewingUserId, ]);
 
 	useEffect(() => {
 		async function getStats() {
 			if (viewingUserInfo) {
 				// const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=instafluff`;
-				const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=${viewingUserInfo.name}`;
+				const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=${viewingUserInfo.name}&new=true`;
 				const response = await fetch(ApiUrl);
 				const data = await response.json();
 				setViewingUserStats(prev => {
@@ -128,7 +145,7 @@ const Header = props => {
 						return {
 							name: viewingUserInfo.displayName,
 							viewers: data.viewer_count,
-							isLive: true,
+							isLive: data.isLive,
 						};
 					} else {
 						return {
@@ -141,19 +158,21 @@ const Header = props => {
 			}
 		}
 		getStats();
-		const id = setInterval(getStats, 45000);
+		const id = setInterval(getStats, 60000);
 		return () => clearInterval(id);
 	}, [viewingUserInfo]);
 
 	useEffect(() => {
 		setChatHeader(location?.pathname?.includes("chat"));
 		setShow(!location?.pathname?.includes("login"));
-	}, [location]);
+		setIsPopOut(new URLSearchParams(location?.search).has("popout"));
+		set(location.pathname.includes("viewers"));
+	}, [location, absoluteLocation]);
 
 	useEffect(() => {
 		(async () => {
-			const settingsRef = await firebase.db.collection("defaults").doc("settings").get();
-            const settingsData = settingsRef.data().settings
+			const settingsRef = await firebase.db.collection("defaults").doc("settings13").get();
+			const settingsData = settingsRef.data().settings;
 			setDefaultSettings(settingsData);
 		})();
 	}, []);
@@ -198,30 +217,39 @@ const Header = props => {
 					{chatHeader && viewingUserStats && (
 						<div className="stats">
 							<div className={`live-status ${viewingUserStats?.isLive ? "live" : ""}`}></div>
-							<div className="name">{viewingUserStats?.name}</div>
-							<div className={"live-viewers"}>
-								<PeopleAltTwoToneIcon />
-								{viewingUserStats?.viewers}
-							</div>
+							<a href={`https://twitch.tv/${viewingUserStats?.name?.toLowerCase?.()}`} className="name">{viewingUserStats?.name}</a>
+							<Tooltip arrow title="Viewers in Chat">
+								<div
+									className={"live-viewers"}
+									onClick={() => setShowViewers(true)}
+								>
+									<PeopleAltTwoToneIcon />
+									{viewingUserStats?.viewers}
+								</div>
+							</Tooltip>
 						</div>
 					)}
 					{chatHeader ? (
 						<>
-							<Tooltip title={`${unreadMessages ? "Mark as Read" : ""}`} arrow>
-								<div
-									onClick={() => setMessages(prev => prev.map(msg => ({ ...msg, read: true })))}
-									className={`messages-notification ${unreadMessages ? "unread" : ""}`}
-								>
-									{unreadMessages ? (unreadMessages.length > maxDisplayNum ? `${maxDisplayNum}+` : unreadMessages.length) : ""}
-									{unreadMessages ? " " : ""}
-									<MailTwoToneIcon />
-								</div>
-							</Tooltip>
-							<Link to="/channels">
-								<Button variant="contained" color="primary">
-									Channels
-								</Button>
-							</Link>
+							{
+								<Tooltip title={`${unreadMessages ? "Mark as Read" : "No unread Messages"}`} arrow>
+									<div
+										onClick={() => setMessages(prev => prev.map(msg => ({ ...msg, read: true })))}
+										className={`messages-notification ${unreadMessages ? "unread" : ""}`}
+									>
+										{unreadMessages ? (unreadMessages.length > maxDisplayNum ? `${maxDisplayNum}+` : unreadMessages.length) : ""}
+										{unreadMessages ? " " : ""}
+										<MailTwoToneIcon />
+									</div>
+								</Tooltip>
+							}
+							{!isPopoutOut && (
+								<Link to="/channels">
+									<Button variant="contained" color="primary">
+										{isPopoutOut ? "Close" : "Channels"}
+									</Button>
+								</Link>
+							)}
 						</>
 					) : (
 						<Button variant="contained" color="primary" onClick={signout}>

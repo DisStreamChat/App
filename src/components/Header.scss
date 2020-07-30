@@ -10,7 +10,7 @@
 	transition: 0.5s ease-in-out;
 	transition-property: height, background;
 	position: fixed;
-	z-index: 10;
+	z-index: 100;
 	padding-top: 5px;
 	padding-left: 1rem;
 	padding-right: 1rem;
@@ -177,11 +177,11 @@
 	position: absolute;
 	top: 65px;
 	left: 0px;
-	opacity: 0;
 	font-size: 2rem !important;
-	transition: 0.5s !important;
-	&.open {
-		opacity: 1;
+    transition: 0.5s !important;
+	&:not(.open) {
+        opacity: 0;
+		display: none;
 	}
 }
 
@@ -208,22 +208,22 @@
 }
 
 .nav .MuiButton-contained {
-	background: var(--distwitchchat-blue);
+	background: var(--disstreamchat-blue);
 	transition: 0.25s;
 	color: white !important;
 }
 
 #root .nav .MuiButton-contained:hover {
-	background: var(--distwitchchat-blue);
+	background: var(--disstreamchat-blue);
 	filter: contrast(125%);
 }
 
 #root .nav .MuiButton-containedPrimary:hover {
-	background: var(--distwitchchat-purple);
+	background: var(--disstreamchat-purple);
 }
 
 .nav .MuiButton-containedPrimary {
-	background: var(--distwitchchat-purple);
+	background: var(--disstreamchat-purple);
 }
 
 #root .MuiFormControlLabel-root {
@@ -294,6 +294,18 @@
 	align-items: center;
 }
 
+.live-viewers{
+    cursor: pointer;
+    svg.MuiSvgIcon-root{
+        padding: .25rem;
+        border-radius: .25rem;
+        transition: .5s;
+        &:hover{
+            background: #ffffff26
+        }
+    }
+}
+
 .live-status {
 	width: 12px;
 	height: 12px;
@@ -328,6 +340,49 @@
 		font-size: 1rem;
 	}
 }
+
+.keybind-body{
+    display: flex;
+    align-items: center;
+    justify-content:  space-around;
+    margin-bottom: 1rem;
+    .preview{
+        border: .5px solid white;
+        color: white;
+        padding: .5rem 1rem;
+        border-radius: .5rem;
+        background: rgba(116,127,141,.1);
+        height: calc(40px - 1rem);
+        flex: .25;
+        text-align: center;
+    }
+    .keybind--disabled{
+        color: #aaa;
+        border: .5px solid #aaa;
+    }
+    button {
+		border: none;
+		outline: none !important;
+        background: rgba(116,127,141,.3);
+        padding: .5rem 1rem;
+        border-radius: .5rem;
+        color: white;
+        
+        transition: 0.05s;
+        margin: 0 .5rem;
+        &:hover, &:focus {
+            background: rgba(116,127,141,.5)
+        }
+		svg {
+			transform: scale(1.5);
+		}
+		&:active {
+			transform: scale(0.95);
+		}
+	}
+}
+
+
 
 .list-body {
 	display: flex;

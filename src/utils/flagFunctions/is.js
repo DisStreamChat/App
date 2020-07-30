@@ -5,7 +5,7 @@ export default (parameter, messages) => {
 		matchingMessages = [
 			...matchingMessages,
 			...messages?.filter(
-				msg => msg?.messageId?.toLowerCase?.() === param?.toLowerCase?.() || msg?.messageType?.toLowerCase?.() === param.toLowerCase?.() || (msg.pinned && param==="pinned")
+				msg => msg?.messageId?.toLowerCase?.()?.includes( param?.toLowerCase?.()) || msg?.messageType?.toLowerCase?.()?.includes(param.toLowerCase?.()) || (msg.pinned && param==="pinned")
 			),
 		];
 	});

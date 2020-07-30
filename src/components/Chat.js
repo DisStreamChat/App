@@ -2,21 +2,32 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import firebase from "../firebase";
 import { useParams } from "react-router-dom";
 import openSocket from "socket.io-client";
-import { Message } from "distwitchchat-componentlib";
+import { Message } from "chatbits";
 import { useContext } from "react";
 import { AppContext } from "../contexts/AppContext";
 import SearchBox from "./SearchBox";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import { CSSTransition } from "react-transition-group";
-import "./Chat.css";
+import "./Chat.scss";
 import "./Message.css";
-import "distwitchchat-componentlib/dist/index.css";
+import "chatbits/dist/index.css";
 import hasFlag from "../utils/flagFunctions/has";
 import fromFlag from "../utils/flagFunctions/from";
 import platformFlag from "../utils/flagFunctions/platform";
 import isFlag from "../utils/flagFunctions/is";
 import { TransitionGroup } from "react-transition-group";
 import useHotkeys from "use-hotkeys";
+import Viewers from "./Viewers";
+import { Tooltip } from "@material-ui/core";
+
+const displayMotes = [
+	"https://static-cdn.jtvnw.net/emoticons/v1/115847/1.0",
+	"https://static-cdn.jtvnw.net/emoticons/v1/64138/1.0",
+	"https://static-cdn.jtvnw.net/emoticons/v1/30259/1.0",
+	"https://static-cdn.jtvnw.net/emoticons/v1/28087/1.0",
+	"https://static-cdn.jtvnw.net/emoticons/v1/68856/1.0",
+	"https://static-cdn.jtvnw.net/emoticons/v1/425618/1.0",
+];
 
 const flagRegex = /(\s|^)(has|from|platform|is):([^\s]*)/gim;
 
@@ -60,15 +71,18 @@ const Messages = React.memo(props => {
 
 function App() {
 	const [socket, setSocket] = useState();
-	const { streamerInfo: settings, messages, setMessages, pinnedMessages, setPinnedMessages } = useContext(AppContext);
+	const { streamerInfo: settings, messages, setMessages, pinnedMessages, setPinnedMessages, showViewers } = useContext(AppContext);
 	const [channel, setChannel] = useState();
 	const [search, setSearch] = useState("");
 	const { id } = useParams();
 	const [showToTop, setShowToTop] = useState(false);
 	const [showSearch, setShowSearch] = useState(true);
+	const [chatValue, setChatValue] = useState("");
 	const bodyRef = useRef();
 	const observerRef = useRef();
 	const currentUser = firebase.auth.currentUser;
+	const [emoteIndex, setEmoteIndex] = useState(0);
+	const [focused, setFocused] = useState(true);
 
 	// this runs once on load, and starts the socket
 	useEffect(() => {
@@ -88,6 +102,7 @@ function App() {
 			switch (key) {
 				case "ctrl+f":
 					setShowSearch(true);
+					document.getElementById("chat-search").focus();
 					break;
 				case "esc":
 					setShowSearch(false);
@@ -108,22 +123,22 @@ function App() {
 				//move message from messages to pinned messages
 				setMessages(prev => {
 					let copy = [...prev];
-                    let index = copy.findIndex(msg => msg.id === id);
-                    copy[index].pinned = true
-                    const pinnedMessage = copy.splice(index, 1)
-                    setPinnedMessages(prev => [...prev, ...pinnedMessage])
-                    return copy
+					let index = copy.findIndex(msg => msg.id === id);
+					copy[index].pinned = true;
+					const pinnedMessage = copy.splice(index, 1);
+					setPinnedMessages(prev => [...prev, ...pinnedMessage]);
+					return copy;
 				});
-			}else{
-                setPinnedMessages(prev => {
+			} else {
+				setPinnedMessages(prev => {
 					let copy = [...prev];
-                    let index = copy.findIndex(msg => msg.id === id);
-                    copy[index].pinned = false
-                    const unPinnedMessage = copy.splice(index, 1)
-                    setMessages(prev => [...prev, ...unPinnedMessage].sort((a, b) => a.sentAt - b.sentAt))
-                    return copy
+					let index = copy.findIndex(msg => msg.id === id);
+					copy[index].pinned = false;
+					const unPinnedMessage = copy.splice(index, 1);
+					setMessages(prev => [...prev, ...unPinnedMessage].sort((a, b) => a.sentAt - b.sentAt));
+					return copy;
 				});
-            }
+			}
 		},
 		[setMessages, setPinnedMessages, messages]
 	);
@@ -132,20 +147,27 @@ function App() {
 		(id, platform) => {
 			if (platform && socket) {
 				const banMsg = messages.find(msg => msg.id === id);
-				socket.emit(`banuser - ${platform}`, banMsg?.displayName);
+				socket.emit(`banuser - ${platform}`, {
+					modName: currentUser?.displayName?.toLowerCase?.(),
+					user: banMsg?.[platform === "discord" ? "userId" : "displayName"],
+				});
 			}
 		},
-		[socket, messages]
+		[socket, messages, currentUser]
 	);
 
 	const timeout = useCallback(
 		(id, platform) => {
 			if (platform && socket) {
 				const banMsg = messages.find(msg => msg.id === id);
-				socket.emit(`timeoutuser - ${platform}`, banMsg?.[platform === "discord" ? "userId" : "DisplayName"]);
+				// on discord we delete by userId and on twitch we delete by username
+				socket.emit(`timeoutuser - ${platform}`, {
+					modName: currentUser?.displayName?.toLowerCase?.(),
+					user: banMsg?.[platform === "discord" ? "userId" : "displayName"],
+				});
 			}
 		},
-		[socket, messages]
+		[socket, messages, currentUser]
 	);
 
 	// this is used to delete messages, in certain conditions will also send a message to backend tell it to delete the message from the sent platform
@@ -160,10 +182,10 @@ function App() {
 			});
 
 			if (platform && socket) {
-				socket.emit(`deletemsg - ${platform}`, id);
+				socket.emit(`deletemsg - ${platform}`, { id, modName: currentUser?.displayName?.toLowerCase?.() });
 			}
 		},
-		[socket, setMessages]
+		[socket, setMessages, currentUser]
 	);
 
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
@@ -171,24 +193,52 @@ function App() {
 		if (socket) {
 			socket.removeListener("chatmessage");
 			socket.on("chatmessage", msg => {
-                setMessages(m => {
-                    let ignoredMessage = false;
+				setMessages(m => {
+					// by default we don't ignore messages
+					let ignoredMessage = false;
+
+					// check if we should ignore this user
 					if (settings?.IgnoredUsers?.map?.(item => item.value.toLowerCase()).includes(msg.displayName.toLowerCase())) {
-                        ignoredMessage = true;
+						ignoredMessage = true;
 					}
+
+					// check if the message is a command
 					const _ = settings?.IgnoredCommandPrefixes?.forEach(prefix => {
-                        if (msg.body.startsWith(prefix.value)) {
-                            ignoredMessage = true;
+						if (msg.body.startsWith(prefix.value)) {
+							ignoredMessage = true;
 						}
 					});
+
+					// don't allow ignoring of notifications from 'disstreamchat'
+					if (msg.displayName.toLowerCase() === "disstreamchat") ignoredMessage = false;
+
+					// if ignored don't add the message
 					if (ignoredMessage) return m;
-                    msg.body = `<p>${msg.body}</p>`;
+
+					// add a <p></p> around the message to make formatting work properly also hightlight pings
+					msg.body = `<p>${msg.body.replace(
+						new RegExp(`(?<=\s|^)(${currentUser.displayName}|@${currentUser.displayName})`, "ig"),
+						"<span class='ping'>$&</span>"
+					)}</p>`;
+
+					// check if the message can have mod actions done on it
+					msg.moddable =
+						msg?.displayName?.toLowerCase?.() !== currentUser?.displayName?.toLowerCase?.() &&
+						!Object.keys(msg.badges).includes("moderator") &&
+						!Object.keys(msg.badges).includes("broadcaster");
+
+					if (
+						msg.platform !== "discord" &&
+						msg?.displayName?.toLowerCase?.() !== currentUser?.displayName?.toLowerCase?.() &&
+						channel?.TwitchName?.toLowerCase?.() === currentUser?.displayName?.toLowerCase?.()
+					)
+						msg.moddable = true;
 					return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
 				});
 			});
 			return () => socket.removeListener("chatmessage");
 		}
-	}, [settings, socket, setMessages]);
+	}, [settings, socket, setMessages, currentUser, channel]);
 
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
 	useEffect(() => {
@@ -239,7 +289,7 @@ function App() {
 		if (socket) {
 			socket.removeListener("purgeuser");
 			socket.on("purgeuser", username => {
-				setMessages(prev => prev.filter(msg => msg.displayName?.toLowerCase() !== username.toLowerCase() ));
+				setMessages(prev => prev.filter(msg => msg.displayName?.toLowerCase() !== username.toLowerCase()));
 			});
 			return () => socket.removeListener("purgeuser");
 		}
@@ -297,11 +347,11 @@ function App() {
 					entries.forEach((entry, i) => {
 						if (entry.isIntersecting) {
 							setMessages(prev => {
-                                const copy = [...prev];
-                                const index = copy.findIndex(msg => msg.id === entry.target.dataset.idx)
-                                if(index !== -1){
-                                    copy[index].read = true;
-                                }
+								const copy = [...prev];
+								const index = copy.findIndex(msg => msg.id === entry.target.dataset.idx);
+								if (index !== -1) {
+									copy[index].read = true;
+								}
 								return copy;
 							});
 							observerRef.current.unobserve(entry.target);
@@ -318,17 +368,101 @@ function App() {
 			}
 		},
 		[observerRef, setMessages]
-	);
+    );
+    
+    const [chatterInfo, setChatterInfo] = useState();
+	const [chatterCount, setChatterCount] = useState();
+    const { id: userId } = useParams();
+
+	useEffect(() => {
+		let id;
+		(async () => {
+			const userData = await (await firebase.db.collection("Streamers").doc(userId).get()).data();
+			const userName = userData?.TwitchName?.toLowerCase?.();
+			const chatterUrl = `${process.env.REACT_APP_SOCKET_URL}/chatters?user=${userName}`;
+			const getChatters = async () => {
+				const response = await fetch(chatterUrl);
+				const json = await response.json();
+				if (json && response.ok) {
+					const info = {};
+					for (let [key, value] of Object.entries(json.chatters)) {
+						if (value.length === 0 || key === "broadcaster") continue;
+						info[key] = await Promise.all(
+							value.map(async name => {
+								const response = await fetch(`${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${name}&platform=twitch`);
+								return await response.json();
+							})
+						);
+					}
+
+					setChatterInfo(info);
+					setChatterCount(json.chatter_count);
+				}
+			};
+			getChatters();
+			id = setInterval(getChatters, 120000);
+		})();
+		return () => clearInterval(id);
+	}, [userId]);
 
 	const [flagMatches, setFlagMatches] = useState([]);
 
 	useEffect(() => {
-		setFlagMatches((handleFlags(showSearch ? search : "", [...messages, ...pinnedMessages])).filter(msg => !msg.deleted));
+		setFlagMatches(handleFlags(showSearch ? search : "", [...messages, ...pinnedMessages]).filter(msg => !msg.deleted));
 	}, [messages, search, showSearch, pinnedMessages]);
 
-	return (
+	const sendMessage = useCallback(() => {
+		if (socket) {
+			socket.emit("sendchat", {
+				sender: currentUser?.displayName?.toLowerCase?.(),
+				message: chatValue,
+			});
+		}
+	}, [socket, chatValue, currentUser]);
+
+	return showViewers ? (
+		<span style={{ fontFamily: settings.Font }}>
+			<Viewers chatterCount={chatterCount} chatterInfo={chatterInfo}/>
+		</span>
+	) : (
 		<div style={{ fontFamily: settings.Font }} ref={bodyRef} className="overlay-container">
 			<div className="overlay">
+				{(
+					<div
+						id="chat-input--container"
+						onClick={() => {
+							document.getElementById("chat-input").focus();
+						}}
+					>
+						<textarea
+							onKeyPress={e => {
+								if (e.which === 13 && !e.shiftKey) {
+									sendMessage();
+									setChatValue("");
+									e.preventDefault();
+								}
+							}}
+							name="chat-input"
+							id="chat-input"
+							rows="4"
+							value={chatValue}
+							onChange={e => {
+								setChatValue(e.target.value);
+							}}
+						></textarea>
+                        {/* will be used in the future */}
+						{/* <Tooltip title="Emote Picker" arrow>
+							<img
+								src={displayMotes[emoteIndex]}
+								onMouseEnter={() => {
+									setEmoteIndex(Math.floor(Math.random() * displayMotes.length));
+								}}
+								alt=""
+							/>
+						</Tooltip> */}
+					</div>
+				)}
+
 				<Messages
 					messages={flagMatches
 						// .filter(msg => !search || msg.displayName.toLowerCase().includes(search.toLowerCase()) || msg.body.toLowerCase().includes(search.toLowerCase()))
@@ -340,7 +474,7 @@ function App() {
 					unreadMessageHandler={checkReadMessage}
 					pin={pinMessage}
 				/>
-				{showSearch && <SearchBox onChange={handleSearch} placeHolder="Search Messages" />}
+				{showSearch && <SearchBox id="chat-search" onChange={handleSearch} placeHolder="Search Messages" />}
 			</div>
 			<CSSTransition unmountOnExit timeout={400} classNames={"to-top-node"} in={showToTop}>
 				<button className="back-to-top-button fade-in" onClick={scrollTop}>
