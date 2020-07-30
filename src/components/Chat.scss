@@ -78,7 +78,7 @@
 			inset 0 1px 1px rgba(16, 22, 26, 0.4);
     }
     cursor: text;
-    z-index: 1000;
+    z-index: 9;
     position: absolute;
 	bottom: 15px;
     left: 50%;
@@ -242,7 +242,7 @@ h1 {
 	border: none;
 	padding: 0.5rem;
     border-radius: 50%;
-    z-index: 100000000000;
+    z-index: 10;
 	background: var(--disstreamchat-purple);
 	border: solid var(--disstreamchat-blue);
 }
