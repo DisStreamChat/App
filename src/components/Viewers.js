@@ -65,7 +65,7 @@ const Viewers = props => {
 				>
 					Twitch
 				</div>
-				<div
+				{/* <div
 					onClick={() => {
 						setTab("discord");
 					}}
@@ -73,7 +73,7 @@ const Viewers = props => {
 					id="discord-tab"
 				>
 					Discord
-				</div>
+				</div> */}
 			</nav>
 			<div className="viewers">
 				{tab === "twitch" ? (
