@@ -400,7 +400,7 @@ function App() {
 				}
 			};
 			getChatters();
-			id = setInterval(getChatters, 60000);
+			id = setInterval(getChatters, 120000);
 		})();
 		return () => clearInterval(id);
 	}, [userId]);
