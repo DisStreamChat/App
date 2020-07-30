@@ -190,14 +190,24 @@ ipcMain.on("setopacity", (event, data) => {
 });
 
 function clearHotKeys() {
-	globalShortcut.unregister(unfocusKey);
-	globalShortcut.unregister(focusKey);
+    try{
+
+        globalShortcut.unregister(unfocusKey);
+        globalShortcut.unregister(focusKey);
+    }catch(err){
+        console.log(err.message)
+    }
 }
 
 function setHotKeys() {
-	console.log(`unfocus: ${unfocusKey}, focus: ${focusKey}`);
-	globalShortcut.register(unfocusKey, unfocus);
-	globalShortcut.register(focusKey, focus);
+    console.log(`unfocus: ${unfocusKey}, focus: ${focusKey}`);
+    try{
+
+        globalShortcut.register(unfocusKey, unfocus);
+        globalShortcut.register(focusKey, focus);
+    }catch(err){
+        console.log(err.message)
+    }
 }
 
 ipcMain.on("clearhotkeys", clearHotKeys);
