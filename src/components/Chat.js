@@ -18,6 +18,16 @@ import isFlag from "../utils/flagFunctions/is";
 import { TransitionGroup } from "react-transition-group";
 import useHotkeys from "use-hotkeys";
 import Viewers from "./Viewers";
+import { Tooltip } from "@material-ui/core";
+
+const displayMotes = [
+	"https://static-cdn.jtvnw.net/emoticons/v1/115847/1.0",
+	"https://static-cdn.jtvnw.net/emoticons/v1/64138/1.0",
+	"https://static-cdn.jtvnw.net/emoticons/v1/30259/1.0",
+	"https://static-cdn.jtvnw.net/emoticons/v1/28087/1.0",
+	"https://static-cdn.jtvnw.net/emoticons/v1/68856/1.0",
+	"https://static-cdn.jtvnw.net/emoticons/v1/425618/1.0",
+];
 
 const flagRegex = /(\s|^)(has|from|platform|is):([^\s]*)/gim;
 
@@ -66,11 +76,12 @@ function App() {
 	const [search, setSearch] = useState("");
 	const { id } = useParams();
 	const [showToTop, setShowToTop] = useState(false);
-    const [showSearch, setShowSearch] = useState(true);
-    const [chatValue, setChatValue] = useState("")
+	const [showSearch, setShowSearch] = useState(true);
+	const [chatValue, setChatValue] = useState("");
 	const bodyRef = useRef();
 	const observerRef = useRef();
 	const currentUser = firebase.auth.currentUser;
+	const [emoteIndex, setEmoteIndex] = useState(0);
 
 	// this runs once on load, and starts the socket
 	useEffect(() => {
@@ -362,38 +373,56 @@ function App() {
 
 	useEffect(() => {
 		setFlagMatches(handleFlags(showSearch ? search : "", [...messages, ...pinnedMessages]).filter(msg => !msg.deleted));
-    }, [messages, search, showSearch, pinnedMessages]);
-    
-    const sendMessage = useCallback(() => {
-        if(socket){
-            socket.emit("sendchat", {
-                sender: currentUser?.displayName?.toLowerCase?.(),
-                message: chatValue
-            })
-        }
-    }, [socket, chatValue, currentUser])
+	}, [messages, search, showSearch, pinnedMessages]);
+
+	const sendMessage = useCallback(() => {
+		if (socket) {
+			socket.emit("sendchat", {
+				sender: currentUser?.displayName?.toLowerCase?.(),
+				message: chatValue,
+			});
+		}
+	}, [socket, chatValue, currentUser]);
 
 	return showViewers ? (
-		<Viewers />
+        <span style={{ fontFamily: settings.Font }}>
+            <Viewers />
+        </span>
 	) : (
 		<div style={{ fontFamily: settings.Font }} ref={bodyRef} className="overlay-container">
 			<div className="overlay">
-				<textarea
-					onKeyPress={e => {
-						if (e.which === 13 && !e.shiftKey) {
-                            sendMessage()
-                            setChatValue("")
-							e.preventDefault();
-						}
-					}}
-					name="chat-input"
-					id="chat-input"
-                    rows="4"
-                    value={chatValue}
-                    onChange={e => {
-                        setChatValue(e.target.value)
-                    }}
-				></textarea>
+				<div id="chat-input--container" onClick={() => {
+                    document.getElementById("chat-input").focus()
+                }}>
+					
+
+					<textarea
+						onKeyPress={e => {
+							if (e.which === 13 && !e.shiftKey) {
+								sendMessage();
+								setChatValue("");
+								e.preventDefault();
+							}
+						}}
+						name="chat-input"
+						id="chat-input"
+						rows="4"
+						value={chatValue}
+						onChange={e => {
+							setChatValue(e.target.value);
+						}}
+					></textarea>
+                    <Tooltip title="Emote Picker" arrow>
+						<img
+							src={displayMotes[emoteIndex]}
+							onMouseEnter={() => {
+								setEmoteIndex(Math.floor(Math.random() * displayMotes.length));
+							}}
+							alt=""
+						/>
+					</Tooltip>
+				</div>
+
 				<Messages
 					messages={flagMatches
 						// .filter(msg => !search || msg.displayName.toLowerCase().includes(search.toLowerCase()) || msg.body.toLowerCase().includes(search.toLowerCase()))

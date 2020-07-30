@@ -15,6 +15,7 @@ const ViewerCard = props => {
 const Viewers = props => {
 	const [chatterInfo, setChatterInfo] = useState();
 	const [chatterCount, setChatterCount] = useState();
+	const [tab, setTab] = useState("twitch");
 	const { setShowViewers } = useContext(AppContext);
 	const { id: userId } = useParams();
 
@@ -55,41 +56,63 @@ const Viewers = props => {
 				<button onClick={() => setShowViewers(false)}>
 					<ClearTwoToneIcon />
 				</button>
+				<div
+					onClick={() => {
+						setTab("twitch");
+					}}
+					className={`platform-tab ${tab === "twitch" ? "open" : ""}`}
+					id="twitch-tab"
+				>
+					Twitch
+				</div>
+				<div
+					onClick={() => {
+						setTab("discord");
+					}}
+					className={`platform-tab ${tab === "discord" ? "open" : ""}`}
+					id="discord-tab"
+				>
+					Discord
+				</div>
 			</nav>
 			<div className="viewers">
-				{chatterInfo ? (
-					Object.entries(chatterInfo).map(([key, value]) => {
-						return (
-							<div className="viewer-type">
-								<h2 className="viewer-type--header">{key}</h2>
-								{value.map(user => (
-									<ViewerCard {...user}></ViewerCard>
-								))}
-							</div>
-						);
-					})
+				{tab === "twitch" ? (
+					chatterInfo ? (
+						Object.entries(chatterInfo).map(([key, value]) => {
+							return (
+								<div className="viewer-type">
+									<h2 className="viewer-type--header">{key}</h2>
+									{value.map(user => (
+										<ViewerCard {...user}></ViewerCard>
+									))}
+								</div>
+							);
+						})
+					) : (
+						<Loader
+							loaded={false}
+							lines={15}
+							length={0}
+							width={15}
+							radius={35}
+							corners={1}
+							rotate={0}
+							direction={1}
+							color="#fff"
+							speed={1.25}
+							trail={60}
+							shadow={true}
+							hwaccel={true}
+							className="spinner"
+							zIndex={2e9}
+							top="50%"
+							left="50%"
+							scale={2.0}
+							loadedClassName="loadedContent"
+						/>
+					)
 				) : (
-					<Loader
-						loaded={false}
-						lines={15}
-						length={0}
-						width={15}
-						radius={35}
-						corners={1}
-						rotate={0}
-						direction={1}
-						color="#fff"
-						speed={1.25}
-						trail={60}
-						shadow={true}
-						hwaccel={true}
-						className="spinner"
-						zIndex={2e9}
-						top="50%"
-						left="50%"
-						scale={2.0}
-						loadedClassName="loadedContent"
-					/>
+					<></>
 				)}
 			</div>
 		</main>
