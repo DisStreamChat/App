@@ -305,7 +305,7 @@ function App() {
 					if (data) {
 						const { TwitchName, guildId, liveChatId } = data;
 						setChannel({
-							TwitchName,
+							TwitchName: "hayashii",
 							guildId,
 							liveChatId,
 						});
