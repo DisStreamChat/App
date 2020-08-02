@@ -80,7 +80,8 @@ const Header = props => {
 	const [platform, setPlatform] = useState("");
 
 	useEffect(() => {
-		ipcRenderer.on("send-platform", (event, data) => setPlatform(data));
+        ipcRenderer.on("send-platform", (event, data) => setPlatform(data));
+        return () => ipcRenderer.removeAllListeners("send-platform")
 	}, []);
 
 	useEffect(() => {
