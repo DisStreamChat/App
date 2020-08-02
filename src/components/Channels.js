@@ -156,7 +156,7 @@ const Channels = React.memo(props => {
 						}
 						setModChannels(
 							channelsInfo
-								.sort()
+								.sort((a, b) => a.login.localeCompare(b.login))
 								.sort((a, b) => (a.isMember ? -1 : 1))
 								.map(channel => {
 									return { ...channel, modPlatform: "twitch" };
@@ -197,7 +197,6 @@ const Channels = React.memo(props => {
 				<h1>Channels you moderate</h1>
 				<div className="modchannels channel-div">
 					{modChannels
-						.sort((a, b) => a.login.localeCompare(b.login))
 						.map(channel => (
 							<ChannelItem popoutChat={popout} key={channel.id} {...channel} moderator />
 						))}
