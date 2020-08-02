@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, Redirect } from "react-router-dom"
 import firebase from "../firebase"
 
-const ProtectedRoute = ({ component: RouteComponent, ...rest }) => {
+const ProtectedRoute = React.memo(({ component: RouteComponent, ...rest }) => {
     return (
         <Route
             {...rest}
@@ -15,6 +15,6 @@ const ProtectedRoute = ({ component: RouteComponent, ...rest }) => {
             }
         />
     );
-}
+})
 
 export default ProtectedRoute;

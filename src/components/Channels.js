@@ -6,7 +6,7 @@ import "./Channels.scss";
 import SearchBox from "./SearchBox";
 const { ipcRenderer } = window.require("electron");
 
-const ChannelItem = props => {
+const ChannelItem = React.memo(props => {
 	const [channelName, setChannelName] = useState("");
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
@@ -17,21 +17,20 @@ const ChannelItem = props => {
 		setChannelName(props.display_name || props.name);
 	}, [props]);
 
-
-    async function getLive() {
-        if (channelName) {
-            const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=${channelName?.toLowerCase?.()}&new=true`;
-            const response = await fetch(ApiUrl);
-            const data = await response.json();
-            setIsLive(() => data?.isLive && channelName);
-        }
-    }
+	async function getLive() {
+		if (channelName) {
+			const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=${channelName?.toLowerCase?.()}&new=true`;
+			const response = await fetch(ApiUrl);
+			const data = await response.json();
+			setIsLive(() => data?.isLive && channelName);
+		}
+	}
 
 	useEffect(() => {
 		getLive();
 		const id = setInterval(getLive, 60000);
 		return () => clearInterval(id);
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [channelName]);
 
 	return (
@@ -99,9 +98,9 @@ const ChannelItem = props => {
 			)}
 		</div>
 	);
-};
+});
 
-const Channels = props => {
+const Channels = React.memo(props => {
 	const currentUser = firebase.auth.currentUser;
 	const [myChannel, setMyChannel] = useState();
 	const [modChannels, setModChannels] = useState([]);
@@ -207,6 +206,6 @@ const Channels = props => {
 			</div>
 		</>
 	);
-};
+});
 
 export default Channels;

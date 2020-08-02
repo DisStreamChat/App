@@ -3,12 +3,12 @@ import firebase from "../firebase";
 import YouTubeIcon from "@material-ui/icons/YouTube";
 import { withRouter } from "react-router";
 import { Redirect } from "react-router-dom";
-import {v4 as uuidv4} from "uuid"
+import { v4 as uuidv4 } from "uuid";
 import "./Auth.css";
 
 const { remote } = window.require("electron");
 
-const Auth = props => {
+const Auth = React.memo(props => {
 	const signInWithGoogle = useCallback(async () => {
 		// create a google auth provider provided by firebase
 		const provider = new firebase.app.auth.GoogleAuthProvider();
@@ -28,21 +28,19 @@ const Auth = props => {
 	}, [props.history]);
 
 	const loginWithTwitch = useCallback(() => {
-        
-        const id = uuidv4()
-        const oneTimeCodeRef = firebase.db.collection("oneTimeCodes").doc(id)
+		const id = uuidv4();
+		const oneTimeCodeRef = firebase.db.collection("oneTimeCodes").doc(id);
 
-        oneTimeCodeRef.onSnapshot(async snapshot => {
-            const data = snapshot.data()
-            if(data){
-                const token = data.authToken
-                await firebase.auth.signInWithCustomToken(token)
-                props.history.push("/")
-            }
-        })
+		oneTimeCodeRef.onSnapshot(async snapshot => {
+			const data = snapshot.data();
+			if (data) {
+				const token = data.authToken;
+				await firebase.auth.signInWithCustomToken(token);
+				props.history.push("/");
+			}
+		});
 
-        remote.shell.openExternal("https://api.disstreamchat.com/oauth/twitch/?otc="+id)
-
+		remote.shell.openExternal("https://api.disstreamchat.com/oauth/twitch/?otc=" + id);
 	}, [props.history]);
 
 	return firebase.auth.currentUser ? (
@@ -65,6 +63,6 @@ const Auth = props => {
 			</div>
 		</div>
 	);
-};
+});
 
 export default withRouter(Auth);
