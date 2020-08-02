@@ -28,7 +28,8 @@ const App = () => {
 	useEffect(() => {
 		ipcRenderer.on("toggle-border", (event, text) => {
 			setBorder(text);
-		});
+        });
+        return () => ipcRenderer.removeAllListeners("toggle-border")
 	}, []);
 
 	useEffect(() => {
@@ -97,7 +98,7 @@ const App = () => {
 						setStreamerInfo(data.appSettings);
 					}
 				});
-			return () => unsub();
+			return unsub;
 		}
 	}, [currentUser]);
 
