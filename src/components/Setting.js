@@ -14,7 +14,7 @@ import ClearIcon from "@material-ui/icons/Clear";
 import uid from "uid";
 import AddIcon from "@material-ui/icons/Add";
 import AnimateHeight from "react-animate-height";
-import "./Users.css";
+import "./Users.scss";
 const { ipcRenderer } = window.require("electron");
 
 const FancySwitch = withStyles({

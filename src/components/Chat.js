@@ -9,7 +9,7 @@ import SearchBox from "./SearchBox";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import { CSSTransition } from "react-transition-group";
 import "./Chat.scss";
-import "./Message.css";
+import "./Message.scss";
 import "chatbits/dist/index.css";
 import hasFlag from "../utils/flagFunctions/has";
 import fromFlag from "../utils/flagFunctions/from";

@@ -4,7 +4,7 @@ import YouTubeIcon from "@material-ui/icons/YouTube";
 import { withRouter } from "react-router";
 import { Redirect } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import "./Auth.css";
+import "./Auth.scss";
 
 const { remote } = window.require("electron");
 
