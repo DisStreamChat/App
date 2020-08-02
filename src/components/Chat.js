@@ -116,7 +116,7 @@ function App() {
 
 	// this function is passed into the message and will be used for pinning
 	const pinMessage = useCallback(
-		(id, pinned = true) => {
+		(id) => {
 			const pinning = !!messages.find(msg => msg.id === id);
 			if (pinning) {
 				//move message from messages to pinned messages

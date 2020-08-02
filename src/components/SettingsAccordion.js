@@ -1,7 +1,7 @@
 import React from "react";
 import { useCallback, useState } from "react";
 
-const SettingAccordion = props => {
+const SettingAccordion = React.memo(props => {
     const [openItem, setOpenItem] = useState()
 
     const clickHandler = useCallback(key => {
@@ -19,6 +19,6 @@ const SettingAccordion = props => {
             ))}
         </div>
     );
-}
+})
 
 export default SettingAccordion;

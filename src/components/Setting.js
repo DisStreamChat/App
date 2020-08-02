@@ -46,7 +46,7 @@ const FancySwitch = withStyles({
 	focusVisible: {},
 })(Switch);
 
-const Setting = props => {
+const Setting = React.memo(props => {
 	const [value, setValue] = useState(props.value);
 	const [displayName, setDisplayName] = useState();
 	const [addingItem, setAddingItem] = useState(false);
@@ -316,6 +316,6 @@ const Setting = props => {
 			)}
 		</div>
 	);
-};
+});
 
 export default Setting;
