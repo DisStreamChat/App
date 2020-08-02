@@ -25,13 +25,13 @@ const ChannelItem = React.memo(props => {
 			const data = await response.json();
 			setIsLive(() => data?.isLive && channelName);
 		}
-	}, [channelName])
+	}, [channelName]);
 
 	useEffect(() => {
 		getLive();
-    }, [getLive]);
-    
-    useInterval(getLive, 60000)
+	}, [getLive]);
+
+	useInterval(getLive, 60000);
 
 	return (
 		<div className={`channel-item ${props.addChannel ? "add-channel" : ""}`}>
@@ -156,8 +156,10 @@ const Channels = React.memo(props => {
 						}
 						setModChannels(
 							channelsInfo
-								.sort((a, b) => a.login.localeCompare(b.login))
-								.sort((a, b) => (a.isMember ? -1 : 1))
+								.sort((a, b) => -a.login.localeCompare(b.login))
+								.sort((a, b) => {
+									return a.isMember ? -1 : 1;
+								})
 								.map(channel => {
 									return { ...channel, modPlatform: "twitch" };
 								})
@@ -196,10 +198,9 @@ const Channels = React.memo(props => {
 				<hr />
 				<h1>Channels you moderate</h1>
 				<div className="modchannels channel-div">
-					{modChannels
-						.map(channel => (
-							<ChannelItem popoutChat={popout} key={channel.id} {...channel} moderator />
-						))}
+					{modChannels.map(channel => (
+						<ChannelItem popoutChat={popout} key={channel.id} {...channel} moderator />
+					))}
 				</div>
 				{!!modChannels.length && <ChannelItem addChannel />}
 			</div>
