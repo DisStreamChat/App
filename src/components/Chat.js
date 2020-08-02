@@ -80,8 +80,8 @@ function App() {
 	const bodyRef = useRef();
 	const observerRef = useRef();
 	const currentUser = firebase.auth.currentUser;
-	const [emoteIndex, setEmoteIndex] = useState(0);
-	const [focused, setFocused] = useState(true);
+	// const [emoteIndex, setEmoteIndex] = useState(0);
+
 
 	// this runs once on load, and starts the socket
 	useEffect(() => {
