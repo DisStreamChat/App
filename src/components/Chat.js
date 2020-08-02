@@ -18,6 +18,7 @@ import isFlag from "../utils/flagFunctions/is";
 import { TransitionGroup } from "react-transition-group";
 import useHotkeys from "use-hotkeys";
 import Viewers from "./Viewers";
+const { ipcRenderer } = window.require("electron");
 
 // const displayMotes = [
 // 	"https://static-cdn.jtvnw.net/emoticons/v1/115847/1.0",
@@ -80,8 +81,17 @@ function App() {
 	const bodyRef = useRef();
 	const observerRef = useRef();
 	const currentUser = firebase.auth.currentUser;
+	const [windowFocused, setWindowFocused] = useState(true);
 	// const [emoteIndex, setEmoteIndex] = useState(0);
 
+	useEffect(() => {
+		ipcRenderer.on("focus", (event, data) => setWindowFocused(data));
+		ipcRenderer.on("focus-again", (event, data) => setWindowFocused(prev => prev && data));
+		return () => {
+			ipcRenderer.removeAllListeners("focus");
+			ipcRenderer.removeAllListeners("focus-again");
+		};
+	}, []);
 
 	// this runs once on load, and starts the socket
 	useEffect(() => {
@@ -116,7 +126,7 @@ function App() {
 
 	// this function is passed into the message and will be used for pinning
 	const pinMessage = useCallback(
-		(id) => {
+		id => {
 			const pinning = !!messages.find(msg => msg.id === id);
 			if (pinning) {
 				//move message from messages to pinned messages
@@ -326,7 +336,7 @@ function App() {
 	const handleSearch = useCallback(setSearch, []);
 
 	const scrollTop = useCallback(() => {
-        setMessages(prev => prev.map(msg => ({...msg, read: true})))
+		setMessages(prev => prev.map(msg => ({ ...msg, read: true })));
 		bodyRef.current.scrollTo({
 			top: 0,
 			behavior: "smooth",
@@ -344,7 +354,7 @@ function App() {
 			if (!node) return;
 			if (!observerRef.current) {
 				observerRef.current = new IntersectionObserver(entries => {
-					entries.forEach((entry) => {
+					entries.forEach(entry => {
 						if (entry.isIntersecting) {
 							setMessages(prev => {
 								const copy = [...prev];
@@ -368,11 +378,11 @@ function App() {
 			}
 		},
 		[observerRef, setMessages]
-    );
-    
-    const [chatterInfo, setChatterInfo] = useState();
+	);
+
+	const [chatterInfo, setChatterInfo] = useState();
 	const [chatterCount, setChatterCount] = useState();
-    const { id: userId } = useParams();
+	const { id: userId } = useParams();
 
 	useEffect(() => {
 		let id;
@@ -422,12 +432,12 @@ function App() {
 
 	return showViewers ? (
 		<span style={{ fontFamily: settings.Font }}>
-			<Viewers chatterCount={chatterCount} chatterInfo={chatterInfo}/>
+			<Viewers chatterCount={chatterCount} chatterInfo={chatterInfo} />
 		</span>
 	) : (
 		<div style={{ fontFamily: settings.Font }} ref={bodyRef} className="overlay-container">
-			<div className="overlay">
-				{(
+			<div className={`overlay ${windowFocused ? "focused" : "unfocused"}`}>
+				<CSSTransition unmountOnExit classNames="chat-node" timeout={200} in={windowFocused}>
 					<div
 						id="chat-input--container"
 						onClick={() => {
@@ -450,7 +460,7 @@ function App() {
 								setChatValue(e.target.value);
 							}}
 						></textarea>
-                        {/* will be used in the future */}
+						{/* will be used in the future */}
 						{/* <Tooltip title="Emote Picker" arrow>
 							<img
 								src={displayMotes[emoteIndex]}
@@ -461,8 +471,7 @@ function App() {
 							/>
 						</Tooltip> */}
 					</div>
-				)}
-
+				</CSSTransition>
 				<Messages
 					messages={flagMatches
 						// .filter(msg => !search || msg.displayName.toLowerCase().includes(search.toLowerCase()) || msg.body.toLowerCase().includes(search.toLowerCase()))
@@ -474,7 +483,9 @@ function App() {
 					unreadMessageHandler={checkReadMessage}
 					pin={pinMessage}
 				/>
-				{showSearch && <SearchBox id="chat-search" onChange={handleSearch} placeHolder="Search Messages" />}
+				<CSSTransition unmountOnExit timeout={200} classNames="search-node" in={windowFocused && showSearch}>
+					<SearchBox id="chat-search" onChange={handleSearch} placeHolder="Search Messages" />
+				</CSSTransition>
 			</div>
 			<CSSTransition unmountOnExit timeout={400} classNames={"to-top-node"} in={showToTop}>
 				<button className="back-to-top-button fade-in" onClick={scrollTop}>

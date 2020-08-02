@@ -11,7 +11,7 @@ let focusKey = "f21";
 let opacity = 0.5;
 let windows = {};
 const Width = 500;
-let focused = true
+let focused = true;
 
 const sendMessageToWindow = (event, message, window = mainWindow) => {
 	if (window && window.webContents) {
@@ -24,10 +24,11 @@ const focus = () => {
 		if (window) {
 			sendMessageToWindow("toggle-border", true, window);
 			window.setOpacity(1);
-			window.setIgnoreMouseEvents(false);
+            window.setIgnoreMouseEvents(false);
+            sendMessageToWindow("focus", true, window)
 		}
-    }
-    focused = true
+	}
+	focused = true;
 	focusAction(mainWindow);
 	Object.values(windows).forEach(focusAction);
 };
@@ -38,10 +39,11 @@ const unfocus = () => {
 		if (window) {
 			sendMessageToWindow("toggle-border", false, window);
 			window.setOpacity(opacity);
-			window.setIgnoreMouseEvents(true);
+            window.setIgnoreMouseEvents(true);
+            sendMessageToWindow("focus", false, window)
 		}
-    }
-    focused = false
+	}
+	focused = false;
 	unfocusAction(mainWindow);
 	Object.values(windows).forEach(unfocusAction);
 };
@@ -113,14 +115,23 @@ function createMainWindow() {
 			tooltip: "Toggle Focus",
 			icon: path.join(__dirname, "focus.png"),
 			click() {
-                if(focused)unfocus()
-                else focus()
+				if (focused) unfocus();
+				else focus();
 			},
 		},
-    ]);
-    setTimeout(() => {
-        mainWindow.webContents.send("send-platform", process.platform)
-    }, 10000);
+	]);
+
+	mainWindow.on("focus", () => {
+		sendMessageToWindow("focus", true, mainWindow)
+	});
+    
+	mainWindow.on("blur", () => {
+        sendMessageToWindow("focus", false, mainWindow)
+	});
+
+	setTimeout(() => {
+		mainWindow.webContents.send("send-platform", process.platform);
+	}, 10000);
 }
 
 // this is used to send all links to the users default browser
@@ -163,7 +174,14 @@ ipcMain.on("popoutChat", (event, data) => {
 		popoutWindow.webContents.send("popout", data);
 	}, 1000);
 	windows[data] = popoutWindow;
-	popoutWindow.on("closed", () => (windows[data] = null));
+    popoutWindow.on("closed", () => (windows[data] = null));
+    popoutWindow.on("focus", () => {
+		sendMessageToWindow("focus", true, popoutWindow)
+	});
+    
+	popoutWindow.on("blur", () => {
+        sendMessageToWindow("focus", false, popoutWindow)
+	});
 });
 
 ipcMain.on("popoutViewers", (event, data) => {
@@ -193,24 +211,22 @@ ipcMain.on("setopacity", (event, data) => {
 });
 
 function clearHotKeys() {
-    try{
-
-        globalShortcut.unregister(unfocusKey);
-        globalShortcut.unregister(focusKey);
-    }catch(err){
-        console.log(err.message)
-    }
+	try {
+		globalShortcut.unregister(unfocusKey);
+		globalShortcut.unregister(focusKey);
+	} catch (err) {
+		console.log(err.message);
+	}
 }
 
 function setHotKeys() {
-    console.log(`unfocus: ${unfocusKey}, focus: ${focusKey}`);
-    try{
-
-        globalShortcut.register(unfocusKey, unfocus);
-        globalShortcut.register(focusKey, focus);
-    }catch(err){
-        console.log(err.message)
-    }
+	console.log(`unfocus: ${unfocusKey}, focus: ${focusKey}`);
+	try {
+		globalShortcut.register(unfocusKey, unfocus);
+		globalShortcut.register(focusKey, focus);
+	} catch (err) {
+		console.log(err.message);
+	}
 }
 
 ipcMain.on("clearhotkeys", clearHotKeys);
