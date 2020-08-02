@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
 import firebase from "../firebase";
-import { useParams } from "react-router-dom";
 import "./Viewer.scss";
 import { AppContext } from "../contexts/AppContext";
 import ClearTwoToneIcon from "@material-ui/icons/ClearTwoTone";

@@ -1,12 +1,12 @@
 import React, { useCallback } from "react";
 import firebase from "../firebase";
+import YouTubeIcon from "@material-ui/icons/YouTube";
 import { withRouter } from "react-router";
 import { Redirect } from "react-router-dom";
-import YouTubeIcon from "@material-ui/icons/YouTube";
-import "./Auth.css";
 import {v4 as uuidv4} from "uuid"
+import "./Auth.css";
 
-const { ipcRenderer, remote } = window.require("electron");
+const { remote } = window.require("electron");
 
 const Auth = props => {
 	const signInWithGoogle = useCallback(async () => {

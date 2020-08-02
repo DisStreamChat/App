@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect, useContext } from "react";
-import { withRouter, Link, useParams } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 import { AppContext } from "../contexts/AppContext";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import SettingAccordion from "./SettingsAccordion";
@@ -14,19 +14,18 @@ import compare from "semver-compare";
 import ClearIcon from "@material-ui/icons/Clear";
 import MailTwoToneIcon from "@material-ui/icons/MailTwoTone";
 import { Tooltip } from "@material-ui/core";
+import { useInterval } from "react-use";
 const { remote, ipcRenderer } = window.require("electron");
 const customTitlebar = window.require("custom-electron-titlebar");
 
 let MyTitleBar = new customTitlebar.Titlebar({
 	backgroundColor: customTitlebar.Color.fromHex("#17181ba1"),
-	// shadow: false,
-	// color: "black",
 	menu: null,
 });
 MyTitleBar.updateTitle("DisStreamChat");
 MyTitleBar.setHorizontalAlignment("left");
 
-const SettingList = props => {
+const SettingList = React.memo(props => {
 	return (
 		<SettingAccordion>
 			{Object.entries(props.defaultSettings || {})
@@ -56,7 +55,7 @@ const SettingList = props => {
 				})}
 		</SettingAccordion>
 	);
-};
+});
 
 const maxDisplayNum = 999;
 
@@ -67,10 +66,9 @@ const Header = props => {
 	const [search, setSearch] = useState();
 	const [chatHeader, setChatHeader] = useState(false);
 	const [show, setShow] = useState(true);
-	const [, set] = useState(false);
 	const currentUser = firebase.auth.currentUser;
 	const id = currentUser?.uid || " ";
-	const { messages, setMessages, showViewers, setShowViewers } = useContext(AppContext);
+	const { messages, setMessages, setShowViewers } = useContext(AppContext);
 	const [viewingUserId, setViewingUserId] = useState();
 	const [viewingUserInfo, setViewingUserInfo] = useState();
 	const [viewingUserStats, setViewingUserStats] = useState();
@@ -78,12 +76,12 @@ const Header = props => {
 	const [isPopoutOut, setIsPopOut] = useState();
 	const { location } = props;
 	const absoluteLocation = window.location;
-    const [unreadMessages, setUnreadMessages] = useState(false);
-    const [platform, setPlatform] = useState("")
+	const [unreadMessages, setUnreadMessages] = useState(false);
+	const [platform, setPlatform] = useState("");
 
-    useEffect(() => {
-        ipcRenderer.on("send-platform", (event, data) => setPlatform(data))
-    }, [])
+	useEffect(() => {
+		ipcRenderer.on("send-platform", (event, data) => setPlatform(data));
+	}, []);
 
 	useEffect(() => {
 		(async () => {
@@ -95,26 +93,28 @@ const Header = props => {
 			const latestVersion = latestVersionInfo.tag_name;
 			const updateable = compare(latestVersion, currentVersion) > 0;
 			if (updateable) {
-                // add cross platform url
-                let downLoadUrl
-                if(platform === "win32"){
-                    const windowsDownloadAsset = latestVersionInfo.assets[0];
-                    downLoadUrl = windowsDownloadAsset.browser_download_url;
-                }else if(platform === "linux"){
-                    downLoadUrl = "https://i.lungers.com/disstreamchat/linux"
-                }else if(platform === "darwin"){
-                    downLoadUrl = "https://i.lungers.com/disstreamchat/darwin"
-                }
+				let downLoadUrl;
+				if (platform === "win32") {
+					const windowsDownloadAsset = latestVersionInfo.assets[0];
+					downLoadUrl = windowsDownloadAsset.browser_download_url;
+				} else if (platform === "linux") {
+					downLoadUrl = "https://i.lungers.com/disstreamchat/linux";
+				} else if (platform === "darwin") {
+					downLoadUrl = "https://i.lungers.com/disstreamchat/darwin";
+				}
 				setUpdateLink(downLoadUrl);
 			}
 		})();
 	}, [platform]);
 
 	useEffect(() => {
-		setTimeout(() => {
-			const filteredMessages = messages.filter(msg => !msg.read && !msg.deleted);
-			setUnreadMessages(filteredMessages.length ? filteredMessages : false);
-		}, 500);
+		if (messages.length) {
+			const id = setTimeout(() => {
+				const filteredMessages = messages.filter(msg => !msg.read && !msg.deleted);
+				setUnreadMessages(filteredMessages.length ? filteredMessages : false);
+			}, 500);
+			return () => clearTimeout(id);
+		}
 	}, [messages]);
 
 	useEffect(() => {
@@ -131,42 +131,41 @@ const Header = props => {
 				setViewingUserInfo(userData);
 			}
 		})();
-	}, [chatHeader, show, viewingUserId, ]);
+	}, [chatHeader, show, viewingUserId]);
+
+	const getStats = useCallback(async () => {
+		if (viewingUserInfo) {
+			const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=${viewingUserInfo.name}&new=true`;
+			const response = await fetch(ApiUrl);
+			const data = await response.json();
+			setViewingUserStats(prev => {
+				if (data) {
+					return {
+						name: viewingUserInfo.displayName,
+						viewers: data.viewer_count,
+						isLive: data.isLive,
+					};
+				} else {
+					return {
+						name: viewingUserInfo.displayName,
+						viewers: 0,
+						isLive: false,
+					};
+				}
+			});
+		}
+	}, [viewingUserInfo]);
 
 	useEffect(() => {
-		async function getStats() {
-			if (viewingUserInfo) {
-				// const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=instafluff`;
-				const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=${viewingUserInfo.name}&new=true`;
-				const response = await fetch(ApiUrl);
-				const data = await response.json();
-				setViewingUserStats(prev => {
-					if (data) {
-						return {
-							name: viewingUserInfo.displayName,
-							viewers: data.viewer_count,
-							isLive: data.isLive,
-						};
-					} else {
-						return {
-							name: viewingUserInfo.displayName,
-							viewers: 0,
-							isLive: false,
-						};
-					}
-				});
-			}
-		}
 		getStats();
-		const id = setInterval(getStats, 60000);
-		return () => clearInterval(id);
-	}, [viewingUserInfo]);
+	}, [getStats]);
+
+	useInterval(getStats, 60000);
 
 	useEffect(() => {
 		setChatHeader(location?.pathname?.includes("chat"));
 		setShow(!location?.pathname?.includes("login"));
 		setIsPopOut(new URLSearchParams(location?.search).has("popout"));
-		set(location.pathname.includes("viewers"));
 	}, [location, absoluteLocation]);
 
 	useEffect(() => {
@@ -217,12 +216,11 @@ const Header = props => {
 					{chatHeader && viewingUserStats && (
 						<div className="stats">
 							<div className={`live-status ${viewingUserStats?.isLive ? "live" : ""}`}></div>
-							<a href={`https://twitch.tv/${viewingUserStats?.name?.toLowerCase?.()}`} className="name">{viewingUserStats?.name}</a>
+							<a href={`https://twitch.tv/${viewingUserStats?.name?.toLowerCase?.()}`} className="name">
+								{viewingUserStats?.name}
+							</a>
 							<Tooltip arrow title="Viewers in Chat">
-								<div
-									className={"live-viewers"}
-									onClick={() => setShowViewers(true)}
-								>
+								<div className={"live-viewers"} onClick={() => setShowViewers(true)}>
 									<PeopleAltTwoToneIcon />
 									{viewingUserStats?.viewers}
 								</div>
@@ -275,4 +273,4 @@ const Header = props => {
 	);
 };
 
-export default React.memo(withRouter(Header));
+export default withRouter(React.memo(Header));
