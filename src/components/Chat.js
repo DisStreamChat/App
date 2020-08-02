@@ -323,14 +323,15 @@ function App() {
 		}
 	}, [channel, socket]);
 
-	const handleSearch = useCallback(setSearch);
+	const handleSearch = useCallback(setSearch, []);
 
 	const scrollTop = useCallback(() => {
+        setMessages(prev => prev.map(msg => ({...msg, read: true})))
 		bodyRef.current.scrollTo({
 			top: 0,
 			behavior: "smooth",
 		});
-	}, []);
+	}, [setMessages]);
 
 	useEffect(() => {
 		bodyRef.current.addEventListener("scroll", e => {
@@ -343,7 +344,7 @@ function App() {
 			if (!node) return;
 			if (!observerRef.current) {
 				observerRef.current = new IntersectionObserver(entries => {
-					entries.forEach((entry, i) => {
+					entries.forEach((entry) => {
 						if (entry.isIntersecting) {
 							setMessages(prev => {
 								const copy = [...prev];
