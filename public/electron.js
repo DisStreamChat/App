@@ -131,7 +131,7 @@ app.on("web-contents-created", (e, contents) => {
 		electron.shell.openExternal(url);
 		console.log("blocked navigate:", url);
 	});
-	contents.on("new-window", async (event, url) => {
+	contents.on("new-window", (event, url) => {
 		if (url.includes("localhost")) return;
 		event.preventDefault();
 		electron.shell.openExternal(url);

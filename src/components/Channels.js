@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import firebase from "../firebase";
 import { AppContext } from "../contexts/AppContext";
 import { Link } from "react-router-dom";
 import "./Channels.scss";
 import SearchBox from "./SearchBox";
+import { useInterval } from "react-use";
 const { ipcRenderer } = window.require("electron");
 
 const ChannelItem = React.memo(props => {
@@ -17,21 +18,20 @@ const ChannelItem = React.memo(props => {
 		setChannelName(props.display_name || props.name);
 	}, [props]);
 
-	async function getLive() {
+	const getLive = useCallback(async () => {
 		if (channelName) {
 			const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=${channelName?.toLowerCase?.()}&new=true`;
 			const response = await fetch(ApiUrl);
 			const data = await response.json();
 			setIsLive(() => data?.isLive && channelName);
 		}
-	}
+	}, [channelName])
 
 	useEffect(() => {
 		getLive();
-		const id = setInterval(getLive, 60000);
-		return () => clearInterval(id);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [channelName]);
+    }, [getLive]);
+    
+    useInterval(getLive, 60000)
 
 	return (
 		<div className={`channel-item ${props.addChannel ? "add-channel" : ""}`}>
@@ -201,8 +201,8 @@ const Channels = React.memo(props => {
 						.map(channel => (
 							<ChannelItem popoutChat={popout} key={channel.id} {...channel} moderator />
 						))}
-					{!!modChannels.length && <ChannelItem addChannel />}
 				</div>
+				{!!modChannels.length && <ChannelItem addChannel />}
 			</div>
 		</>
 	);
