@@ -55,7 +55,8 @@
 
 .overlay > div:nth-of-type(2) {
 	display: flex;
-	flex-direction: column-reverse;
+    flex-direction: column-reverse;
+    padding-bottom: 100px;
 }
 
 #chat-input--container{
