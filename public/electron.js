@@ -55,7 +55,7 @@ function windowGenerator({ width = Width, height = Width * 1.5, x, y } = {}) {
 		width: width, // width of the window
 		height: height, // height of the window
 		minWidth: 290,
-		minHeight: 500,
+		minHeight: 300,
 		frame: false, // whether or not the window has 'frame' or header
 		backgroundColor: "#001e272e", // window background color, first two values set alpha which is set to 0 for transparency
 		transparent: true, // make window transparent
