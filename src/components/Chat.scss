@@ -61,10 +61,9 @@
 
 .unfocused > div:first-of-type {
 	display: flex;
-	flex-direction: column-reverse;
+    flex-direction: column-reverse;
+    
 }
-
-
 
 #chat-input--container {
 	& > img {
@@ -388,19 +387,23 @@ h1 {
 
 .search-node-enter {
     opacity: 0;
-    transform: translateY(-50%) !important
+    transform: translateY(-50%) !important;
+    height: 0 !important;
 }
 .search-node-enter-active {
     opacity: 1;
     transform: translateY(0) !important;
 	transition: 200ms;
+    height: 64px !important;
 }
 .search-node-exit {
     transform: translateY(0) !important;
-	opacity: 1;
+    opacity: 1;
+    height: 64px !important;
 }
 .search-node-exit-active {
     opacity: 0;
+    height: 0 !important;
     transform: translateY(-50%) !important;
 	transition: 200ms;
 }
