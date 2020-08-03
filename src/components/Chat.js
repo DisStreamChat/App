@@ -81,8 +81,20 @@ function App() {
 	const bodyRef = useRef();
 	const observerRef = useRef();
 	const currentUser = firebase.auth.currentUser;
-	const [windowFocused, setWindowFocused] = useState(true);
-	// const [emoteIndex, setEmoteIndex] = useState(0);
+    const [windowFocused, setWindowFocused] = useState(true);
+    const [userInfo, setUserInfo] = useState()
+    // const [emoteIndex, setEmoteIndex] = useState(0);
+    
+    useEffect(() => {
+        const unsub = firebase.db.collection("Streamers").doc(currentUser.uid).onSnapshot(snapshot => {
+            const data = snapshot.data()
+            if(data){
+                setUserInfo(data)
+            }
+        })
+        return unsub
+    }, [currentUser])
+
 
 	useEffect(() => {
 		ipcRenderer.on("focus", (event, data) => setWindowFocused(data));
@@ -157,7 +169,7 @@ function App() {
 			if (platform && socket) {
 				const banMsg = messages.find(msg => msg.id === id);
 				socket.emit(`banuser - ${platform}`, {
-					modName: currentUser?.displayName?.toLowerCase?.(),
+					modName: userInfo?.name?.toLowerCase?.(),
 					user: banMsg?.[platform === "discord" ? "userId" : "displayName"],
 				});
 			}
@@ -171,7 +183,7 @@ function App() {
 				const banMsg = messages.find(msg => msg.id === id);
 				// on discord we delete by userId and on twitch we delete by username
 				socket.emit(`timeoutuser - ${platform}`, {
-					modName: currentUser?.displayName?.toLowerCase?.(),
+					modName: userInfo?.name?.toLowerCase?.(),
 					user: banMsg?.[platform === "discord" ? "userId" : "displayName"],
 				});
 			}
@@ -191,7 +203,7 @@ function App() {
 			});
 
 			if (platform && socket) {
-				socket.emit(`deletemsg - ${platform}`, { id, modName: currentUser?.displayName?.toLowerCase?.() });
+				socket.emit(`deletemsg - ${platform}`, { id, modName: userInfo?.name?.toLowerCase?.() });
 			}
 		},
 		[socket, setMessages, currentUser]
@@ -232,14 +244,14 @@ function App() {
 
 					// check if the message can have mod actions done on it
 					msg.moddable =
-						msg?.displayName?.toLowerCase?.() !== currentUser?.displayName?.toLowerCase?.() &&
+						msg?.displayName?.toLowerCase?.() !== userInfo?.name?.toLowerCase?.() &&
 						!Object.keys(msg.badges).includes("moderator") &&
 						!Object.keys(msg.badges).includes("broadcaster");
 
 					if (
 						msg.platform !== "discord" &&
-						msg?.displayName?.toLowerCase?.() !== currentUser?.displayName?.toLowerCase?.() &&
-						channel?.TwitchName?.toLowerCase?.() === currentUser?.displayName?.toLowerCase?.()
+						msg?.displayName?.toLowerCase?.() !== userInfo?.name?.toLowerCase?.() &&
+						channel?.TwitchName?.toLowerCase?.() === userInfo?.name?.toLowerCase?.()
 					)
 						msg.moddable = true;
 					return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
@@ -429,8 +441,8 @@ function App() {
 	const sendMessage = useCallback(() => {
 		if (socket) {
 			socket.emit("sendchat", {
-				sender: currentUser?.displayName?.toLowerCase?.(),
-				message: chatValue,
+				sender: userInfo?.name?.toLowerCase?.(),
+                message: chatValue,
 			});
 		}
 	}, [socket, chatValue, currentUser]);
