@@ -392,7 +392,8 @@ function App() {
 			const chatterUrl = `${process.env.REACT_APP_SOCKET_URL}/chatters?user=${userName}`;
 			const getChatters = async () => {
 				const response = await fetch(chatterUrl);
-				const json = await response.json();
+                const json = await response.json();
+                console.log(json)
 				if (json && response.ok) {
 					const info = {};
 					for (let [key, value] of Object.entries(json.chatters)) {

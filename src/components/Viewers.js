@@ -20,7 +20,7 @@ const ViewerCard = props => {
 const Viewers = ({ chatterInfo, chatterCount }) => {
 	const [tab, setTab] = useState("twitch");
 	const { setShowViewers } = useContext(AppContext);
-	const currentUser = firebase.auth.currentUser;
+    const currentUser = firebase.auth.currentUser;
 
 	return (
 		<main className="viewer-body">
