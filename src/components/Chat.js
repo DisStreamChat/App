@@ -383,17 +383,21 @@ function App() {
 	const [chatterInfo, setChatterInfo] = useState();
 	const [chatterCount, setChatterCount] = useState();
 	const { id: userId } = useParams();
+    const [streamerName, setStreamerName] = useState()
 
 	useEffect(() => {
 		let id;
 		(async () => {
-			const userData = await (await firebase.db.collection("Streamers").doc(userId).get()).data();
-			const userName = userData?.TwitchName?.toLowerCase?.();
-			const chatterUrl = `${process.env.REACT_APP_SOCKET_URL}/chatters?user=${userName}`;
+            let userName = streamerName
+            if(!userName){
+                const userData = (await firebase.db.collection("Streamers").doc(userId).get()).data();
+                userName = userData?.TwitchName?.toLowerCase?.();
+                setStreamerName(userName)
+            }
+            const chatterUrl = `${process.env.REACT_APP_SOCKET_URL}/chatters?user=${userName}`;
 			const getChatters = async () => {
 				const response = await fetch(chatterUrl);
                 const json = await response.json();
-                console.log(json)
 				if (json && response.ok) {
 					const info = {};
 					for (let [key, value] of Object.entries(json.chatters)) {
@@ -414,7 +418,7 @@ function App() {
 			id = setInterval(getChatters, 120000);
 		})();
 		return () => clearInterval(id);
-	}, [userId]);
+	}, [userId, streamerName]);
 
 	const [flagMatches, setFlagMatches] = useState([]);
 
@@ -433,7 +437,7 @@ function App() {
 
 	return showViewers ? (
 		<span style={{ fontFamily: settings.Font }}>
-			<Viewers chatterCount={chatterCount} chatterInfo={chatterInfo} />
+			<Viewers streamer={streamerName} chatterCount={chatterCount} chatterInfo={chatterInfo} />
 		</span>
 	) : (
 		<div style={{ fontFamily: settings.Font }} ref={bodyRef} className="overlay-container">

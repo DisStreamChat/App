@@ -79,7 +79,6 @@ const Setting = React.memo(props => {
 		save => {
 			let resetRecording = false;
 			const listenKeyBind = e => {
-				console.log({ resetRecording });
 				setRecorded(prev => (resetRecording ? [e.key] : [...new Set([...prev, e.key])]));
 				if (resetRecording) {
 					resetRecording = false;

@@ -172,7 +172,7 @@ ipcMain.on("popoutChat", (event, data) => {
 	popoutWindow.loadURL(baseUrl());
 	setTimeout(() => {
 		popoutWindow.webContents.send("popout", data);
-	}, 1000);
+	}, 2000);
 	windows[data] = popoutWindow;
     popoutWindow.on("closed", () => (windows[data] = null));
     popoutWindow.on("focus", () => {

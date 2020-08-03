@@ -59,9 +59,17 @@
 	padding-bottom: 100px;
 }
 
+@keyframes flip{
+    from{
+        display: flex;
+        flex-direction: column-reverse;
+    }to{
+
+    }
+}
+
 .unfocused > div:first-of-type {
-	display: flex;
-    flex-direction: column-reverse;
+	animation: flip 200ms forwards;
     
 }
 
