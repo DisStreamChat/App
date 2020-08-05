@@ -2,7 +2,7 @@ import React, { useCallback, useState, useEffect, useContext } from "react";
 import { withRouter, Link } from "react-router-dom";
 import { AppContext } from "../contexts/AppContext";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
-import SettingsIcon from "@material-ui/icons/Settings";
+import SettingsTwoToneIcon from '@material-ui/icons/SettingsTwoTone';
 import SettingAccordion from "./SettingsAccordion";
 import firebase from "../firebase";
 import Button from "@material-ui/core/Button";
@@ -216,7 +216,7 @@ const Header = props => {
 			<header className={`header ${settingsOpen && "open"}`}>
 				<nav className="nav">
 					<button className="clear" onClick={() => setSettingsOpen(o => !o)}>
-						{!settingsOpen ? <SettingsIcon /> : <ClearIcon/>}
+						{!settingsOpen ? <SettingsTwoToneIcon /> : <ClearIcon/>}
 					</button>
 					{chatHeader && viewingUserStats && (
 						<div className="stats">

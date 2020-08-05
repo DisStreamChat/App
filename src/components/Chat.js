@@ -193,7 +193,7 @@ function App() {
 
 	// this is used to delete messages, in certain conditions will also send a message to backend tell it to delete the message from the sent platform
 	const removeMessage = useCallback(
-		(id, platform) => {
+		async (id, platform) => {
 			setMessages(prev => {
 				let copy = [...prev];
 				let index = copy.findIndex(msg => msg.id === id);
@@ -202,8 +202,16 @@ function App() {
 				return copy;
 			});
 
+            let modName = userInfo.name
+            if(!modName){
+                console.log("attempting to obtain username")
+                const UserData = (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data()
+                modName = UserData.name
+                
+            }
+
 			if (platform && socket) {
-				socket.emit(`deletemsg - ${platform}`, { id, modName: userInfo?.name || userInfo?.displayName?.toLowerCase?.() || currentUser?.displayName?.toLowerCase?.() });
+				socket.emit(`deletemsg - ${platform}`, { id, modName});
 			}
 		},
 		[socket, setMessages, userInfo, currentUser]
