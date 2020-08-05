@@ -468,7 +468,7 @@ function App() {
 				message: chatValue,
 			});
 		}
-	}, [socket, chatValue, currentUser]);
+	}, [socket, chatValue,userInfo]);
 
 	return showViewers ? (
 		<span style={{ fontFamily: settings.Font }}>
