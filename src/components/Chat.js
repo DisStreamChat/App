@@ -174,7 +174,7 @@ function App() {
 				});
 			}
 		},
-		[socket, messages, currentUser]
+		[socket, messages, userInfo]
 	);
 
 	const timeout = useCallback(
@@ -188,7 +188,7 @@ function App() {
 				});
 			}
 		},
-		[socket, messages, currentUser]
+		[socket, messages, userInfo]
 	);
 
 	// this is used to delete messages, in certain conditions will also send a message to backend tell it to delete the message from the sent platform
@@ -203,10 +203,10 @@ function App() {
 			});
 
 			if (platform && socket) {
-				socket.emit(`deletemsg - ${platform}`, { id, modName: userInfo?.name?.toLowerCase?.() });
+				socket.emit(`deletemsg - ${platform}`, { id, modName: userInfo?.name || userInfo?.displayName?.toLowerCase?.() || currentUser?.displayName?.toLowerCase?.() });
 			}
 		},
-		[socket, setMessages, currentUser]
+		[socket, setMessages, userInfo, currentUser]
 	);
 
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
@@ -238,7 +238,7 @@ function App() {
 
 					// add a <p></p> around the message to make formatting work properly also hightlight pings
 					msg.body = `<p>${msg.body.replace(
-						new RegExp(`(?<=\s|^)(${currentUser.displayName}|@${currentUser.displayName})`, "ig"),
+						new RegExp(`(?<=\s|^)(${userInfo?.name}|@${userInfo?.name})`, "ig"),
 						"<span class='ping'>$&</span>"
 					)}</p>`;
 
@@ -259,7 +259,7 @@ function App() {
 			});
 			return () => socket.removeListener("chatmessage");
 		}
-	}, [settings, socket, setMessages, currentUser, channel]);
+	}, [settings, socket, setMessages, userInfo, channel]);
 
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
 	useEffect(() => {

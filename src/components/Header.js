@@ -2,6 +2,7 @@ import React, { useCallback, useState, useEffect, useContext } from "react";
 import { withRouter, Link } from "react-router-dom";
 import { AppContext } from "../contexts/AppContext";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
+import SettingsIcon from "@material-ui/icons/Settings";
 import SettingAccordion from "./SettingsAccordion";
 import firebase from "../firebase";
 import Button from "@material-ui/core/Button";
@@ -80,8 +81,8 @@ const Header = props => {
 	const [platform, setPlatform] = useState("");
 
 	useEffect(() => {
-        ipcRenderer.on("send-platform", (event, data) => setPlatform(data));
-        return () => ipcRenderer.removeAllListeners("send-platform")
+		ipcRenderer.on("send-platform", (event, data) => setPlatform(data));
+		return () => ipcRenderer.removeAllListeners("send-platform");
 	}, []);
 
 	useEffect(() => {
@@ -214,6 +215,9 @@ const Header = props => {
 		<>
 			<header className={`header ${settingsOpen && "open"}`}>
 				<nav className="nav">
+					<button className="clear" onClick={() => setSettingsOpen(o => !o)}>
+						{!settingsOpen ? <SettingsIcon /> : <ClearIcon/>}
+					</button>
 					{chatHeader && viewingUserStats && (
 						<div className="stats">
 							<div className={`live-status ${viewingUserStats?.isLive ? "live" : ""}`}></div>
@@ -265,10 +269,6 @@ const Header = props => {
 					<SearchBox onChange={setSearch} placeHolder="Search Settings" />
 					<SettingList all search={search} defaultSettings={defaultSettings} settings={appSettings} updateSettings={updateAppSetting} />
 				</div>
-				<div className="header-lower">
-					<KeyboardArrowDownIcon onClick={() => setSettingsOpen(o => !o)} className={`chevron ${settingsOpen && "open"}`} />
-				</div>
-				<ClearIcon onClick={() => setSettingsOpen(o => !o)} className={`closeButton ${settingsOpen && "open"}`} />
 			</header>
 		</>
 	);

@@ -189,6 +189,12 @@
 	font-size: inherit;
 }
 
+button.clear{
+    background: none;
+    outline: none;
+    border: none;
+}
+
 .nav {
 	/* position: absolute; */
 	width: 100%;
@@ -200,7 +206,7 @@
 
 .nav button {
 	font-size: 0.75rem !important;
-	outline: none !important;
+    outline: none !important;
 }
 
 .nav button:active {
