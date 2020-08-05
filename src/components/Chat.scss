@@ -300,7 +300,11 @@ h1 {
 }
 
 ._1pKVQ * {
-	width: initial !important;
+    width: initial !important;
+}
+
+#root ._1pKVQ *:not(.ping){
+    color: inherit !important
 }
 
 #root ._2WzYd * {
