@@ -169,8 +169,7 @@ function App() {
 	const ban = useCallback(
 		async (id, platform) => {
 			if (platform && socket) {
-
-                let modName = userInfo.name;
+				let modName = userInfo.name;
 				if (!modName) {
 					console.log("attempting to obtain username");
 					const UserData = (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data();
@@ -468,7 +467,7 @@ function App() {
 				message: chatValue,
 			});
 		}
-	}, [socket, chatValue,userInfo]);
+	}, [socket, chatValue, userInfo]);
 
 	return showViewers ? (
 		<span style={{ fontFamily: settings.Font }}>
