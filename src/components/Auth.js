@@ -27,7 +27,7 @@ const Auth = React.memo(props => {
 		}
 	}, [props.history]);
 
-	const loginWithTwitch = useCallback(() => {
+	const loginWithTwitch = useCallback(async () => {
 		const id = uuidv4();
 		const oneTimeCodeRef = firebase.db.collection("oneTimeCodes").doc(id);
 
@@ -40,7 +40,12 @@ const Auth = React.memo(props => {
 			}
 		});
 
-		remote.shell.openExternal("https://api.disstreamchat.com/oauth/twitch/?otc=" + id);
+        try{
+
+            await remote.shell.openExternal("https://api.disstreamchat.com/oauth/twitch/?otc=" + id);
+        }catch(err){
+            // use old pop up method
+        }
 	}, [props.history]);
 
 	return firebase.auth.currentUser ? (
