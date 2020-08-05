@@ -81,20 +81,22 @@ function App() {
 	const bodyRef = useRef();
 	const observerRef = useRef();
 	const currentUser = firebase.auth.currentUser;
-    const [windowFocused, setWindowFocused] = useState(true);
-    const [userInfo, setUserInfo] = useState()
-    // const [emoteIndex, setEmoteIndex] = useState(0);
-    
-    useEffect(() => {
-        const unsub = firebase.db.collection("Streamers").doc(currentUser.uid).onSnapshot(snapshot => {
-            const data = snapshot.data()
-            if(data){
-                setUserInfo(data)
-            }
-        })
-        return unsub
-    }, [currentUser])
+	const [windowFocused, setWindowFocused] = useState(true);
+	const [userInfo, setUserInfo] = useState();
+	// const [emoteIndex, setEmoteIndex] = useState(0);
 
+	useEffect(() => {
+		const unsub = firebase.db
+			.collection("Streamers")
+			.doc(currentUser.uid)
+			.onSnapshot(snapshot => {
+				const data = snapshot.data();
+				if (data) {
+					setUserInfo(data);
+				}
+			});
+		return unsub;
+	}, [currentUser]);
 
 	useEffect(() => {
 		ipcRenderer.on("focus", (event, data) => setWindowFocused(data));
@@ -165,30 +167,44 @@ function App() {
 	);
 
 	const ban = useCallback(
-		(id, platform) => {
+		async (id, platform) => {
 			if (platform && socket) {
+
+                let modName = userInfo.name;
+				if (!modName) {
+					console.log("attempting to obtain username");
+					const UserData = (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data();
+					modName = UserData.name;
+				}
+
 				const banMsg = messages.find(msg => msg.id === id);
 				socket.emit(`banuser - ${platform}`, {
-					modName: userInfo?.name?.toLowerCase?.(),
+					modName,
 					user: banMsg?.[platform === "discord" ? "userId" : "displayName"],
 				});
 			}
 		},
-		[socket, messages, userInfo]
+		[socket, messages, userInfo, currentUser]
 	);
 
 	const timeout = useCallback(
-		(id, platform) => {
+		async (id, platform) => {
 			if (platform && socket) {
 				const banMsg = messages.find(msg => msg.id === id);
 				// on discord we delete by userId and on twitch we delete by username
+				let modName = userInfo.name;
+				if (!modName) {
+					console.log("attempting to obtain username");
+					const UserData = (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data();
+					modName = UserData.name;
+				}
 				socket.emit(`timeoutuser - ${platform}`, {
-					modName: userInfo?.name?.toLowerCase?.(),
+					modName,
 					user: banMsg?.[platform === "discord" ? "userId" : "displayName"],
 				});
 			}
 		},
-		[socket, messages, userInfo]
+		[socket, messages, userInfo, currentUser]
 	);
 
 	// this is used to delete messages, in certain conditions will also send a message to backend tell it to delete the message from the sent platform
@@ -202,16 +218,15 @@ function App() {
 				return copy;
 			});
 
-            let modName = userInfo.name
-            if(!modName){
-                console.log("attempting to obtain username")
-                const UserData = (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data()
-                modName = UserData.name
-                
-            }
+			let modName = userInfo.name;
+			if (!modName) {
+				console.log("attempting to obtain username");
+				const UserData = (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data();
+				modName = UserData.name;
+			}
 
 			if (platform && socket) {
-				socket.emit(`deletemsg - ${platform}`, { id, modName});
+				socket.emit(`deletemsg - ${platform}`, { id, modName });
 			}
 		},
 		[socket, setMessages, userInfo, currentUser]
@@ -403,21 +418,21 @@ function App() {
 	const [chatterInfo, setChatterInfo] = useState();
 	const [chatterCount, setChatterCount] = useState();
 	const { id: userId } = useParams();
-    const [streamerName, setStreamerName] = useState()
+	const [streamerName, setStreamerName] = useState();
 
 	useEffect(() => {
 		let id;
 		(async () => {
-            let userName = streamerName
-            if(!userName){
-                const userData = (await firebase.db.collection("Streamers").doc(userId).get()).data();
-                userName = userData?.TwitchName?.toLowerCase?.();
-                setStreamerName(userName)
-            }
-            const chatterUrl = `${process.env.REACT_APP_SOCKET_URL}/chatters?user=${userName}`;
+			let userName = streamerName;
+			if (!userName) {
+				const userData = (await firebase.db.collection("Streamers").doc(userId).get()).data();
+				userName = userData?.TwitchName?.toLowerCase?.();
+				setStreamerName(userName);
+			}
+			const chatterUrl = `${process.env.REACT_APP_SOCKET_URL}/chatters?user=${userName}`;
 			const getChatters = async () => {
 				const response = await fetch(chatterUrl);
-                const json = await response.json();
+				const json = await response.json();
 				if (json && response.ok) {
 					const info = {};
 					for (let [key, value] of Object.entries(json.chatters)) {
@@ -450,7 +465,7 @@ function App() {
 		if (socket) {
 			socket.emit("sendchat", {
 				sender: userInfo?.name?.toLowerCase?.(),
-                message: chatValue,
+				message: chatValue,
 			});
 		}
 	}, [socket, chatValue, currentUser]);
