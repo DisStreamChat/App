@@ -110,8 +110,12 @@
 .ping {
 	background: white;
 	color: black !important;
-	padding: 0.1rem;
-	border-radius: 0.1rem;
+	padding: 0.15rem;
+    border-radius: 0.15rem;
+    .dark & {
+        background: #515151 !important;
+        color: white !important; 
+    }
 }
 
 .overlay .search-container {

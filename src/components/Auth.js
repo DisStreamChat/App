@@ -41,7 +41,6 @@ const Auth = React.memo(props => {
 		});
 
         try{
-
             await remote.shell.openExternal("https://api.disstreamchat.com/oauth/twitch/?otc=" + id);
         }catch(err){
             // use old pop up method
