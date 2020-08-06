@@ -41,22 +41,20 @@ const Auth = React.memo(props => {
 					props.history.push("/");
 				}
 			});
-
-            throw "fake error"
-			// await remote.shell.openExternal("https://api.disstreamchat.com/oauth/twitch/?otc=" + id);
+			await remote.shell.openExternal("https://api.disstreamchat.com/oauth/twitch/?otc=" + id);
 		} catch (err) {
 			async function receiveMessage(event, data) {
 				console.log(data);
 				const json = data;
-                const result = await firebase.auth.signInWithCustomToken(json.token);
+                await firebase.auth.signInWithCustomToken(json.token);
                 props.history.push("/")
 			}
 
+			// open a popup window to the twitch oauth url
+			// use old pop up method
 			ipcRenderer.once("log-me-in", receiveMessage);
 
-			// open a popup window to the twitch oauth url
 			ipcRenderer.send("login");
-			// use old pop up method
 		}
 	}, [props.history]);
 
