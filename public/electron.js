@@ -6,6 +6,7 @@ const windowStateKeeper = require("electron-window-state");
 const contextMenu = require("electron-context-menu");
 
 let mainWindow;
+let loginWindow
 let unfocusKey = "f20";
 let focusKey = "f21";
 let opacity = 0.5;
@@ -137,7 +138,7 @@ function createMainWindow() {
 // this is used to send all links to the users default browser
 app.on("web-contents-created", (e, contents) => {
 	contents.on("will-navigate", (event, url) => {
-		if (url.includes("localhost")) return;
+		if (url.includes("localhost") || url.includes("https://id.twitch.tv/oauth2/authorize")) return;
 		event.preventDefault();
 		electron.shell.openExternal(url);
 		console.log("blocked navigate:", url);
@@ -253,4 +254,25 @@ ipcMain.on("setFocus", (event, data) => {
 		focusKey = data;
 		console.log(err, data);
 	}
+});
+
+ipcMain.on('login', (event) => {
+    loginWindow = new BrowserWindow({
+        width: Width*1.1, // width of the window
+        height: Width*1.35, // height of the window
+        frame: true, // whether or not the window has 'frame' and header
+        backgroundColor: '#001e272e', // window background color, first two values set alpha which is set to 0 for transparency
+        alwaysOnTop: true, // make is so other windows won't go on top of this one
+        webPreferences: {
+            nodeIntegration: false, // don't allow integration with node
+            preload: path.join(__dirname, "loginWindow.js")
+        },
+    });
+    loginWindow.loadURL('https://api.disstreamchat.com/oauth/twitch');
+});
+
+ipcMain.on('login-data', (event, token) => {
+    if(mainWindow){
+        mainWindow.webContents.send("log-me-in", token)
+    }
 });

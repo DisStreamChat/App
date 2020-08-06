@@ -5,6 +5,7 @@ import { withRouter } from "react-router";
 import { Redirect } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import "./Auth.scss";
+const { ipcRenderer } = window.require("electron");
 
 const { remote } = window.require("electron");
 
@@ -28,23 +29,35 @@ const Auth = React.memo(props => {
 	}, [props.history]);
 
 	const loginWithTwitch = useCallback(async () => {
-		const id = uuidv4();
-		const oneTimeCodeRef = firebase.db.collection("oneTimeCodes").doc(id);
+		try {
+			const id = uuidv4();
+			const oneTimeCodeRef = firebase.db.collection("oneTimeCodes").doc(id);
 
-		oneTimeCodeRef.onSnapshot(async snapshot => {
-			const data = snapshot.data();
-			if (data) {
-				const token = data.authToken;
-				await firebase.auth.signInWithCustomToken(token);
-				props.history.push("/");
+			oneTimeCodeRef.onSnapshot(async snapshot => {
+				const data = snapshot.data();
+				if (data) {
+					const token = data.authToken;
+					await firebase.auth.signInWithCustomToken(token);
+					props.history.push("/");
+				}
+			});
+
+            throw "fake error"
+			// await remote.shell.openExternal("https://api.disstreamchat.com/oauth/twitch/?otc=" + id);
+		} catch (err) {
+			async function receiveMessage(event, data) {
+				console.log(data);
+				const json = data;
+                const result = await firebase.auth.signInWithCustomToken(json.token);
+                props.history.push("/")
 			}
-		});
 
-        try{
-            await remote.shell.openExternal("https://api.disstreamchat.com/oauth/twitch/?otc=" + id);
-        }catch(err){
-            // use old pop up method
-        }
+			ipcRenderer.once("log-me-in", receiveMessage);
+
+			// open a popup window to the twitch oauth url
+			ipcRenderer.send("login");
+			// use old pop up method
+		}
 	}, [props.history]);
 
 	return firebase.auth.currentUser ? (
