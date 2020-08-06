@@ -259,7 +259,7 @@ const Header = props => {
 							Sign Out
 						</Button>
 					)}
-					{(updateLink) && (
+					{updateLink && (
 						<Tooltip title="update available" arrow>
 							<a id="update-link" href={updateLink}>
 								<GetAppIcon></GetAppIcon>

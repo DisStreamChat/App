@@ -523,7 +523,11 @@ function App() {
 					pin={pinMessage}
 				/>
 				<CSSTransition unmountOnExit timeout={200} classNames="search-node" in={windowFocused && showSearch}>
-					<SearchBox id="chat-search" onChange={handleSearch} placeHolder="Search Messages" />
+					<SearchBox onKeyDown={e => {
+                        if(e.key === "Escape"){
+                            setShowSearch(false)
+                        }
+                    }} id="chat-search" onChange={handleSearch} placeHolder="Search Messages" />
 				</CSSTransition>
 			</div>
 			<CSSTransition unmountOnExit timeout={400} classNames={"to-top-node"} in={showToTop}>
