@@ -204,6 +204,20 @@ button.clear{
 	padding: 0.5rem !important;
 }
 
+
+#update-link{
+    position: relative;
+}
+#notification-light{
+    width: 8px;
+    height: 8px;
+    background: red;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
 .nav button {
 	font-size: 0.75rem !important;
     outline: none !important;

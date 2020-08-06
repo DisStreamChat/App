@@ -2,7 +2,7 @@ import React, { useCallback, useState, useEffect, useContext } from "react";
 import { withRouter, Link } from "react-router-dom";
 import { AppContext } from "../contexts/AppContext";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
-import SettingsTwoToneIcon from '@material-ui/icons/SettingsTwoTone';
+import SettingsTwoToneIcon from "@material-ui/icons/SettingsTwoTone";
 import SettingAccordion from "./SettingsAccordion";
 import firebase from "../firebase";
 import Button from "@material-ui/core/Button";
@@ -216,7 +216,7 @@ const Header = props => {
 			<header className={`header ${settingsOpen && "open"}`}>
 				<nav className="nav">
 					<button className="clear" onClick={() => setSettingsOpen(o => !o)}>
-						{!settingsOpen ? <SettingsTwoToneIcon /> : <ClearIcon/>}
+						{!settingsOpen ? <SettingsTwoToneIcon /> : <ClearIcon />}
 					</button>
 					{chatHeader && viewingUserStats && (
 						<div className="stats">
@@ -259,10 +259,13 @@ const Header = props => {
 							Sign Out
 						</Button>
 					)}
-					{updateLink && (
-						<a href={updateLink}>
-							<GetAppIcon></GetAppIcon>
-						</a>
+					{(updateLink) && (
+						<Tooltip title="update available" arrow>
+							<a id="update-link" href={updateLink}>
+								<GetAppIcon></GetAppIcon>
+								<div id="notification-light"></div>
+							</a>
+						</Tooltip>
 					)}
 				</nav>
 				<div className="header-settings">
