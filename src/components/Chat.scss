@@ -362,9 +362,7 @@ h1 {
         }
     }
 
-    ._1pKVQ{
-        padding-left: .125rem !important;
-    }
+    
 
 	._2WzYd:not(._28Kac) {
 		font-size: 1.5rem !important;
@@ -381,7 +379,10 @@ h1 {
 @media screen and (max-width: 420px) {
 	._2WzYd:not(._28Kac) {
 		font-size: 1rem !important;
-	}
+    }
+    ._1pKVQ:not(._1K1H8){
+        padding-left: .125rem !important;
+    }
 }
 
 @media screen and (max-width: 360px) {
