@@ -475,7 +475,7 @@ function App() {
 		</span>
 	) : (
 		<div style={{ fontFamily: settings.Font }} ref={bodyRef} className="overlay-container">
-			<div className={`overlay `}>
+			<div className={`overlay`}>
 				<CSSTransition unmountOnExit classNames="chat-node" timeout={200} in={windowFocused}>
 					<div
 						id="chat-input--container"
