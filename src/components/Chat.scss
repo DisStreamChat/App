@@ -64,6 +64,11 @@
 	flex-direction: column-reverse;
 }
 
+.search-container{
+    flex-direction: row !important;
+    // display: initial !important
+}
+
 #chat-input--container {
 	& > img {
 		margin: 0 1rem;

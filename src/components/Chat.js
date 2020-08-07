@@ -124,11 +124,13 @@ function App() {
 		(key, event, handle) => {
 			switch (key) {
 				case "ctrl+f":
+                    setSearch("")
 					setShowSearch(true);
 					document.getElementById("chat-search").focus();
 					break;
 				case "esc":
-					setShowSearch(false);
+                    setShowSearch(false);
+                    setSearch("")
 					break;
 				default:
 					break;
@@ -475,7 +477,7 @@ function App() {
 		</span>
 	) : (
 		<div style={{ fontFamily: settings.Font }} ref={bodyRef} className="overlay-container">
-			<div className={`overlay`}>
+			<div className={`overlay ${windowFocused ? "focused" : "unfocused"}`}>
 				<CSSTransition unmountOnExit classNames="chat-node" timeout={200} in={windowFocused}>
 					<div
 						id="chat-input--container"
