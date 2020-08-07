@@ -458,7 +458,7 @@ function App() {
 
 	useEffect(() => {
 		setFlagMatches(handleFlags(showSearch ? search : "", [...messages, ...pinnedMessages]).filter(msg => !msg.deleted));
-	}, [messages, search, showSearch, pinnedMessages]);
+	}, [messages, search, showSearch, pinnedMessages, windowFocused]);
 
 	const sendMessage = useCallback(() => {
 		if (socket) {
@@ -475,7 +475,7 @@ function App() {
 		</span>
 	) : (
 		<div style={{ fontFamily: settings.Font }} ref={bodyRef} className="overlay-container">
-			<div className={`overlay ${windowFocused ? "focused" : "unfocused"}`}>
+			<div className={`overlay `}>
 				<CSSTransition unmountOnExit classNames="chat-node" timeout={200} in={windowFocused}>
 					<div
 						id="chat-input--container"
@@ -522,7 +522,7 @@ function App() {
 					unreadMessageHandler={checkReadMessage}
 					pin={pinMessage}
 				/>
-				<CSSTransition unmountOnExit timeout={200} classNames="search-node" in={windowFocused && showSearch}>
+				<CSSTransition unmountOnExit timeout={200} classNames="search-node" in={showSearch}>
 					<SearchBox onKeyDown={e => {
                         if(e.key === "Escape"){
                             setShowSearch(false)
