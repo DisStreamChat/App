@@ -11,7 +11,7 @@
 	transition-property: height, background;
 	position: fixed;
 	z-index: 100;
-	padding-top: 5px;
+	padding-top: calc(5px + .5rem);
 	padding-left: 1rem;
 	padding-right: 1rem;
     box-sizing: border-box !important;
@@ -201,7 +201,7 @@ button.clear{
 	display: flex;
 	align-items: center;
 	justify-content: space-around;
-	padding: 0.5rem !important;
+	padding: 0 .5rem .5rem 0.5rem !important;
 }
 
 
@@ -281,10 +281,9 @@ button.clear{
 }
 
 @media screen and (max-width: 350px) {
-	.nav button {
-		min-width: fit-content !important;
-		/* font-size: .4rem !important; */
-	}
+    .header{
+        padding-top: 0px;
+    }
 }
 
 @media screen and (max-width: 340px) {
