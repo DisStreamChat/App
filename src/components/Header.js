@@ -50,7 +50,8 @@ const SettingList = React.memo(props => {
 							min={value.min}
 							max={value.max}
 							step={value.step}
-							options={value.options}
+                            options={value.options}
+                            description={value.description}
 						/>
 					);
 				})}

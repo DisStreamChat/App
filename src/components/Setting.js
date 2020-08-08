@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { ChromePicker } from "react-color";
-import { Switch } from "@material-ui/core";
+import { Switch, Tooltip } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import { blueGrey } from "@material-ui/core/colors";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -14,6 +14,7 @@ import ClearIcon from "@material-ui/icons/Clear";
 import uid from "uid";
 import AddIcon from "@material-ui/icons/Add";
 import AnimateHeight from "react-animate-height";
+import InfoTwoToneIcon from "@material-ui/icons/InfoTwoTone";
 import "./Users.scss";
 const { ipcRenderer } = window.require("electron");
 
@@ -95,8 +96,8 @@ const Setting = React.memo(props => {
 					document.removeEventListener("keydown", listenKeyBind);
 				} catch (err) {}
 				if (save) {
-                    setValue(recorded.join("+"))
-                    changeHandler(recorded.join("+"))
+					setValue(recorded.join("+"));
+					changeHandler(recorded.join("+"));
 				}
 			} else {
 				setRecording(true);
@@ -112,6 +113,12 @@ const Setting = React.memo(props => {
 
 	return (
 		<div className={`setting ${props.type === "color" ? "color-setting" : "list-setting"} ${props.open && "open"}`}>
+			{props.description && (
+				<Tooltip placement="top" arrow title={props.description} className="info-tip">
+					<InfoTwoToneIcon />
+				</Tooltip>
+			)}
+
 			{props.type === "color" ? (
 				<>
 					<div className="color-header" onClick={() => props.onClick(props.name)}>

@@ -20,6 +20,24 @@
     }
 }
 
+.setting{
+    position: relative;
+}
+
+.info-tip{
+    position: absolute;
+    transform: scale(.85);
+    $pos: 3px;
+    @media screen and (max-width: 400px) {
+        & {
+            transform: scale(.75);
+            $pos: 1px;
+        }
+    }
+    right: $pos;
+    top: $pos;
+}
+
 .messages-notification{
     position: relative;
     cursor: pointer;
