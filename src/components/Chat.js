@@ -291,7 +291,8 @@ function App() {
 						msg?.displayName?.toLowerCase?.() !== userInfo?.name?.toLowerCase?.() &&
 						channel?.TwitchName?.toLowerCase?.() === userInfo?.name?.toLowerCase?.()
 					)
-						msg.moddable = true;
+                        msg.moddable = true;
+                    if(msg.displayName.toLowerCase() === "disstreamchat") msg.moddable = false
 					return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
 				});
 			});
