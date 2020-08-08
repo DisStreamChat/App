@@ -27,7 +27,7 @@
 .info-tip{
     position: absolute;
     transform: scale(.85);
-    $pos: 3px;
+    $pos: 4px;
     @media screen and (max-width: 400px) {
         & {
             transform: scale(.75);

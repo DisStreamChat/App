@@ -252,10 +252,24 @@ function App() {
 						if (msg.body.startsWith(prefix.value)) {
 							ignoredMessage = true;
 						}
-					});
-
+                    });
+                    
+                    
 					// don't allow ignoring of notifications from 'disstreamchat'
 					if (msg.displayName.toLowerCase() === "disstreamchat") ignoredMessage = false;
+                    
+                    if(settings?.IgnoreCheers && msg.messageId === "cheer"){
+                        ignoredMessage = true
+                    }
+                    if(settings?.IgnoreFollows && msg.messageId === "follow"){
+                        ignoredMessage = true
+                    }
+                    if(settings?.IgnoreSubscriptions && msg.messageId === "subscription"){
+                        ignoredMessage = true
+                    }
+                    if(settings?.IgnoreChannelPoints && msg.messageType === "channel-points"){
+                        ignoredMessage = true
+                    }
 
 					// if ignored don't add the message
 					if (ignoredMessage) return m;
