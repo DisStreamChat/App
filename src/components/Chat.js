@@ -264,7 +264,7 @@ function App() {
                     if(settings?.IgnoreFollows && msg.messageId === "follow"){
                         ignoredMessage = true
                     }
-                    if(settings?.IgnoreSubscriptions && msg.messageId === "subscription"){
+                    if(settings?.IgnoreSubscriptions && msg.messageId === "subscription" && msg.messageType !== "channel-points"){
                         ignoredMessage = true
                     }
                     if(settings?.IgnoreChannelPoints && msg.messageType === "channel-points"){
