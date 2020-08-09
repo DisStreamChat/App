@@ -6,7 +6,7 @@ const windowStateKeeper = require("electron-window-state");
 const contextMenu = require("electron-context-menu");
 
 let mainWindow;
-let loginWindow
+let loginWindow;
 let unfocusKey = "f20";
 let focusKey = "f21";
 let opacity = 0.5;
@@ -25,8 +25,8 @@ const focus = () => {
 		if (window) {
 			sendMessageToWindow("toggle-border", true, window);
 			window.setOpacity(1);
-            window.setIgnoreMouseEvents(false);
-            sendMessageToWindow("focus", true, window)
+			window.setIgnoreMouseEvents(false);
+			sendMessageToWindow("focus", true, window);
 		}
 	}
 	focused = true;
@@ -40,8 +40,8 @@ const unfocus = () => {
 		if (window) {
 			sendMessageToWindow("toggle-border", false, window);
 			window.setOpacity(opacity);
-            window.setIgnoreMouseEvents(true);
-            sendMessageToWindow("focus", false, window)
+			window.setIgnoreMouseEvents(true);
+			sendMessageToWindow("focus", false, window);
 		}
 	}
 	focused = false;
@@ -60,7 +60,8 @@ function windowGenerator({ width = Width, height = Width * 1.5, x, y } = {}) {
 		frame: false, // whether or not the window has 'frame' or header
 		backgroundColor: "#001e272e", // window background color, first two values set alpha which is set to 0 for transparency
 		transparent: true, // make window transparent
-		alwaysOnTop: true, // make is so other windows won't go on top of this one
+        alwaysOnTop: true, // make is so other windows won't go on top of this one
+        fullScreenable: false,
 		webPreferences: {
 			nodeIntegration: true, // integrates the frontend with node, this is used for the custom toolbar
 		},
@@ -72,9 +73,13 @@ function windowGenerator({ width = Width, height = Width * 1.5, x, y } = {}) {
 	let window = new BrowserWindow(options);
 	window.on("page-title-updated", e => {
 		e.preventDefault();
-	});
-	window.setAlwaysOnTop(true, "screen-saver");
+    });
+    window.setAlwaysOnTop(true, "screen-saver");
+    try{
+        window.setFullScreenable(false)
+    }catch(err){
 
+    }
 	return window;
 }
 
@@ -123,11 +128,11 @@ function createMainWindow() {
 	]);
 
 	mainWindow.on("focus", () => {
-		sendMessageToWindow("focus", true, mainWindow)
+		sendMessageToWindow("focus", true, mainWindow);
 	});
-    
+
 	mainWindow.on("blur", () => {
-        sendMessageToWindow("focus", false, mainWindow)
+		sendMessageToWindow("focus", false, mainWindow);
 	});
 
 	setTimeout(() => {
@@ -175,13 +180,13 @@ ipcMain.on("popoutChat", (event, data) => {
 		popoutWindow.webContents.send("popout", data);
 	}, 2000);
 	windows[data] = popoutWindow;
-    popoutWindow.on("closed", () => (windows[data] = null));
-    popoutWindow.on("focus", () => {
-		sendMessageToWindow("focus", true, popoutWindow)
+	popoutWindow.on("closed", () => (windows[data] = null));
+	popoutWindow.on("focus", () => {
+		sendMessageToWindow("focus", true, popoutWindow);
 	});
-    
+
 	popoutWindow.on("blur", () => {
-        sendMessageToWindow("focus", false, popoutWindow)
+		sendMessageToWindow("focus", false, popoutWindow);
 	});
 });
 
@@ -256,23 +261,23 @@ ipcMain.on("setFocus", (event, data) => {
 	}
 });
 
-ipcMain.on('login', (event) => {
-    loginWindow = new BrowserWindow({
-        width: Width*1.1, // width of the window
-        height: Width*1.35, // height of the window
-        frame: true, // whether or not the window has 'frame' and header
-        backgroundColor: '#001e272e', // window background color, first two values set alpha which is set to 0 for transparency
-        alwaysOnTop: true, // make is so other windows won't go on top of this one
-        webPreferences: {
-            nodeIntegration: false, // don't allow integration with node
-            preload: path.join(__dirname, "loginWindow.js")
-        },
-    });
-    loginWindow.loadURL('https://api.disstreamchat.com/oauth/twitch');
+ipcMain.on("login", event => {
+	loginWindow = new BrowserWindow({
+		width: Width * 1.1, // width of the window
+		height: Width * 1.35, // height of the window
+		frame: true, // whether or not the window has 'frame' and header
+		backgroundColor: "#001e272e", // window background color, first two values set alpha which is set to 0 for transparency
+		alwaysOnTop: true, // make is so other windows won't go on top of this one
+		webPreferences: {
+			nodeIntegration: false, // don't allow integration with node
+			preload: path.join(__dirname, "loginWindow.js"),
+		},
+	});
+	loginWindow.loadURL("https://api.disstreamchat.com/oauth/twitch");
 });
 
-ipcMain.on('login-data', (event, token) => {
-    if(mainWindow){
-        mainWindow.webContents.send("log-me-in", token)
-    }
+ipcMain.on("login-data", (event, token) => {
+	if (mainWindow) {
+		mainWindow.webContents.send("log-me-in", token);
+	}
 });
