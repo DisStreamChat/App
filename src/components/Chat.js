@@ -69,9 +69,9 @@ const Messages = React.memo(props => {
 	);
 });
 
-function App() {
+function App(props) {
 	const [socket, setSocket] = useState();
-	const { streamerInfo: settings, messages, setMessages, pinnedMessages, setPinnedMessages, showViewers } = useContext(AppContext);
+	const { streamerInfo: settings, messages, setMessages, pinnedMessages, setPinnedMessages, showViewers, windowFocused } = useContext(AppContext);
 	const [channel, setChannel] = useState();
 	const [search, setSearch] = useState("");
 	const { id } = useParams();
@@ -81,7 +81,6 @@ function App() {
 	const bodyRef = useRef();
 	const observerRef = useRef();
 	const currentUser = firebase.auth.currentUser;
-	const [windowFocused, setWindowFocused] = useState(true);
 	const [userInfo, setUserInfo] = useState();
 	// const [emoteIndex, setEmoteIndex] = useState(0);
 
@@ -98,14 +97,7 @@ function App() {
 		return unsub;
 	}, [currentUser]);
 
-	useEffect(() => {
-		ipcRenderer.on("focus", (event, data) => setWindowFocused(data));
-		ipcRenderer.on("focus-again", (event, data) => setWindowFocused(prev => prev && data));
-		return () => {
-			ipcRenderer.removeAllListeners("focus");
-			ipcRenderer.removeAllListeners("focus-again");
-		};
-	}, []);
+	
 
 	// this runs once on load, and starts the socket
 	useEffect(() => {

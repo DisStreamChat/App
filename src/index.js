@@ -23,6 +23,7 @@ const App = () => {
 	const [border, setBorder] = useState(true);
 	const [showViewers, setShowViewers] = useState(false);
 	const currentUser = firebase.auth.currentUser;
+	const [windowFocused, setWindowFocused] = useState(true);
 
 	useEffect(() => {
 		ipcRenderer.on("toggle-border", (event, text) => {
@@ -78,6 +79,15 @@ const App = () => {
 		})();
 	}, [firebaseInit, currentUser]);
 
+	useEffect(() => {
+		ipcRenderer.on("focus", (event, data) => setWindowFocused(data));
+		ipcRenderer.on("focus-again", (event, data) => setWindowFocused(prev => prev && data));
+		return () => {
+			ipcRenderer.removeAllListeners("focus");
+			ipcRenderer.removeAllListeners("focus-again");
+		};
+	}, []);
+
 	// vanilla dom in react 🤮
 	useEffect(() => {
 		if (border && streamerInfo?.ShowBorder) {
@@ -113,11 +123,17 @@ const App = () => {
 				setPinnedMessages,
 				showViewers,
 				setShowViewers,
+				windowFocused,
+				setWindowFocused,
 			}}
 		>
 			<Router>
 				<Header />
-				<main className="body">
+				<main
+					className={`body ${
+						streamerInfo?.HideHeaderOnUnfocus ? (windowFocused ? "window-focused" : "window-unfocused") : "window-focused"
+					}`}
+				>
 					<Switch>
 						<ProtectedRoute exact path="/chat/:id" component={Chat} />
 						<ProtectedRoute exact path="/viewers/:id" component={Viewers} />

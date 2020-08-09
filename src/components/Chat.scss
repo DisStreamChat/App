@@ -40,8 +40,12 @@
 .body {
 	display: flex;
 	justify-content: center;
-	position: absolute;
-	top: 65px;
+    position: absolute;
+    transition: 400ms;
+    &.window-unfocused{
+        transform: translateY(-65px);
+    }
+    top: 65px;
 	width: 100vw;
 }
 
@@ -102,7 +106,9 @@
 }
 
 .overlay-container {
-	height: calc(100vh - 95px);
+    .window-focused &{
+        height: calc(100vh - 95px);
+    }
 	overflow: auto;
 	width: fit-content;
 	overflow-x: hidden;

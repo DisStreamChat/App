@@ -522,3 +522,22 @@ button.clear{
 		margin: 0.5rem 0;
 	}
 }
+
+.header-node-enter {
+	opacity: 0;
+	transform: translateY(-100%);
+}
+.header-node-enter-active {
+	opacity: 1;
+	transform: translateY(0);
+	transition: 400ms;
+}
+.header-node-exit {
+	transform: translateY(0);
+	opacity: 1;
+}
+.header-node-exit-active {
+	opacity: 0;
+	transform: translateY(-100%);
+	transition: 400ms;
+}

@@ -12,8 +12,12 @@ hr {
 	position: absolute;
 	top: 0;
 	padding-top: 1rem;
-	width: 100%;
-	height: calc(100vh - 111px);
+    width: 100%;
+    .window-focused &{
+        height: calc(100vh - 111px);
+    }
+    height: calc(100vh - 45px);
+    transition: 400ms;
 	display: flex;
 	flex-direction: column;
 	align-items: center;

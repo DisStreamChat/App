@@ -16,6 +16,7 @@ import ClearIcon from "@material-ui/icons/Clear";
 import MailTwoToneIcon from "@material-ui/icons/MailTwoTone";
 import { Tooltip } from "@material-ui/core";
 import { useInterval } from "react-use";
+import {CSSTransition} from "react-transition-group"
 const { remote, ipcRenderer } = window.require("electron");
 const customTitlebar = window.require("custom-electron-titlebar");
 
@@ -33,7 +34,7 @@ const SettingList = React.memo(props => {
 		<SettingAccordion>
 			{Object.entries(props.defaultSettings || {})
 				.filter(
-					([name, data]) => !data.discordSetting && (!props.search ? true : name?.toLowerCase()?.includes(props?.search?.toLowerCase()))
+					([name, data]) => !data.discordSetting && (!props.search ? true : name?.match(/[A-Z][a-z]+|[0-9]+/g)?.join(" ")?.toLowerCase()?.includes(props?.search?.toLowerCase()))
 				)
 				.sort((a, b) => {
 					const categoryOrder = a[1].type.localeCompare(b[1].type);
@@ -72,7 +73,7 @@ const Header = props => {
 	const [show, setShow] = useState(true);
 	const currentUser = firebase.auth.currentUser;
 	const id = currentUser?.uid || " ";
-	const { messages, setMessages, setShowViewers } = useContext(AppContext);
+	const { messages, setMessages, setShowViewers, windowFocused, streamerInfo } = useContext(AppContext);
 	const [viewingUserId, setViewingUserId] = useState();
 	const [viewingUserInfo, setViewingUserInfo] = useState();
 	const [viewingUserStats, setViewingUserStats] = useState();
@@ -211,12 +212,13 @@ const Header = props => {
 	const signout = useCallback(async () => {
 		await firebase.logout();
 		props.history.push("/");
-	}, [props.history]);
+    }, [props.history]);
+
 
 	return !show ? (
 		<></>
 	) : (
-		<>
+		<CSSTransition in={streamerInfo?.HideHeaderOnUnfocus ? windowFocused : true} timeout={100} unmountOnExit classNames="header-node">
 			<header className={`header ${settingsOpen && "open"}`}>
 				<nav className="nav">
 					<button className="clear" onClick={() => setSettingsOpen(o => !o)}>
@@ -277,7 +279,7 @@ const Header = props => {
 					<SettingList all search={search} defaultSettings={defaultSettings} settings={appSettings} updateSettings={updateAppSetting} />
 				</div>
 			</header>
-		</>
+		</CSSTransition>
 	);
 };
 
