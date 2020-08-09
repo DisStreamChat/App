@@ -15,21 +15,20 @@ import Header from "./components/Header";
 import Viewers from "./components/Viewers";
 const { ipcRenderer } = window.require("electron");
 
-
 const App = () => {
 	const [firebaseInit, setFirebaseInit] = useState(false);
 	const [streamerInfo, setStreamerInfo] = useState({});
 	const [messages, setMessages] = useState([]);
 	const [pinnedMessages, setPinnedMessages] = useState([]);
-    const [border, setBorder] = useState(true);
-    const [showViewers, setShowViewers] = useState(false)
+	const [border, setBorder] = useState(true);
+	const [showViewers, setShowViewers] = useState(false);
 	const currentUser = firebase.auth.currentUser;
 
 	useEffect(() => {
 		ipcRenderer.on("toggle-border", (event, text) => {
 			setBorder(text);
-        });
-        return () => ipcRenderer.removeAllListeners("toggle-border")
+		});
+		return () => ipcRenderer.removeAllListeners("toggle-border");
 	}, []);
 
 	useEffect(() => {
@@ -39,11 +38,11 @@ const App = () => {
 			.onSnapshot(snapshot => {
 				const data = snapshot.data();
 				if (data) {
-                    const opacity = data.appSettings.ClickThroughOpacity;
-                    const unfocusKey = data.appSettings.UnfocusKeybind
-                    const focusKey = data.appSettings.FocusKeybind
-                    ipcRenderer.send("setFocus", focusKey || "f7")
-                    ipcRenderer.send("setunFocus", unfocusKey || "f6")
+					const opacity = data.appSettings.ClickThroughOpacity;
+					const unfocusKey = data.appSettings.UnfocusKeybind;
+					const focusKey = data.appSettings.FocusKeybind;
+					ipcRenderer.send("setFocus", focusKey || "f7");
+					ipcRenderer.send("setunFocus", unfocusKey || "f6");
 					ipcRenderer.send("setopacity", opacity);
 				}
 			});
@@ -66,7 +65,8 @@ const App = () => {
 				const profilePictureResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/profilepicture?user=${userData.TwitchName}`);
 				const profilePicture = await profilePictureResponse.json();
 				const modChannelResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/modchannels?user=${userData.TwitchName}`);
-				const NewModChannels = await modChannelResponse.json();
+				const removedChannels = userData.removedChannels || [];
+				const NewModChannels = (await modChannelResponse.json()).filter(channel => !removedChannels.includes(channel.id));
 				const ModChannels = [...NewModChannels, ...userData.ModChannels].filter(
 					(thing, index, self) => index === self.findIndex(t => t.id === thing.id)
 				);
@@ -110,9 +110,9 @@ const App = () => {
 				streamerInfo,
 				setStreamerInfo,
 				pinnedMessages,
-                setPinnedMessages,
-                showViewers,
-                setShowViewers
+				setPinnedMessages,
+				showViewers,
+				setShowViewers,
 			}}
 		>
 			<Router>
@@ -120,7 +120,7 @@ const App = () => {
 				<main className="body">
 					<Switch>
 						<ProtectedRoute exact path="/chat/:id" component={Chat} />
-                        <ProtectedRoute exact path="/viewers/:id" component={Viewers}/>
+						<ProtectedRoute exact path="/viewers/:id" component={Viewers} />
 						<ProtectedRoute path="/channels" component={Channels} />
 						<Route path="/login" component={Auth} />
 						<Redirect to="/channels" />

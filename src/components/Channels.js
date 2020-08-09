@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 import "./Channels.scss";
 import SearchBox from "./SearchBox";
 import { useInterval } from "react-use";
+import ClearIcon from "@material-ui/icons/Clear";
+import { Tooltip } from "@material-ui/core";
 const { ipcRenderer } = window.require("electron");
 
 const ChannelItem = React.memo(props => {
@@ -30,6 +32,17 @@ const ChannelItem = React.memo(props => {
 	useEffect(() => {
 		getLive();
 	}, [getLive]);
+
+	const removeChannel = useCallback(async () => {
+		const Append = firebase.firestore.FieldValue.arrayUnion;
+		const Splice = firebase.firestore.FieldValue.arrayRemove;
+		const userRef = firebase.db.collection("Streamers").doc(currentUser.uid);
+		const modChannels = (await userRef.get()).data().ModChannels;
+		await userRef.update({
+			ModChannels: modChannels.filter(channel => channel.id !== props.id),
+			removedChannels: Append(props.id),
+		});
+	}, [currentUser, props]);
 
 	useInterval(getLive, 60000);
 
@@ -75,6 +88,13 @@ const ChannelItem = React.memo(props => {
 				</>
 			) : (
 				<>
+					{!props.mine && (
+						<Tooltip title="Remove Channel" arrow placement="top">
+							<button onClick={removeChannel} className="remove-btn">
+								<ClearIcon />
+							</button>
+						</Tooltip>
+					)}
 					<div className={`channel-profile-pic ${isLive ? "live" : ""}`}>
 						<img src={props["profile_image_url"] || props.profilePicture} alt="" />
 					</div>
@@ -193,7 +213,7 @@ const Channels = React.memo(props => {
 			<div className="my-channels">
 				<div className="mychannel channel-div">
 					<h1>Your Channel</h1>
-					<ChannelItem popoutChat={popout} {...myChannel} />
+					<ChannelItem mine popoutChat={popout} {...myChannel} />
 				</div>
 				<hr />
 				<h1>Channels you moderate</h1>

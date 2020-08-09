@@ -22,6 +22,7 @@ class Firebase {
         app.analytics();
         this.auth = app.auth();
         this.db = app.firestore();
+        this.firestore = app.firestore
         this.app = app
         this.storage = app.storage()
         this.perf = app.performance()

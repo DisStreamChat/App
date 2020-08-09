@@ -20,6 +20,32 @@ hr {
 	background: linear-gradient(119.36deg, #17181ba1 21.35%, #24252aa1 76.56%);
 }
 
+.remove-btn {
+	position: absolute;
+	svg {
+		width: 20px;
+        height: 20px;
+        fill: red;
+    }
+    &:active{
+        transform: scale(.85) !important;
+    }
+    border: none;
+    outline: none !important;
+    color: red !important;
+	width: 28px;
+	height: 28px;
+	$pos: -6px;
+	top: $pos;
+	right: $pos;
+	padding: 4px;
+	box-sizing: border-box !important;
+	background: darken(#2a2c30, 5);
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+}
+
 #root .channel-item.add-channel {
 	display: grid;
 	justify-content: center;
@@ -243,14 +269,14 @@ hr {
 
 @media screen and (max-width: 450px) {
 	.channel-profile-pic {
-        width: 0px;
-        padding-left: 2rem;
-        // outline: solid;
-        &:after{
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%)
-        }
+		width: 0px;
+		padding-left: 2rem;
+		// outline: solid;
+		&:after {
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+		}
 	}
 
 	.channel-profile-pic img {
