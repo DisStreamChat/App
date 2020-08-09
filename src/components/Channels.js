@@ -35,7 +35,6 @@ const ChannelItem = React.memo(props => {
 
 	const removeChannel = useCallback(async () => {
 		const Append = firebase.firestore.FieldValue.arrayUnion;
-		const Splice = firebase.firestore.FieldValue.arrayRemove;
 		const userRef = firebase.db.collection("Streamers").doc(currentUser.uid);
 		const modChannels = (await userRef.get()).data().ModChannels;
 		await userRef.update({
