@@ -7,6 +7,7 @@ import SearchBox from "./SearchBox";
 import { useInterval } from "react-use";
 import ClearIcon from "@material-ui/icons/Clear";
 import { Tooltip } from "@material-ui/core";
+import Loader from "react-loader"
 const { ipcRenderer } = window.require("electron");
 
 const ChannelItem = React.memo(props => {
@@ -228,9 +229,29 @@ const Channels = React.memo(props => {
 				<hr />
 				<h1>Channels you moderate</h1>
 				<div className="modchannels channel-div">
-					{modChannels.map(channel => (
+					{modChannels.length ? modChannels.map(channel => (
 						<ChannelItem setModChannels={setModChannels} popoutChat={popout} key={channel.id} {...channel} moderator />
-					))}
+					)):<Loader
+                    loaded={false}
+                    lines={15}
+                    length={0}
+                    width={15}
+                    radius={35}
+                    corners={1}
+                    rotate={0}
+                    direction={1}
+                    color="#fff"
+                    speed={1}
+                    trail={60}
+                    shadow={true}
+                    hwaccel={true}
+                    className="spinner"
+                    zIndex={2e9}
+                    top="50%"
+                    left="50%"
+                    scale={1.75}
+                    loadedClassName="loadedContent"
+                />}
 				</div>
 				{!!modChannels.length && <ChannelItem addChannel />}
 			</div>

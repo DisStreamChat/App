@@ -218,7 +218,8 @@ hr {
 .modchannels {
 	height: 65vh;
 	overflow-y: auto;
-	margin-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+    position: relative;
 	/* padding-bottom: .5rem; */
 }
 
