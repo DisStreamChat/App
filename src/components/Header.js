@@ -21,10 +21,12 @@ const customTitlebar = window.require("custom-electron-titlebar");
 
 let MyTitleBar = new customTitlebar.Titlebar({
 	backgroundColor: customTitlebar.Color.fromHex("#17181ba1"),
-	menu: null,
+    menu: null,
+    maximizable: false,
 });
 MyTitleBar.updateTitle("DisStreamChat");
 MyTitleBar.setHorizontalAlignment("left");
+
 
 const SettingList = React.memo(props => {
 	return (
