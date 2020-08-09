@@ -17,7 +17,9 @@ const ChannelItem = React.memo(props => {
 	const currentUser = firebase.auth.currentUser;
 
 	useEffect(() => {
-		setChannelName(props.display_name || props.name);
+		if (!props.addChannel) {
+			setChannelName(props.display_name || props.name);
+		}
 	}, [props]);
 
 	const getLive = useCallback(async () => {
@@ -37,8 +39,10 @@ const ChannelItem = React.memo(props => {
 		const Append = firebase.firestore.FieldValue.arrayUnion;
 		const userRef = firebase.db.collection("Streamers").doc(currentUser.uid);
 		const modChannels = (await userRef.get()).data().ModChannels;
+		const newModChannels = modChannels.filter(channel => channel.id !== props.id);
+		props.setModChannels(prev => prev.filter(channel => channel.id !== props.id));
 		await userRef.update({
-			ModChannels: modChannels.filter(channel => channel.id !== props.id),
+			ModChannels: newModChannels,
 			removedChannels: Append(props.id),
 		});
 	}, [currentUser, props]);
@@ -53,6 +57,7 @@ const ChannelItem = React.memo(props => {
 					<form
 						onSubmit={async e => {
 							e.preventDefault();
+							setError("");
 							try {
 								setLoading(true);
 								if (!channelName) {
@@ -77,10 +82,16 @@ const ChannelItem = React.memo(props => {
 							} catch (err) {
 								setError("An error occured while fetching " + channelName);
 							}
+							setChannelName("");
 							setLoading(false);
 						}}
 					>
-						<SearchBox onClick={() => setError("")} onChange={setChannelName} placeholder="Enter Channel Name" />
+						<SearchBox
+							onClick={() => setError("")}
+							onChange={setChannelName}
+							value={channelName}
+							placeholder="Enter Channel Name"
+						/>
 						<button className="dashboard-button to-dashboard">{!loading ? "Submit" : "Loading..."}</button>
 					</form>
 					{error && <p className="error-message">{error}</p>}
@@ -218,7 +229,7 @@ const Channels = React.memo(props => {
 				<h1>Channels you moderate</h1>
 				<div className="modchannels channel-div">
 					{modChannels.map(channel => (
-						<ChannelItem popoutChat={popout} key={channel.id} {...channel} moderator />
+						<ChannelItem setModChannels={setModChannels} popoutChat={popout} key={channel.id} {...channel} moderator />
 					))}
 				</div>
 				{!!modChannels.length && <ChannelItem addChannel />}

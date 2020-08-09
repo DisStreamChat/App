@@ -544,7 +544,7 @@ function App() {
                         if(e.key === "Escape"){
                             setShowSearch(false)
                         }
-                    }} id="chat-search" onChange={handleSearch} placeHolder="Search Messages" />
+                    }} id="chat-search" value={search} onChange={handleSearch} placeHolder="Search Messages" />
 				</CSSTransition>
 			</div>
 			<CSSTransition unmountOnExit timeout={400} classNames={"to-top-node"} in={showToTop}>

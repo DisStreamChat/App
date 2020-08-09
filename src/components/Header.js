@@ -273,7 +273,7 @@ const Header = props => {
 					)}
 				</nav>
 				<div className="header-settings">
-					<SearchBox onChange={setSearch} placeHolder="Search Settings" />
+					<SearchBox value={search} onChange={setSearch} placeHolder="Search Settings" />
 					<SettingList all search={search} defaultSettings={defaultSettings} settings={appSettings} updateSettings={updateAppSetting} />
 				</div>
 			</header>

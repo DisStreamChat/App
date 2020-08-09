@@ -1,21 +1,17 @@
 import React, { useState, useCallback, useEffect } from "react";
 import ClearRoundedIcon from "@material-ui/icons/ClearRounded";
 
-const SearchBox = React.memo(({ onChange, placeHolder, placeholder, onClick, id, onKeyDown }) => {
-	const [value, setValue] = useState("");
+const SearchBox = React.memo(({ value, onChange, placeHolder, placeholder, onClick, id, onKeyDown }) => {
+    const [stateValue, setStateValue] = useState(value)
 
-	const handleChange = useCallback(e => {
-		setValue(e.target.value);
-	}, []);
-
-	useEffect(() => {
-		const _ = onChange?.(value);
-	}, [onChange, value]);
-
-	const clickHandler = useCallback(() => {
-		setValue("");
+    useEffect(() => {
+        setStateValue(value)
+    }, [value])
+    
+    const clickHandler = useCallback(() => {
+        onChange("")
 		const _ = onClick?.();
-    }, [onClick]);
+    }, [onClick, onChange]);
     
     const keyDownHandler = useCallback(e => {
         const _ = onKeyDown?.(e)
@@ -25,8 +21,8 @@ const SearchBox = React.memo(({ onChange, placeHolder, placeholder, onClick, id,
 		<>
 			<div className="search-container">
 				<input
-					value={value}
-                    onChange={handleChange}
+					value={stateValue}
+                    onChange={e => onChange(e.target.value)}
                     onKeyDown={keyDownHandler}
 					type="text"
 					name=""
