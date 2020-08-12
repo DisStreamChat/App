@@ -105,11 +105,11 @@ const Auth = React.memo(props => {
 						/>
 						<label htmlFor="terms-check">
 							I accept the{" "}
-							<A href="/terms" local newTab>
+							<A href="https://disstreamchat.com/#/terms" newTab>
 								terms and conditions
 							</A>{" "}
 							and{" "}
-							<A href="/privacy" local newTab>
+							<A href="https://disstreamchat.com/#/privacy" newTab>
 								privacy policy
 							</A>
 						</label>
