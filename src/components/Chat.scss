@@ -474,6 +474,10 @@ pre._1K1H8._1pKVQ * {
 
 .react-contextmenu-wrapper{
     display: inline;
+    margin-left: .75rem;
+    @media screen and (max-width: 475px) {
+        margin-left: .25rem;
+    }
 }
 
 .react-contextmenu{
@@ -481,7 +485,7 @@ pre._1K1H8._1pKVQ * {
     border-radius: .5rem;
     padding: .1rem;
     overflow: hidden;
-    border: .5px solid darken(#515151, 20)
+    border: .5px solid darken(#515151, 100)
 }
 
 .react-contextmenu-item{
