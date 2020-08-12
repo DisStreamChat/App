@@ -7,8 +7,8 @@ import SearchBox from "./SearchBox";
 import { useInterval } from "react-use";
 import ClearIcon from "@material-ui/icons/Clear";
 import { Tooltip } from "@material-ui/core";
-import Loader from "react-loader"
-import sha1 from "sha1"
+import Loader from "react-loader";
+import sha1 from "sha1";
 const { ipcRenderer } = window.require("electron");
 
 const ChannelItem = React.memo(props => {
@@ -88,12 +88,7 @@ const ChannelItem = React.memo(props => {
 							setLoading(false);
 						}}
 					>
-						<SearchBox
-							onClick={() => setError("")}
-							onChange={setChannelName}
-							value={channelName}
-							placeholder="Enter Channel Name"
-						/>
+						<SearchBox onClick={() => setError("")} onChange={setChannelName} value={channelName} placeholder="Enter Channel Name" />
 						<button className="dashboard-button to-dashboard">{!loading ? "Submit" : "Loading..."}</button>
 					</form>
 					{error && <p className="error-message">{error}</p>}
@@ -120,9 +115,7 @@ const ChannelItem = React.memo(props => {
 							)
 						) : (
 							<Link className="dashboard-link" to={`/chat/${props.uid}`}>
-								<button  className="to-dashboard dashboard-button">
-									{"Go To Chat"}
-								</button>
+								<button className="to-dashboard dashboard-button">{"Go To Chat"}</button>
 							</Link>
 						)}
 					</div>
@@ -219,29 +212,33 @@ const Channels = React.memo(props => {
 				<hr />
 				<h1>Channels you moderate</h1>
 				<div className="modchannels channel-div">
-					{modChannels.length ? modChannels.map(channel => (
-						<ChannelItem setModChannels={setModChannels} popoutChat={popout} key={channel.id} {...channel} moderator />
-					)):<Loader
-                    loaded={false}
-                    lines={15}
-                    length={0}
-                    width={15}
-                    radius={35}
-                    corners={1}
-                    rotate={0}
-                    direction={1}
-                    color="#fff"
-                    speed={1}
-                    trail={60}
-                    shadow={true}
-                    hwaccel={true}
-                    className="spinner"
-                    zIndex={2e9}
-                    top="50%"
-                    left="50%"
-                    scale={1.75}
-                    loadedClassName="loadedContent"
-                />}
+					{modChannels.length ? (
+						modChannels.map(channel => (
+							<ChannelItem setModChannels={setModChannels} popoutChat={popout} key={channel.id} {...channel} moderator />
+						))
+					) : (
+						<Loader
+							loaded={false}
+							lines={15}
+							length={0}
+							width={15}
+							radius={35}
+							corners={1}
+							rotate={0}
+							direction={1}
+							color="#fff"
+							speed={1}
+							trail={60}
+							shadow={true}
+							hwaccel={true}
+							className="spinner"
+							zIndex={2e9}
+							top="50%"
+							left="50%"
+							scale={1.75}
+							loadedClassName="loadedContent"
+						/>
+					)}
 				</div>
 				{!!modChannels.length && <ChannelItem addChannel />}
 			</div>
