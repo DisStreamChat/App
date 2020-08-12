@@ -45,6 +45,16 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    .legal{
+        a{
+            text-decoration: underline !important;
+        }
+        display: flex;
+        margin-top: 1rem;
+        input[type="checkbox"]{
+            margin-right: .5rem;
+        }
+    }
 }
 
 .modal-heading{
