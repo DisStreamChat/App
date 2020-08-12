@@ -471,3 +471,25 @@ pre._1K1H8._1pKVQ * {
 #root ._28Kac {
 	background: darken(#515151, 15) !important;
 }
+
+.react-contextmenu-wrapper{
+    display: inline;
+}
+
+.react-contextmenu{
+    background: darken(#515151, 7);
+    border-radius: .5rem;
+    padding: .1rem;
+    overflow: hidden;
+    border: .5px solid darken(#515151, 20)
+}
+
+.react-contextmenu-item{
+    font-weight: 600 !important;
+    padding: .25rem .5rem;
+    cursor: pointer;
+    color: black;
+    &:hover{
+        background: darken(#515151, 3);
+    }
+}
