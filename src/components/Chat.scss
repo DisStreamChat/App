@@ -485,7 +485,8 @@ pre._1K1H8._1pKVQ * {
     border-radius: .5rem;
     padding: .1rem;
     overflow: hidden;
-    border: .5px solid darken(#515151, 100)
+    border: .5px solid darken(#515151, 100);
+    z-index: 1000;
 }
 
 .react-contextmenu-item{
