@@ -8,6 +8,7 @@ import { useInterval } from "react-use";
 import ClearIcon from "@material-ui/icons/Clear";
 import { Tooltip } from "@material-ui/core";
 import Loader from "react-loader"
+import sha1 from "sha1"
 const { ipcRenderer } = window.require("electron");
 
 const ChannelItem = React.memo(props => {
@@ -114,13 +115,13 @@ const ChannelItem = React.memo(props => {
 						{props.popoutChat ? (
 							props.isMember && (
 								<button onClick={() => ipcRenderer.send("popoutChat", props.uid)} className="to-dashboard dashboard-button">
-									{props.isMember ? "Popout Chat" : <>This channel doesn't use DisStreamChat</>}
+									{"Popout Chat"}
 								</button>
 							)
 						) : (
-							<Link className="dashboard-link" to={props.isMember ? `/chat/${props.uid}` : ""}>
-								<button disabled={!props.isMember} className="to-dashboard dashboard-button">
-									{props.isMember ? "Go To Chat" : <>This channel doesn't use DisStreamChat</>}
+							<Link className="dashboard-link" to={`/chat/${props.uid}`}>
+								<button  className="to-dashboard dashboard-button">
+									{"Go To Chat"}
 								</button>
 							</Link>
 						)}
@@ -174,25 +175,14 @@ const Channels = React.memo(props => {
 						const data = snapshot.data();
 						if (!data) return;
 						const channelsInfo = data.ModChannels;
-						const channelNames = channelsInfo.map(channel => channel.login);
-						const streamerRef = firebase.db.collection("Streamers");
-						for (const name of channelNames) {
-							const channelData = await streamerRef.where("name", "==", name).get();
-							const idx = channelsInfo.findIndex(channel => channel.login === name);
-							if (!channelData.empty) {
-								channelsInfo[idx].isMember = true;
-								const { uid } = channelData.docs[0].data();
-								channelsInfo[idx].uid = uid;
-							}
-						}
 						setModChannels(
 							channelsInfo
-								.sort((a, b) => -a.login.localeCompare(b.login))
+								.sort((a, b) => a.login.localeCompare(b.login))
 								.sort((a, b) => {
 									return a.isMember ? -1 : 1;
 								})
 								.map(channel => {
-									return { ...channel, modPlatform: "twitch" };
+									return { ...channel, modPlatform: "twitch", uid: sha1(channel.id) };
 								})
 						);
 					});
