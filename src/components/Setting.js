@@ -208,7 +208,7 @@ const Setting = React.memo(props => {
 					</span>
 					<AnimateHeight duration={250} height={!props.open ? 0 : "auto"}>
 						<div className="list-body">
-							<div className="item add-item" onClick={() => setAddingItem(prev => !prev)}>
+							<div className={`item add-item ${addingItem ? "open" : ""}`} onClick={() => setAddingItem(prev => !prev)}>
 								<h3>Add Item</h3>
 								<button>
 									<AddIcon />
