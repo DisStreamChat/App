@@ -171,9 +171,6 @@ const Channels = React.memo(props => {
 						setModChannels(
 							channelsInfo
 								.sort((a, b) => a.login.localeCompare(b.login))
-								.sort((a, b) => {
-									return a.isMember ? -1 : 1;
-								})
 								.map(channel => {
 									return { ...channel, modPlatform: "twitch", uid: sha1(channel.id) };
 								})
