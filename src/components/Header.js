@@ -138,9 +138,10 @@ const Header = props => {
 	useEffect(() => {
 		(async () => {
 			if (chatHeader && show) {
-				const userRef = firebase.db.collection("Streamers").doc(viewingUserId || " ");
-				const userDoc = await userRef.get();
-				const userData = userDoc.data();
+                const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${viewingUserId}&platform=twitch`
+                const response = await fetch(apiUrl)
+                const userData = await response.json()
+                console.log({userData})
 				setViewingUserInfo(userData);
 			}
 		})();
@@ -148,19 +149,19 @@ const Header = props => {
 
 	const getStats = useCallback(async () => {
 		if (viewingUserInfo) {
-			const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=${viewingUserInfo.name}&new=true`;
+			const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=${viewingUserInfo.display_name}&new=true`;
 			const response = await fetch(ApiUrl);
 			const data = await response.json();
 			setViewingUserStats(prev => {
 				if (data) {
 					return {
-						name: viewingUserInfo.displayName,
+						name: viewingUserInfo.display_name,
 						viewers: data.viewer_count,
 						isLive: data.isLive,
 					};
 				} else {
 					return {
-						name: viewingUserInfo.displayName,
+						name: viewingUserInfo.display_name,
 						viewers: 0,
 						isLive: false,
 					};

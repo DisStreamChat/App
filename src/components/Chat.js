@@ -352,16 +352,21 @@ function App(props) {
 	}, [socket, removeMessage, setMessages]);
 
 	useEffect(() => {
-		const data = userInfo;
-		if (data) {
-			const { TwitchName, guildId, liveChatId } = data;
-			setChannel({
-				TwitchName,
-				guildId,
-				liveChatId,
-			});
-		}
-	}, [userInfo]);
+		const unsub = firebase.db
+			.collection("Streamers")
+			.doc(id)
+			.onSnapshot(snapshot => {
+				const data = snapshot.data();
+				if (!data) return;
+				const { TwitchName, guildId, liveChatId } = data;
+				setChannel({
+					TwitchName,
+					guildId,
+					liveChatId,
+				});
+            });
+        return unsub
+	}, [id]);
 
 	useEffect(() => {
 		if (channel) {
@@ -421,8 +426,8 @@ function App(props) {
 
 	const [chatterInfo, setChatterInfo] = useState();
 	const [chatterCount, setChatterCount] = useState();
-	const { id: userId } = useParams();
 	const [streamerName, setStreamerName] = useState();
+	const userId = id;
 
 	useEffect(() => {
 		let id;

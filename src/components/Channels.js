@@ -110,12 +110,12 @@ const ChannelItem = React.memo(props => {
 						<span className="channel-name">{channelName}</span>
 						{props.popoutChat ? (
 							props.isMember && (
-								<button onClick={() => ipcRenderer.send("popoutChat", props.uid)} className="to-dashboard dashboard-button">
+								<button onClick={() => ipcRenderer.send("popoutChat", props.id)} className="to-dashboard dashboard-button">
 									{"Popout Chat"}
 								</button>
 							)
 						) : (
-							<Link className="dashboard-link" to={`/chat/${props.uid}`}>
+							<Link className="dashboard-link" to={`/chat/${props.id}`}>
 								<button className="to-dashboard dashboard-button">{"Go To Chat"}</button>
 							</Link>
 						)}
@@ -127,7 +127,6 @@ const ChannelItem = React.memo(props => {
 });
 
 const Channels = React.memo(props => {
-	const currentUser = firebase.auth.currentUser;
 	const [myChannel, setMyChannel] = useState();
 	const [modChannels, setModChannels] = useLocalStorage("channels", []);
 	const { setMessages, setPinnedMessages, setShowViewers, userData } = useContext(AppContext);
@@ -157,8 +156,8 @@ const Channels = React.memo(props => {
 		const channelsInfo = userData.ModChannels;
 		setModChannels(
 			channelsInfo
-				.sort((a, b) => a.login.localeCompare(b.login))
-				.map(channel => {
+				?.sort((a, b) => a.login.localeCompare(b.login))
+				?.map(channel => {
 					return { ...channel, modPlatform: "twitch", uid: sha1(channel.id) };
 				})
 		);
@@ -193,7 +192,7 @@ const Channels = React.memo(props => {
 				<hr />
 				<h1>Channels you moderate</h1>
 				<div className="modchannels channel-div">
-					{modChannels?.length ? (
+					{modChannels ? (
 						modChannels?.map?.(channel => (
 							<ChannelItem setModChannels={setModChannels} popoutChat={popout} key={channel.id} {...channel} moderator />
 						))
@@ -221,7 +220,7 @@ const Channels = React.memo(props => {
 						/>
 					)}
 				</div>
-				{!!modChannels.length && <ChannelItem addChannel />}
+				{<ChannelItem addChannel />}
 			</div>
 		</>
 	);

@@ -65,12 +65,14 @@ const App = () => {
 	useEffect(() => {
 		(async () => {
 			if (firebaseInit !== false && currentUser) {
+                if(!userData.TwitchName) return
 				const profilePictureResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/profilepicture?user=${userData.TwitchName}`);
 				const profilePicture = await profilePictureResponse.json();
 				const modChannelResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/modchannels?user=${userData.TwitchName}`);
 				const removedChannels = userData.removedChannels || [];
-				const NewModChannels = (await modChannelResponse.json()).filter(channel => !removedChannels.includes(channel.id));
-				const ModChannels = [...NewModChannels, ...userData.ModChannels].filter(
+                const NewModChannels = (await modChannelResponse.json()).filter(channel => !removedChannels.includes(channel.id));
+                
+				const ModChannels = [...NewModChannels, ...(userData.ModChannels || [])].filter(
 					(thing, index, self) => index === self.findIndex(t => t.id === thing.id)
 				);
 				firebase.db.collection("Streamers").doc(currentUser.uid).update({
