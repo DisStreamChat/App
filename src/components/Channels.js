@@ -9,6 +9,7 @@ import ClearIcon from "@material-ui/icons/Clear";
 import { Tooltip } from "@material-ui/core";
 import Loader from "react-loader";
 import sha1 from "sha1";
+import useLocalStorage from "../hooks/useLocalStorage"
 const { ipcRenderer } = window.require("electron");
 
 const ChannelItem = React.memo(props => {
@@ -22,7 +23,7 @@ const ChannelItem = React.memo(props => {
 		if (!props.addChannel) {
 			setChannelName(props.display_name || props.name);
 		}
-	}, [props]);
+	}, [props, setChannelName]);
 
 	const getLive = useCallback(async () => {
 		if (channelName) {
@@ -128,7 +129,7 @@ const ChannelItem = React.memo(props => {
 const Channels = React.memo(props => {
 	const currentUser = firebase.auth.currentUser;
 	const [myChannel, setMyChannel] = useState();
-	const [modChannels, setModChannels] = useState([]);
+	const [modChannels, setModChannels] = useLocalStorage("channels", []);
 	const { setMessages, setPinnedMessages, setShowViewers } = useContext(AppContext);
 	const [popout, setPopout] = useState(false);
 
@@ -178,7 +179,7 @@ const Channels = React.memo(props => {
 					});
 			}
 		})();
-	}, [currentUser]);
+	}, [currentUser, setModChannels]);
 
 	useEffect(() => {
 		const handleKeyDown = e => {
@@ -209,8 +210,8 @@ const Channels = React.memo(props => {
 				<hr />
 				<h1>Channels you moderate</h1>
 				<div className="modchannels channel-div">
-					{modChannels.length ? (
-						modChannels.map(channel => (
+					{modChannels?.length ? (
+						modChannels?.map?.(channel => (
 							<ChannelItem setModChannels={setModChannels} popoutChat={popout} key={channel.id} {...channel} moderator />
 						))
 					) : (
