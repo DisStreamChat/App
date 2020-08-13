@@ -76,6 +76,7 @@ function App(props) {
 	const [search, setSearch] = useState("");
 	const { id } = useParams();
     const [storedMessages, setStoredMessages] = useLocalStorage(`messages - ${id}`, [])
+    const [storedPinnedMessages, setStoredPinnedMessages] = useLocalStorage(`pinned messages - ${id}`, [])
 	const [showToTop, setShowToTop] = useState(false);
 	const [showSearch, setShowSearch] = useState(true);
 	const [chatValue, setChatValue] = useState("");
@@ -100,11 +101,13 @@ function App(props) {
 
 	useEffect(() => {
         setMessages(storedMessages)
+        setPinnedMessages(storedPinnedMessages)
     }, [])
 
     useEffect(() => {
         setStoredMessages(messages)
-    }, [messages, setStoredMessages])
+        setStoredPinnedMessages(pinnedMessages)
+    }, [messages, setStoredMessages, pinnedMessages, setStoredPinnedMessages])
 
 	// this runs once on load, and starts the socket
 	useEffect(() => {
