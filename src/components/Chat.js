@@ -18,8 +18,7 @@ import isFlag from "../utils/flagFunctions/is";
 import { TransitionGroup } from "react-transition-group";
 import useHotkeys from "use-hotkeys";
 import Viewers from "./Viewers";
-const { ipcRenderer } = window.require("electron");
-
+import {useLocalStorage} from "react-use";
 // const displayMotes = [
 // 	"https://static-cdn.jtvnw.net/emoticons/v1/115847/1.0",
 // 	"https://static-cdn.jtvnw.net/emoticons/v1/64138/1.0",
@@ -71,10 +70,12 @@ const Messages = React.memo(props => {
 
 function App(props) {
 	const [socket, setSocket] = useState();
+	// const { streamerInfo: settings, pinnedMessages, setPinnedMessages, showViewers, windowFocused } = useContext(AppContext);
 	const { streamerInfo: settings, messages, setMessages, pinnedMessages, setPinnedMessages, showViewers, windowFocused } = useContext(AppContext);
-	const [channel, setChannel] = useState();
+    const [channel, setChannel] = useState();
 	const [search, setSearch] = useState("");
 	const { id } = useParams();
+    const [storedMessages, setStoredMessages] = useLocalStorage(`messages - ${id}`, [])
 	const [showToTop, setShowToTop] = useState(false);
 	const [showSearch, setShowSearch] = useState(true);
 	const [chatValue, setChatValue] = useState("");
@@ -97,7 +98,13 @@ function App(props) {
 		return unsub;
 	}, [currentUser]);
 
-	
+	useEffect(() => {
+        setMessages(storedMessages)
+    }, [])
+
+    useEffect(() => {
+        setStoredMessages(messages)
+    }, [messages, setStoredMessages])
 
 	// this runs once on load, and starts the socket
 	useEffect(() => {
