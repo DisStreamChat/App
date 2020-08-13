@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect, useContext } from "react";
-import { withRouter, Link } from "react-router-dom";
+import { withRouter, useParams, Link } from "react-router-dom";
 import { AppContext } from "../contexts/AppContext";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import SettingsTwoToneIcon from "@material-ui/icons/SettingsTwoTone";
@@ -81,7 +81,7 @@ const Header = props => {
 	const currentUser = firebase.auth.currentUser;
 	const id = currentUser?.uid || " ";
 	const { messages, setMessages, setShowViewers, windowFocused, streamerInfo, userData } = useContext(AppContext);
-	const [viewingUserId, setViewingUserId] = useState();
+	const viewingUserId = useParams().id
 	const [viewingUserInfo, setViewingUserInfo] = useState();
 	const [viewingUserStats, setViewingUserStats] = useState();
 	const [updateLink, setUpdateLink] = useState();
@@ -131,7 +131,6 @@ const Header = props => {
 	}, [messages]);
 
 	useEffect(() => {
-		setViewingUserId(location.pathname.split("/").slice(-1)[0]);
 		setViewingUserStats(null);
 	}, [location]);
 
