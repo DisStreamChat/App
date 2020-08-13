@@ -9,7 +9,7 @@ import ClearIcon from "@material-ui/icons/Clear";
 import { Tooltip } from "@material-ui/core";
 import Loader from "react-loader";
 import sha1 from "sha1";
-import {useLocalStorage} from "react-use"
+import { useLocalStorage } from "react-use";
 const { ipcRenderer } = window.require("electron");
 
 const ChannelItem = React.memo(props => {
@@ -17,6 +17,7 @@ const ChannelItem = React.memo(props => {
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [isLive, setIsLive] = useState(false);
+	const { userData } = useContext(AppContext);
 	const currentUser = firebase.auth.currentUser;
 
 	useEffect(() => {
@@ -41,14 +42,14 @@ const ChannelItem = React.memo(props => {
 	const removeChannel = useCallback(async () => {
 		const Append = firebase.firestore.FieldValue.arrayUnion;
 		const userRef = firebase.db.collection("Streamers").doc(currentUser.uid);
-		const modChannels = (await userRef.get()).data().ModChannels;
+		const modChannels = userData.ModChannels;
 		const newModChannels = modChannels.filter(channel => channel.id !== props.id);
 		props.setModChannels(prev => prev.filter(channel => channel.id !== props.id));
 		await userRef.update({
 			ModChannels: newModChannels,
 			removedChannels: Append(props.id),
 		});
-	}, [currentUser, props]);
+	}, [currentUser, props, userData]);
 
 	useInterval(getLive, 60000);
 
@@ -66,7 +67,6 @@ const ChannelItem = React.memo(props => {
 								if (!channelName) {
 									setError("Missing Channel Name");
 								} else {
-									const userData = await (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data();
 									const userName = userData.name;
 									const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/checkmod?channel=${channelName}&user=${userName}`;
 									const res = await fetch(apiUrl);
@@ -130,7 +130,7 @@ const Channels = React.memo(props => {
 	const currentUser = firebase.auth.currentUser;
 	const [myChannel, setMyChannel] = useState();
 	const [modChannels, setModChannels] = useLocalStorage("channels", []);
-	const { setMessages, setPinnedMessages, setShowViewers } = useContext(AppContext);
+	const { setMessages, setPinnedMessages, setShowViewers, userData } = useContext(AppContext);
 	const [popout, setPopout] = useState(false);
 
 	useEffect(() => {
@@ -149,37 +149,20 @@ const Channels = React.memo(props => {
 	}, [setMessages, setPinnedMessages, setShowViewers]);
 
 	useEffect(() => {
-		const unsub = firebase.db
-			.collection("Streamers")
-			.doc(currentUser.uid)
-			.onSnapshot(snapshot => {
-				const user = snapshot.data();
-				setMyChannel({ name: user?.displayName, isMember: true, profilePicture: user?.profilePicture, uid: currentUser.uid });
-			});
-		return () => unsub();
-	}, [currentUser]);
+		const user = userData;
+		setMyChannel({ name: user?.displayName, isMember: true, profilePicture: user?.profilePicture, uid: userData.uid });
+	}, [userData]);
 
 	useEffect(() => {
-		(async () => {
-			if (currentUser) {
-				firebase.db
-					.collection("Streamers")
-					.doc(currentUser.uid)
-					.onSnapshot(async snapshot => {
-						const data = snapshot.data();
-						if (!data) return;
-						const channelsInfo = data.ModChannels;
-						setModChannels(
-							channelsInfo
-								.sort((a, b) => a.login.localeCompare(b.login))
-								.map(channel => {
-									return { ...channel, modPlatform: "twitch", uid: sha1(channel.id) };
-								})
-						);
-					});
-			}
-		})();
-	}, [currentUser, setModChannels]);
+		const channelsInfo = userData.ModChannels;
+		setModChannels(
+			channelsInfo
+				.sort((a, b) => a.login.localeCompare(b.login))
+				.map(channel => {
+					return { ...channel, modPlatform: "twitch", uid: sha1(channel.id) };
+				})
+		);
+	}, [userData, setModChannels]);
 
 	useEffect(() => {
 		const handleKeyDown = e => {

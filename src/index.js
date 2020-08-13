@@ -20,10 +20,11 @@ const App = () => {
 	const [streamerInfo, setStreamerInfo] = useState({});
 	const [messages, setMessages] = useState([]);
 	const [pinnedMessages, setPinnedMessages] = useState([]);
-	const [border, setBorder] = useState(true);
 	const [showViewers, setShowViewers] = useState(false);
+    const [windowFocused, setWindowFocused] = useState(true);
+    const [userData, setUserData] = useState({})
+	const [border, setBorder] = useState(true);
 	const currentUser = firebase.auth.currentUser;
-	const [windowFocused, setWindowFocused] = useState(true);
 
 	useEffect(() => {
 		ipcRenderer.on("toggle-border", (event, text) => {
@@ -39,6 +40,8 @@ const App = () => {
 			.onSnapshot(snapshot => {
 				const data = snapshot.data();
 				if (data) {
+                    setUserData(data)
+                    setStreamerInfo(data.appSettings);
 					const opacity = data.appSettings.ClickThroughOpacity;
 					const unfocusKey = data.appSettings.UnfocusKeybind;
 					const focusKey = data.appSettings.FocusKeybind;
@@ -62,7 +65,6 @@ const App = () => {
 	useEffect(() => {
 		(async () => {
 			if (firebaseInit !== false && currentUser) {
-				const userData = (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data();
 				const profilePictureResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/profilepicture?user=${userData.TwitchName}`);
 				const profilePicture = await profilePictureResponse.json();
 				const modChannelResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/modchannels?user=${userData.TwitchName}`);
@@ -77,7 +79,7 @@ const App = () => {
 				});
 			}
 		})();
-	}, [firebaseInit, currentUser]);
+	}, [firebaseInit, currentUser, userData]);
 
 	useEffect(() => {
 		ipcRenderer.on("focus", (event, data) => setWindowFocused(data));
@@ -97,21 +99,6 @@ const App = () => {
 		}
 	}, [border, streamerInfo]);
 
-	useEffect(() => {
-		if (currentUser) {
-			const unsub = firebase.db
-				.collection("Streamers")
-				.doc(currentUser.uid)
-				.onSnapshot(snapshot => {
-					const data = snapshot.data();
-					if (data) {
-						setStreamerInfo(data.appSettings);
-					}
-				});
-			return unsub;
-		}
-	}, [currentUser]);
-
 	return firebaseInit !== false ? (
 		<AppContext.Provider
 			value={{
@@ -124,7 +111,9 @@ const App = () => {
 				showViewers,
 				setShowViewers,
 				windowFocused,
-				setWindowFocused,
+                setWindowFocused,
+                userData,
+                setUserData
 			}}
 		>
 			<Router>

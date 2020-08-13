@@ -16,25 +16,32 @@ import ClearIcon from "@material-ui/icons/Clear";
 import MailTwoToneIcon from "@material-ui/icons/MailTwoTone";
 import { Tooltip } from "@material-ui/core";
 import { useInterval } from "react-use";
-import {CSSTransition} from "react-transition-group"
+import { CSSTransition } from "react-transition-group";
 const { remote, ipcRenderer } = window.require("electron");
 const customTitlebar = window.require("custom-electron-titlebar");
 
 let MyTitleBar = new customTitlebar.Titlebar({
 	backgroundColor: customTitlebar.Color.fromHex("#17181ba1"),
-    menu: null,
-    maximizable: false,
+	menu: null,
+	maximizable: false,
 });
 MyTitleBar.updateTitle("DisStreamChat");
 MyTitleBar.setHorizontalAlignment("left");
-
 
 const SettingList = React.memo(props => {
 	return (
 		<SettingAccordion>
 			{Object.entries(props.defaultSettings || {})
 				.filter(
-					([name, data]) => !data.discordSetting && (!props.search ? true : name?.match(/[A-Z][a-z]+|[0-9]+/g)?.join(" ")?.toLowerCase()?.includes(props?.search?.toLowerCase()))
+					([name, data]) =>
+						!data.discordSetting &&
+						(!props.search
+							? true
+							: name
+									?.match(/[A-Z][a-z]+|[0-9]+/g)
+									?.join(" ")
+									?.toLowerCase()
+									?.includes(props?.search?.toLowerCase()))
 				)
 				.sort((a, b) => {
 					const categoryOrder = a[1].type.localeCompare(b[1].type);
@@ -53,8 +60,8 @@ const SettingList = React.memo(props => {
 							min={value.min}
 							max={value.max}
 							step={value.step}
-                            options={value.options}
-                            description={value.description}
+							options={value.options}
+							description={value.description}
 						/>
 					);
 				})}
@@ -73,7 +80,7 @@ const Header = props => {
 	const [show, setShow] = useState(true);
 	const currentUser = firebase.auth.currentUser;
 	const id = currentUser?.uid || " ";
-	const { messages, setMessages, setShowViewers, windowFocused, streamerInfo } = useContext(AppContext);
+	const { messages, setMessages, setShowViewers, windowFocused, streamerInfo, userData } = useContext(AppContext);
 	const [viewingUserId, setViewingUserId] = useState();
 	const [viewingUserInfo, setViewingUserInfo] = useState();
 	const [viewingUserStats, setViewingUserStats] = useState();
@@ -176,25 +183,18 @@ const Header = props => {
 
 	useEffect(() => {
 		(async () => {
-            const settingsRef = await firebase.db.collection("defaults").doc("settings14").get();
-            
-            const settingsData = settingsRef.data().settings;
+			const settingsRef = await firebase.db.collection("defaults").doc("settings14").get();
+			const settingsData = settingsRef.data().settings;
 			setDefaultSettings(settingsData);
 		})();
 	}, []);
 
 	useEffect(() => {
-		const unsub = firebase.db
-			.collection("Streamers")
-			.doc(id)
-			.onSnapshot(snapshot => {
-				const data = snapshot.data();
-				if (data) {
-					setAppSettings(data.appSettings);
-				}
-			});
-		return unsub;
-	}, [id]);
+		const data = userData;
+		if (data) {
+			setAppSettings(data.appSettings);
+		}
+	}, [userData]);
 
 	const updateAppSetting = useCallback(
 		async (name, value) => {
@@ -212,8 +212,7 @@ const Header = props => {
 	const signout = useCallback(async () => {
 		await firebase.logout();
 		props.history.push("/");
-    }, [props.history]);
-
+	}, [props.history]);
 
 	return !show ? (
 		<></>

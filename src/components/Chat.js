@@ -18,7 +18,7 @@ import isFlag from "../utils/flagFunctions/is";
 import { TransitionGroup } from "react-transition-group";
 import useHotkeys from "use-hotkeys";
 import Viewers from "./Viewers";
-import {useLocalStorage} from "react-use";
+import { useLocalStorage } from "react-use";
 // const displayMotes = [
 // 	"https://static-cdn.jtvnw.net/emoticons/v1/115847/1.0",
 // 	"https://static-cdn.jtvnw.net/emoticons/v1/64138/1.0",
@@ -71,43 +71,38 @@ const Messages = React.memo(props => {
 function App(props) {
 	const [socket, setSocket] = useState();
 	// const { streamerInfo: settings, pinnedMessages, setPinnedMessages, showViewers, windowFocused } = useContext(AppContext);
-	const { streamerInfo: settings, messages, setMessages, pinnedMessages, setPinnedMessages, showViewers, windowFocused } = useContext(AppContext);
-    const [channel, setChannel] = useState();
+	const {
+		streamerInfo: settings,
+		messages,
+		setMessages,
+		pinnedMessages,
+		setPinnedMessages,
+		showViewers,
+		windowFocused,
+		userData: userInfo,
+	} = useContext(AppContext);
+	const [channel, setChannel] = useState();
 	const [search, setSearch] = useState("");
 	const { id } = useParams();
-    const [storedMessages, setStoredMessages] = useLocalStorage(`messages - ${id}`, [])
-    const [storedPinnedMessages, setStoredPinnedMessages] = useLocalStorage(`pinned messages - ${id}`, [])
+	const [storedMessages, setStoredMessages] = useLocalStorage(`messages - ${id}`, []);
+	const [storedPinnedMessages, setStoredPinnedMessages] = useLocalStorage(`pinned messages - ${id}`, []);
 	const [showToTop, setShowToTop] = useState(false);
 	const [showSearch, setShowSearch] = useState(true);
 	const [chatValue, setChatValue] = useState("");
 	const bodyRef = useRef();
 	const observerRef = useRef();
 	const currentUser = firebase.auth.currentUser;
-	const [userInfo, setUserInfo] = useState();
 	// const [emoteIndex, setEmoteIndex] = useState(0);
 
 	useEffect(() => {
-		const unsub = firebase.db
-			.collection("Streamers")
-			.doc(currentUser.uid)
-			.onSnapshot(snapshot => {
-				const data = snapshot.data();
-				if (data) {
-					setUserInfo(data);
-				}
-			});
-		return unsub;
-	}, [currentUser]);
+		setMessages(storedMessages);
+		setPinnedMessages(storedPinnedMessages);
+	}, []);
 
 	useEffect(() => {
-        setMessages(storedMessages)
-        setPinnedMessages(storedPinnedMessages)
-    }, [])
-
-    useEffect(() => {
-        setStoredMessages(messages)
-        setStoredPinnedMessages(pinnedMessages)
-    }, [messages, setStoredMessages, pinnedMessages, setStoredPinnedMessages])
+		setStoredMessages(messages);
+		setStoredPinnedMessages(pinnedMessages);
+	}, [messages, setStoredMessages, pinnedMessages, setStoredPinnedMessages]);
 
 	// this runs once on load, and starts the socket
 	useEffect(() => {
@@ -126,13 +121,13 @@ function App(props) {
 		(key, event, handle) => {
 			switch (key) {
 				case "ctrl+f":
-                    setSearch("")
+					setSearch("");
 					setShowSearch(true);
 					document.getElementById("chat-search").focus();
 					break;
 				case "esc":
-                    setShowSearch(false);
-                    setSearch("")
+					setShowSearch(false);
+					setSearch("");
 					break;
 				default:
 					break;
@@ -254,24 +249,23 @@ function App(props) {
 						if (msg.body.startsWith(prefix.value)) {
 							ignoredMessage = true;
 						}
-                    });
-                    
-                    
+					});
+
 					// don't allow ignoring of notifications from 'disstreamchat'
 					if (msg.displayName.toLowerCase() === "disstreamchat") ignoredMessage = false;
-                    
-                    if(settings?.IgnoreCheers && msg.messageId === "cheer"){
-                        ignoredMessage = true
-                    }
-                    if(settings?.IgnoreFollows && msg.messageId === "follow"){
-                        ignoredMessage = true
-                    }
-                    if(settings?.IgnoreSubscriptions && msg.messageId === "subscription" && msg.messageType !== "channel-points"){
-                        ignoredMessage = true
-                    }
-                    if(settings?.IgnoreChannelPoints && msg.messageType === "channel-points"){
-                        ignoredMessage = true
-                    }
+
+					if (settings?.IgnoreCheers && msg.messageId === "cheer") {
+						ignoredMessage = true;
+					}
+					if (settings?.IgnoreFollows && msg.messageId === "follow") {
+						ignoredMessage = true;
+					}
+					if (settings?.IgnoreSubscriptions && msg.messageId === "subscription" && msg.messageType !== "channel-points") {
+						ignoredMessage = true;
+					}
+					if (settings?.IgnoreChannelPoints && msg.messageType === "channel-points") {
+						ignoredMessage = true;
+					}
 
 					// if ignored don't add the message
 					if (ignoredMessage) return m;
@@ -293,8 +287,8 @@ function App(props) {
 						msg?.displayName?.toLowerCase?.() !== userInfo?.name?.toLowerCase?.() &&
 						channel?.TwitchName?.toLowerCase?.() === userInfo?.name?.toLowerCase?.()
 					)
-                        msg.moddable = true;
-                    if(msg.displayName.toLowerCase() === "disstreamchat") msg.moddable = false
+						msg.moddable = true;
+					if (msg.displayName.toLowerCase() === "disstreamchat") msg.moddable = false;
 					return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
 				});
 			});
@@ -358,24 +352,16 @@ function App(props) {
 	}, [socket, removeMessage, setMessages]);
 
 	useEffect(() => {
-		if (id && currentUser) {
-			const unsub = firebase.db
-				.collection("Streamers")
-				.doc(id)
-				.onSnapshot(snapshot => {
-					const data = snapshot.data();
-					if (data) {
-						const { TwitchName, guildId, liveChatId } = data;
-						setChannel({
-							TwitchName,
-							guildId,
-							liveChatId,
-						});
-					}
-				});
-			return () => unsub();
+		const data = userInfo;
+		if (data) {
+			const { TwitchName, guildId, liveChatId } = data;
+			setChannel({
+				TwitchName,
+				guildId,
+				liveChatId,
+			});
 		}
-	}, [id, currentUser]);
+	}, [userInfo]);
 
 	useEffect(() => {
 		if (channel) {
@@ -468,7 +454,7 @@ function App(props) {
 				}
 			};
 			getChatters();
-			id = setInterval(getChatters, 120000*2);
+			id = setInterval(getChatters, 120000 * 2);
 		})();
 		return () => clearInterval(id);
 	}, [userId, streamerName]);
@@ -542,11 +528,17 @@ function App(props) {
 					pin={pinMessage}
 				/>
 				<CSSTransition unmountOnExit timeout={200} classNames="search-node" in={showSearch}>
-					<SearchBox onKeyDown={e => {
-                        if(e.key === "Escape"){
-                            setShowSearch(false)
-                        }
-                    }} id="chat-search" value={search} onChange={handleSearch} placeHolder="Search Messages" />
+					<SearchBox
+						onKeyDown={e => {
+							if (e.key === "Escape") {
+								setShowSearch(false);
+							}
+						}}
+						id="chat-search"
+						value={search}
+						onChange={handleSearch}
+						placeHolder="Search Messages"
+					/>
 				</CSSTransition>
 			</div>
 			<CSSTransition unmountOnExit timeout={400} classNames={"to-top-node"} in={showToTop}>
