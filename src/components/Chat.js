@@ -458,7 +458,7 @@ function App(props) {
 				}
 			};
 			getChatters();
-			id = setInterval(getChatters, 120000);
+			id = setInterval(getChatters, 120000*2);
 		})();
 		return () => clearInterval(id);
 	}, [userId, streamerName]);
