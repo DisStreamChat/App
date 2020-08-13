@@ -149,7 +149,7 @@ const Channels = React.memo(props => {
 
 	useEffect(() => {
 		const user = userData;
-		setMyChannel({ name: user?.displayName, isMember: true, profilePicture: user?.profilePicture, uid: userData.uid });
+		setMyChannel({ name: user?.displayName, isMember: true, profilePicture: user?.profilePicture, uid: userData.uid, id: userData.twitchId });
 	}, [userData]);
 
 	useEffect(() => {

@@ -19,6 +19,7 @@ import { TransitionGroup } from "react-transition-group";
 import useHotkeys from "use-hotkeys";
 import Viewers from "./Viewers";
 import { useLocalStorage } from "react-use";
+import sha1 from "sha1"
 // const displayMotes = [
 // 	"https://static-cdn.jtvnw.net/emoticons/v1/115847/1.0",
 // 	"https://static-cdn.jtvnw.net/emoticons/v1/64138/1.0",
@@ -354,18 +355,26 @@ function App(props) {
 	useEffect(() => {
 		const unsub = firebase.db
 			.collection("Streamers")
-			.doc(id)
-			.onSnapshot(snapshot => {
+			.doc(sha1(id))
+			.onSnapshot(async snapshot => {
 				const data = snapshot.data();
-				if (!data) return;
-				const { TwitchName, guildId, liveChatId } = data;
-				setChannel({
-					TwitchName,
-					guildId,
-					liveChatId,
-				});
-            });
-        return unsub
+				if (!data) {
+                    const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${id}&platform=twitch`
+                    const response = await fetch(apiUrl)
+                    const userData = await response.json()
+                    setChannel({
+                        TwitchName: userData?.display_name?.toLowerCase?.()
+                    })
+				} else {
+					const { TwitchName, guildId, liveChatId } = data;
+					setChannel({
+						TwitchName,
+						guildId,
+						liveChatId,
+					});
+				}
+			});
+		return unsub;
 	}, [id]);
 
 	useEffect(() => {

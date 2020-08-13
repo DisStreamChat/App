@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect, useContext } from "react";
-import { withRouter, useParams, Link } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 import { AppContext } from "../contexts/AppContext";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import SettingsTwoToneIcon from "@material-ui/icons/SettingsTwoTone";
@@ -81,7 +81,7 @@ const Header = props => {
 	const currentUser = firebase.auth.currentUser;
 	const id = currentUser?.uid || " ";
 	const { messages, setMessages, setShowViewers, windowFocused, streamerInfo, userData } = useContext(AppContext);
-	const viewingUserId = useParams().id
+	const [viewingUserId, setViewingUserId] = useState();
 	const [viewingUserInfo, setViewingUserInfo] = useState();
 	const [viewingUserStats, setViewingUserStats] = useState();
 	const [updateLink, setUpdateLink] = useState();
@@ -131,6 +131,7 @@ const Header = props => {
 	}, [messages]);
 
 	useEffect(() => {
+		setViewingUserId(location.pathname.split("/").slice(-1)[0]);
 		setViewingUserStats(null);
 	}, [location]);
 
@@ -140,15 +141,14 @@ const Header = props => {
                 const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${viewingUserId}&platform=twitch`
                 const response = await fetch(apiUrl)
                 const userData = await response.json()
-                console.log({userData})
 				setViewingUserInfo(userData);
 			}
 		})();
 	}, [chatHeader, show, viewingUserId]);
 
 	const getStats = useCallback(async () => {
-		if (viewingUserInfo) {
-			const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=${viewingUserInfo.display_name}&new=true`;
+        if (viewingUserInfo) {
+			const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=${viewingUserInfo?.display_name?.toLowerCase?.()}&new=true`;
 			const response = await fetch(ApiUrl);
 			const data = await response.json();
 			setViewingUserStats(prev => {
@@ -167,11 +167,14 @@ const Header = props => {
 				}
 			});
 		}
-	}, [viewingUserInfo]);
+    }, [viewingUserInfo]);
+    
 
 	useEffect(() => {
-		getStats();
-	}, [getStats]);
+        if(viewingUserInfo){
+            getStats();
+        }
+	}, [getStats, viewingUserInfo]);
 
 	useInterval(getStats, 60000);
 
