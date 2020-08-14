@@ -14,7 +14,7 @@ import compare from "semver-compare";
 import ClearIcon from "@material-ui/icons/Clear";
 import MailTwoToneIcon from "@material-ui/icons/MailTwoTone";
 import { Tooltip } from "@material-ui/core";
-import { useInterval } from "react-use";
+import { useInterval, useLocalStorage } from "react-use";
 import { CSSTransition } from "react-transition-group";
 const { remote, ipcRenderer } = window.require("electron");
 const customTitlebar = window.require("custom-electron-titlebar");
@@ -79,24 +79,22 @@ const Header = props => {
 	const [show, setShow] = useState(true);
 	const currentUser = firebase.auth.currentUser;
 	const id = currentUser?.uid || " ";
-	const {setShowViewers, windowFocused, streamerInfo, userData, unreadMessageIds, setUnreadMessageIds } = useContext(
-		AppContext
-	);
+	const { location } = props;
+	const { setShowViewers, windowFocused, streamerInfo, userData, unreadMessageIds, setUnreadMessageIds } = useContext(AppContext);
 	const [viewingUserId, setViewingUserId] = useState();
 	const [viewingUserInfo, setViewingUserInfo] = useState();
 	const [viewingUserStats, setViewingUserStats] = useState();
 	const [updateLink, setUpdateLink] = useState();
-    const [isPopoutOut, setIsPopOut] = useState();
-    const [unreadMessages, setUnreadMessages] = useState(false)
-	const { location } = props;
+	const [isPopoutOut, setIsPopOut] = useState();
+	const [unreadMessages, setUnreadMessages] = useState(false);
 	const absoluteLocation = window.location;
-    const [platform, setPlatform] = useState("");
-    
-    useEffect(() => {
-        setTimeout(() => {
-            setUnreadMessages(!!unreadMessageIds.length)
-        }, 10)
-    }, [setUnreadMessages, unreadMessageIds])
+	const [platform, setPlatform] = useState("");
+
+	useEffect(() => {
+		setTimeout(() => {
+			setUnreadMessages(!!unreadMessageIds.length);
+		}, 10);
+	}, [setUnreadMessages, unreadMessageIds]);
 
 	useEffect(() => {
 		ipcRenderer.on("send-platform", (event, data) => setPlatform(data));
@@ -128,17 +126,22 @@ const Header = props => {
 	}, [platform]);
 
 	useEffect(() => {
-		setViewingUserId(location.pathname.split("/").slice(-1)[0]);
-		setViewingUserStats(null);
-	}, [location]);
-
+        setViewingUserId(location.pathname.split("/").slice(-1)[0]);
+        setViewingUserStats()
+    }, [location]);
+    
 	useEffect(() => {
 		(async () => {
 			if (chatHeader && show) {
-				const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${viewingUserId}&platform=twitch`;
-				const response = await fetch(apiUrl);
-				const userData = await response.json();
-				setViewingUserInfo(userData);
+                try{
+                    const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${viewingUserId}&platform=twitch`;
+                    const response = await fetch(apiUrl);
+                    const userData = await response.json();
+                    setViewingUserInfo(userData);
+                }catch(err){
+                    console.log(err.message)
+                }
+				
 			}
 		})();
 	}, [chatHeader, show, viewingUserId]);
@@ -222,32 +225,27 @@ const Header = props => {
 					<button className="clear" onClick={() => setSettingsOpen(o => !o)}>
 						{!settingsOpen ? <SettingsTwoToneIcon /> : <ClearIcon />}
 					</button>
-					{chatHeader && viewingUserStats && (
+					{chatHeader && (
 						<div className="stats">
 							<div className={`live-status ${viewingUserStats?.isLive ? "live" : ""}`}></div>
 							<a href={`https://twitch.tv/${viewingUserStats?.name?.toLowerCase?.()}`} className="name">
 								{viewingUserStats?.name}
 							</a>
-							<Tooltip arrow title="Viewers in Chat">
-								<div className={"live-viewers"} onClick={() => setShowViewers(true)}>
-									<PeopleAltTwoToneIcon />
-									{viewingUserStats?.viewers}
-								</div>
-							</Tooltip>
+							{viewingUserStats && (
+								<Tooltip arrow title="Viewers in Chat">
+									<div className={"live-viewers"} onClick={() => setShowViewers(true)}>
+										<PeopleAltTwoToneIcon />
+										{viewingUserStats?.viewers}
+									</div>
+								</Tooltip>
+							)}
 						</div>
 					)}
 					{chatHeader ? (
 						<>
 							<Tooltip title={`${unreadMessages ? "Mark as Read" : "No unread Messages"}`} arrow>
-								<div
-									onClick={() => setUnreadMessageIds([])}
-									className={`messages-notification ${unreadMessages ? "unread" : ""}`}
-								>
-									{unreadMessages
-										? unreadMessageIds.length > maxDisplayNum
-											? `${maxDisplayNum}+`
-											: unreadMessageIds.length
-										: ""}
+								<div onClick={() => setUnreadMessageIds([])} className={`messages-notification ${unreadMessages ? "unread" : ""}`}>
+									{unreadMessages ? (unreadMessageIds.length > maxDisplayNum ? `${maxDisplayNum}+` : unreadMessageIds.length) : ""}
 									{unreadMessages ? " " : ""}
 									<MailTwoToneIcon />
 								</div>
