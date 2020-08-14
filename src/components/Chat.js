@@ -485,12 +485,15 @@ function App(props) {
 
 	const sendMessage = useCallback(() => {
 		if (socket) {
+            if(chatValue.startsWith("/clear")){
+                setMessages([])
+            }
 			socket.emit("sendchat", {
 				sender: userInfo?.name?.toLowerCase?.(),
 				message: chatValue,
 			});
 		}
-	}, [socket, chatValue, userInfo]);
+	}, [socket, chatValue, userInfo, setMessages]);
 
 	return showViewers ? (
 		<span style={{ fontFamily: settings.Font }}>
