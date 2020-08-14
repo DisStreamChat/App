@@ -238,7 +238,8 @@ function App(props) {
 			socket.removeListener("chatmessage");
 			socket.on("chatmessage", msg => {
 				setMessages(m => {
-					// by default we don't ignore messages
+                    // by default we don't ignore messages
+                    if(messages.findIndex(message => message.id === msg.id) !== -1) return m
 					let ignoredMessage = false;
 
 					// check if we should ignore this user
