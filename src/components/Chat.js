@@ -445,8 +445,10 @@ function App(props) {
 		(async () => {
 			let userName = streamerName;
 			if (!userName) {
-				const userData = (await firebase.db.collection("Streamers").doc(userId).get()).data();
-				userName = userData?.TwitchName?.toLowerCase?.();
+				const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${userId}&platform=twitch`;
+				const response = await fetch(apiUrl);
+				const userData = await response.json();
+				userName = userData?.display_name?.toLowerCase?.();
 				setStreamerName(userName);
 			}
 			const chatterUrl = `${process.env.REACT_APP_SOCKET_URL}/chatters?user=${userName}`;
