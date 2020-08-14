@@ -10,6 +10,7 @@ import { Tooltip } from "@material-ui/core";
 import Loader from "react-loader";
 import sha1 from "sha1";
 import { useLocalStorage } from "react-use";
+
 const { ipcRenderer } = window.require("electron");
 
 const ChannelItem = React.memo(props => {

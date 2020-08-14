@@ -3,6 +3,7 @@ import { withRouter, Link } from "react-router-dom";
 import { AppContext } from "../contexts/AppContext";
 import SettingsTwoToneIcon from "@material-ui/icons/SettingsTwoTone";
 import SettingAccordion from "./SettingsAccordion";
+import Skeleton from "@material-ui/lab/Skeleton";
 import firebase from "../firebase";
 import Button from "@material-ui/core/Button";
 import Setting from "./Setting";
@@ -14,7 +15,7 @@ import compare from "semver-compare";
 import ClearIcon from "@material-ui/icons/Clear";
 import MailTwoToneIcon from "@material-ui/icons/MailTwoTone";
 import { Tooltip } from "@material-ui/core";
-import { useInterval, useLocalStorage } from "react-use";
+import { useInterval } from "react-use";
 import { CSSTransition } from "react-transition-group";
 const { remote, ipcRenderer } = window.require("electron");
 const customTitlebar = window.require("custom-electron-titlebar");
@@ -126,22 +127,21 @@ const Header = props => {
 	}, [platform]);
 
 	useEffect(() => {
-        setViewingUserId(location.pathname.split("/").slice(-1)[0]);
-        setViewingUserStats()
-    }, [location]);
-    
+		setViewingUserId(location.pathname.split("/").slice(-1)[0]);
+		setViewingUserStats();
+	}, [location]);
+
 	useEffect(() => {
 		(async () => {
 			if (chatHeader && show) {
-                try{
-                    const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${viewingUserId}&platform=twitch`;
-                    const response = await fetch(apiUrl);
-                    const userData = await response.json();
-                    setViewingUserInfo(userData);
-                }catch(err){
-                    console.log(err.message)
-                }
-				
+				try {
+					const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${viewingUserId}&platform=twitch`;
+					const response = await fetch(apiUrl);
+					const userData = await response.json();
+					setViewingUserInfo(userData);
+				} catch (err) {
+					console.log(err.message);
+				}
 			}
 		})();
 	}, [chatHeader, show, viewingUserId]);
@@ -228,17 +228,19 @@ const Header = props => {
 					{chatHeader && (
 						<div className="stats">
 							<div className={`live-status ${viewingUserStats?.isLive ? "live" : ""}`}></div>
-							<a href={`https://twitch.tv/${viewingUserStats?.name?.toLowerCase?.()}`} className="name">
-								{viewingUserStats?.name}
-							</a>
-							{viewingUserStats && (
-								<Tooltip arrow title="Viewers in Chat">
-									<div className={"live-viewers"} onClick={() => setShowViewers(true)}>
-										<PeopleAltTwoToneIcon />
-										{viewingUserStats?.viewers}
-									</div>
-								</Tooltip>
+							{!viewingUserStats ? (
+								<Skeleton variant="text" animation="wave" />
+							) : (
+								<a href={`https://twitch.tv/${viewingUserStats?.name?.toLowerCase?.()}`} className="name">
+									{viewingUserStats?.name}
+								</a>
 							)}
+							<Tooltip arrow title="Viewers in Chat">
+								<div className={"live-viewers"} onClick={() => setShowViewers(true)}>
+									<PeopleAltTwoToneIcon />
+									{viewingUserStats?.viewers}
+								</div>
+							</Tooltip>
 						</div>
 					)}
 					{chatHeader ? (
