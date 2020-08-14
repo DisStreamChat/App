@@ -292,9 +292,7 @@ function App(props) {
 						msg.moddable = true;
 					if (msg.displayName.toLowerCase() === "disstreamchat") msg.moddable = false;
 
-					setTimeout(() => {
-						setUnreadMessageIds(prev => [...prev, msg.id]);
-					}, 70);
+					// setUnreadMessageIds(prev => [...prev, msg.id]);
 
 					return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
 				});
@@ -417,6 +415,8 @@ function App(props) {
 						if (entry.isIntersecting) {
 							setUnreadMessageIds(prev => prev.filter(id => id !== entry.target.dataset.idx));
 							observerRef.current.unobserve(entry.target);
+						} else {
+							setUnreadMessageIds(prev => [...prev, entry.target.dataset.idx]);
 						}
 					});
 				});

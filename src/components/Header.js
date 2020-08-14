@@ -79,17 +79,24 @@ const Header = props => {
 	const [show, setShow] = useState(true);
 	const currentUser = firebase.auth.currentUser;
 	const id = currentUser?.uid || " ";
-	const { messages, setMessages, setShowViewers, windowFocused, streamerInfo, userData, unreadMessageIds, setUnreadMessageIds } = useContext(
+	const {setShowViewers, windowFocused, streamerInfo, userData, unreadMessageIds, setUnreadMessageIds } = useContext(
 		AppContext
 	);
 	const [viewingUserId, setViewingUserId] = useState();
 	const [viewingUserInfo, setViewingUserInfo] = useState();
 	const [viewingUserStats, setViewingUserStats] = useState();
 	const [updateLink, setUpdateLink] = useState();
-	const [isPopoutOut, setIsPopOut] = useState();
+    const [isPopoutOut, setIsPopOut] = useState();
+    const [unreadMessages, setUnreadMessages] = useState(false)
 	const { location } = props;
 	const absoluteLocation = window.location;
-	const [platform, setPlatform] = useState("");
+    const [platform, setPlatform] = useState("");
+    
+    useEffect(() => {
+        setTimeout(() => {
+            setUnreadMessages(!!unreadMessageIds.length)
+        }, 10)
+    }, [setUnreadMessages, unreadMessageIds])
 
 	useEffect(() => {
 		ipcRenderer.on("send-platform", (event, data) => setPlatform(data));
@@ -231,17 +238,17 @@ const Header = props => {
 					)}
 					{chatHeader ? (
 						<>
-							<Tooltip title={`${unreadMessageIds?.length ? "Mark as Read" : "No unread Messages"}`} arrow>
+							<Tooltip title={`${unreadMessages ? "Mark as Read" : "No unread Messages"}`} arrow>
 								<div
 									onClick={() => setUnreadMessageIds([])}
-									className={`messages-notification ${unreadMessageIds?.length ? "unread" : ""}`}
+									className={`messages-notification ${unreadMessages ? "unread" : ""}`}
 								>
-									{unreadMessageIds?.length
+									{unreadMessages
 										? unreadMessageIds.length > maxDisplayNum
 											? `${maxDisplayNum}+`
 											: unreadMessageIds.length
 										: ""}
-									{unreadMessageIds?.length ? " " : ""}
+									{unreadMessages ? " " : ""}
 									<MailTwoToneIcon />
 								</div>
 							</Tooltip>
