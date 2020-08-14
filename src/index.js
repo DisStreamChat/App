@@ -23,7 +23,8 @@ const App = () => {
 	const [showViewers, setShowViewers] = useState(false);
     const [windowFocused, setWindowFocused] = useState(true);
     const [userData, setUserData] = useState({})
-	const [border, setBorder] = useState(true);
+    const [border, setBorder] = useState(true);
+    const [unreadMessageIds, setUnreadMessageIds] = useState([])
 	const currentUser = firebase.auth.currentUser;
 
 	useEffect(() => {
@@ -115,7 +116,9 @@ const App = () => {
 				windowFocused,
                 setWindowFocused,
                 userData,
-                setUserData
+                setUserData,
+                unreadMessageIds,
+                setUnreadMessageIds
 			}}
 		>
 			<Router>

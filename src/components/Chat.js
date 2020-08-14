@@ -19,7 +19,7 @@ import { TransitionGroup } from "react-transition-group";
 import useHotkeys from "use-hotkeys";
 import Viewers from "./Viewers";
 import { useLocalStorage } from "react-use";
-import sha1 from "sha1"
+import sha1 from "sha1";
 // const displayMotes = [
 // 	"https://static-cdn.jtvnw.net/emoticons/v1/115847/1.0",
 // 	"https://static-cdn.jtvnw.net/emoticons/v1/64138/1.0",
@@ -81,6 +81,7 @@ function App(props) {
 		showViewers,
 		windowFocused,
 		userData: userInfo,
+		setUnreadMessageIds,
 	} = useContext(AppContext);
 	const [channel, setChannel] = useState();
 	const [search, setSearch] = useState("");
@@ -290,12 +291,17 @@ function App(props) {
 					)
 						msg.moddable = true;
 					if (msg.displayName.toLowerCase() === "disstreamchat") msg.moddable = false;
+
+					setTimeout(() => {
+						setUnreadMessageIds(prev => [...prev, msg.id]);
+					}, 70);
+
 					return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
 				});
 			});
 			return () => socket.removeListener("chatmessage");
 		}
-	}, [settings, socket, setMessages, userInfo, channel]);
+	}, [settings, socket, setMessages, userInfo, channel, setUnreadMessageIds]);
 
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
 	useEffect(() => {
@@ -359,12 +365,12 @@ function App(props) {
 			.onSnapshot(async snapshot => {
 				const data = snapshot.data();
 				if (!data) {
-                    const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${id}&platform=twitch`
-                    const response = await fetch(apiUrl)
-                    const userData = await response.json()
-                    setChannel({
-                        TwitchName: userData?.display_name?.toLowerCase?.()
-                    })
+					const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${id}&platform=twitch`;
+					const response = await fetch(apiUrl);
+					const userData = await response.json();
+					setChannel({
+						TwitchName: userData?.display_name?.toLowerCase?.(),
+					});
 				} else {
 					const { TwitchName, guildId, liveChatId } = data;
 					setChannel({
@@ -409,14 +415,7 @@ function App(props) {
 				observerRef.current = new IntersectionObserver(entries => {
 					entries.forEach(entry => {
 						if (entry.isIntersecting) {
-							setMessages(prev => {
-								const copy = [...prev];
-								const index = copy.findIndex(msg => msg.id === entry.target.dataset.idx);
-								if (index !== -1) {
-									copy[index].read = true;
-								}
-								return copy;
-							});
+							setUnreadMessageIds(prev => prev.filter(id => id !== entry.target.dataset.idx));
 							observerRef.current.unobserve(entry.target);
 						}
 					});
@@ -430,7 +429,7 @@ function App(props) {
 				}
 			}
 		},
-		[observerRef, setMessages]
+		[observerRef, setUnreadMessageIds]
 	);
 
 	const [chatterInfo, setChatterInfo] = useState();

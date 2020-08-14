@@ -79,7 +79,9 @@ const Header = props => {
 	const [show, setShow] = useState(true);
 	const currentUser = firebase.auth.currentUser;
 	const id = currentUser?.uid || " ";
-	const { messages, setMessages, setShowViewers, windowFocused, streamerInfo, userData } = useContext(AppContext);
+	const { messages, setMessages, setShowViewers, windowFocused, streamerInfo, userData, unreadMessageIds, setUnreadMessageIds } = useContext(
+		AppContext
+	);
 	const [viewingUserId, setViewingUserId] = useState();
 	const [viewingUserInfo, setViewingUserInfo] = useState();
 	const [viewingUserStats, setViewingUserStats] = useState();
@@ -87,7 +89,6 @@ const Header = props => {
 	const [isPopoutOut, setIsPopOut] = useState();
 	const { location } = props;
 	const absoluteLocation = window.location;
-	const [unreadMessages, setUnreadMessages] = useState(false);
 	const [platform, setPlatform] = useState("");
 
 	useEffect(() => {
@@ -120,16 +121,6 @@ const Header = props => {
 	}, [platform]);
 
 	useEffect(() => {
-		if (messages.length) {
-			const id = setTimeout(() => {
-				const filteredMessages = messages.filter(msg => !msg.read && !msg.deleted);
-				setUnreadMessages(filteredMessages.length ? filteredMessages : false);
-			}, 500);
-			return () => clearTimeout(id);
-		}
-	}, [messages]);
-
-	useEffect(() => {
 		setViewingUserId(location.pathname.split("/").slice(-1)[0]);
 		setViewingUserStats(null);
 	}, [location]);
@@ -137,16 +128,16 @@ const Header = props => {
 	useEffect(() => {
 		(async () => {
 			if (chatHeader && show) {
-                const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${viewingUserId}&platform=twitch`
-                const response = await fetch(apiUrl)
-                const userData = await response.json()
+				const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${viewingUserId}&platform=twitch`;
+				const response = await fetch(apiUrl);
+				const userData = await response.json();
 				setViewingUserInfo(userData);
 			}
 		})();
 	}, [chatHeader, show, viewingUserId]);
 
 	const getStats = useCallback(async () => {
-        if (viewingUserInfo) {
+		if (viewingUserInfo) {
 			const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=${viewingUserInfo?.display_name?.toLowerCase?.()}&new=true`;
 			const response = await fetch(ApiUrl);
 			const data = await response.json();
@@ -166,13 +157,12 @@ const Header = props => {
 				}
 			});
 		}
-    }, [viewingUserInfo]);
-    
+	}, [viewingUserInfo]);
 
 	useEffect(() => {
-        if(viewingUserInfo){
-            getStats();
-        }
+		if (viewingUserInfo) {
+			getStats();
+		}
 	}, [getStats, viewingUserInfo]);
 
 	useInterval(getStats, 60000);
@@ -241,18 +231,20 @@ const Header = props => {
 					)}
 					{chatHeader ? (
 						<>
-							{
-								<Tooltip title={`${unreadMessages ? "Mark as Read" : "No unread Messages"}`} arrow>
-									<div
-										onClick={() => setMessages(prev => prev.map(msg => ({ ...msg, read: true })))}
-										className={`messages-notification ${unreadMessages ? "unread" : ""}`}
-									>
-										{unreadMessages ? (unreadMessages.length > maxDisplayNum ? `${maxDisplayNum}+` : unreadMessages.length) : ""}
-										{unreadMessages ? " " : ""}
-										<MailTwoToneIcon />
-									</div>
-								</Tooltip>
-							}
+							<Tooltip title={`${unreadMessageIds?.length ? "Mark as Read" : "No unread Messages"}`} arrow>
+								<div
+									onClick={() => setMessages(prev => prev.map(msg => ({ ...msg, read: true })))}
+									className={`messages-notification ${unreadMessageIds?.length ? "unread" : ""}`}
+								>
+									{unreadMessageIds?.length
+										? unreadMessageIds.length > maxDisplayNum
+											? `${maxDisplayNum}+`
+											: unreadMessageIds.length
+										: ""}
+									{unreadMessageIds?.length ? " " : ""}
+									<MailTwoToneIcon />
+								</div>
+							</Tooltip>
 							{!isPopoutOut && (
 								<Link to="/channels">
 									<Button variant="contained" color="primary">
