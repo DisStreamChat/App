@@ -393,12 +393,12 @@ function App(props) {
 	const handleSearch = useCallback(setSearch, []);
 
 	const scrollTop = useCallback(() => {
-		setMessages(prev => prev.map(msg => ({ ...msg, read: true })));
+		setUnreadMessageIds([]);
 		bodyRef.current.scrollTo({
 			top: 0,
 			behavior: "smooth",
 		});
-	}, [setMessages]);
+	}, [setUnreadMessageIds]);
 
 	useEffect(() => {
 		bodyRef.current.addEventListener("scroll", e => {
@@ -416,7 +416,9 @@ function App(props) {
 							setUnreadMessageIds(prev => prev.filter(id => id !== entry.target.dataset.idx));
 							observerRef.current.unobserve(entry.target);
 						} else {
-							setUnreadMessageIds(prev => [...prev, entry.target.dataset.idx]);
+							if (storedMessages?.findIndex?.(msg => msg.id === entry.target.dataset.idx) === -1) {
+								setUnreadMessageIds(prev => [...prev, entry.target.dataset.idx]);
+							}
 						}
 					});
 				});
@@ -429,7 +431,7 @@ function App(props) {
 				}
 			}
 		},
-		[observerRef, setUnreadMessageIds]
+		[observerRef, setUnreadMessageIds, storedMessages]
 	);
 
 	const [chatterInfo, setChatterInfo] = useState();
