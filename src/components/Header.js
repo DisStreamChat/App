@@ -233,7 +233,7 @@ const Header = props => {
 						<>
 							<Tooltip title={`${unreadMessageIds?.length ? "Mark as Read" : "No unread Messages"}`} arrow>
 								<div
-									onClick={() => setMessages(prev => prev.map(msg => ({ ...msg, read: true })))}
+									onClick={() => setUnreadMessageIds([])}
 									className={`messages-notification ${unreadMessageIds?.length ? "unread" : ""}`}
 								>
 									{unreadMessageIds?.length
