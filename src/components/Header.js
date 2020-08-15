@@ -89,12 +89,16 @@ const Header = props => {
 	const [isPopoutOut, setIsPopOut] = useState();
 	const [unreadMessages, setUnreadMessages] = useState(false);
 	const absoluteLocation = window.location;
-	const [platform, setPlatform] = useState("");
+    const [platform, setPlatform] = useState("");
+    const [unreadTimeout, setUnreadTimeout] = useState(0)
 
 	useEffect(() => {
-		setTimeout(() => {
-			setUnreadMessages(!!unreadMessageIds.length);
-		}, 10);
+		setUnreadTimeout(prev => {
+            clearTimeout(prev)
+            return setTimeout(() => {
+                setUnreadMessages(!!unreadMessageIds.length);
+            }, 200);
+        }) 
 	}, [setUnreadMessages, unreadMessageIds]);
 
 	useEffect(() => {

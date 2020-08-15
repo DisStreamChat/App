@@ -293,14 +293,14 @@ function App(props) {
 						msg.moddable = true;
 					if (msg.displayName.toLowerCase() === "disstreamchat") msg.moddable = false;
 
-					// setUnreadMessageIds(prev => [...prev, msg.id]);
+					setUnreadMessageIds(prev => [...new Set([...prev, msg.id])]);
 
 					return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
 				});
 			});
 			return () => socket.removeListener("chatmessage");
 		}
-	}, [settings, socket, setMessages, userInfo, channel, setUnreadMessageIds]);
+	}, [settings, socket, setMessages, userInfo, channel, setUnreadMessageIds, messages]);
 
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
 	useEffect(() => {
@@ -416,11 +416,7 @@ function App(props) {
 						if (entry.isIntersecting) {
 							setUnreadMessageIds(prev => prev.filter(id => id !== entry.target.dataset.idx));
 							observerRef.current.unobserve(entry.target);
-						} else {
-							if (storedMessages?.findIndex?.(msg => msg.id === entry.target.dataset.idx) === -1) {
-								setUnreadMessageIds(prev => [...prev, entry.target.dataset.idx]);
-							}
-						}
+						} 
 					});
 				});
 			}
@@ -432,7 +428,7 @@ function App(props) {
 				}
 			}
 		},
-		[observerRef, setUnreadMessageIds, storedMessages]
+		[observerRef, setUnreadMessageIds]
 	);
 
 	const [chatterInfo, setChatterInfo] = useState();
