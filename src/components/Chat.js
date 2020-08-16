@@ -527,7 +527,7 @@ function App(props) {
 	) : (
 		<div style={{ fontFamily: settings.Font }} ref={bodyRef} className="overlay-container">
 			<div className={`overlay ${windowFocused ? "focused" : "unfocused"}`}>
-				<CSSTransition unmountOnExit classNames="chat-node" timeout={200} in={windowFocused || true}>
+				<CSSTransition unmountOnExit classNames="chat-node" timeout={200} in={windowFocused}>
 					<div
 						id="chat-input--container"
 						onClick={() => {
