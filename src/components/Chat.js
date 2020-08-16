@@ -462,7 +462,7 @@ function App(props) {
 					const info = {};
 					const chatters = [];
 					for (let [key, value] of Object.entries(json.chatters)) {
-						if (value.length === 0 || key === "broadcaster") continue;
+						if (value.length === 0 ) continue;
 						info[key] = await Promise.all(
 							value.map(async name => {
 								chatters.push(name);
