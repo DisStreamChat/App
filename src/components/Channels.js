@@ -72,7 +72,7 @@ const ChannelItem = React.memo(props => {
 									const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/checkmod?channel=${channelName}&user=${userName}`;
 									const res = await fetch(apiUrl);
 									if (!res.ok) {
-										setError("An error occured while fetching " + channelName);
+										setError(`An error occured while fetching ${channelName}, make sure you entered the name correctly`);
 									} else {
 										const json = await res.json();
 										if (json) {
@@ -88,7 +88,7 @@ const ChannelItem = React.memo(props => {
 									}
 								}
 							} catch (err) {
-								setError("An error occured while fetching " + channelName);
+								setError(`An error occured while fetching ${channelName}, make sure you entered the name correctly`);
 							}
 							setChannelName("");
 							setLoading(false);
