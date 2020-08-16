@@ -4,6 +4,7 @@ const path = require("path");
 const isDev = require("electron-is-dev");
 const windowStateKeeper = require("electron-window-state");
 const contextMenu = require("electron-context-menu");
+const { autoUpdater } = require("electron-updater")
 
 let mainWindow;
 let loginWindow;
@@ -84,6 +85,9 @@ function windowGenerator({ width = Width, height = Width * 1.5, x, y } = {}) {
 }
 
 function createMainWindow() {
+    if(!isDev){
+        autoUpdater.checkForUpdatesAndNotify().catch(err => console.log(err.message))
+    }
 	contextMenu({
 		prepend: (defaultActions, params, browserWindow) => [
 			{
