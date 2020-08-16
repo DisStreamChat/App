@@ -20,6 +20,12 @@ import useHotkeys from "use-hotkeys";
 import Viewers from "./Viewers";
 import { useLocalStorage } from "react-use";
 import sha1 from "sha1";
+import ReactTextareaAutocomplete from "@webscopeio/react-textarea-autocomplete";
+
+const Item = ({ selected, entity: { name, char } }) => <div className="auto-item">{`${name}: ${char}`}</div>;
+const UserItem = ({ selected, entity: { name, char } }) => <div className={`auto-item ${selected ? "selected-item" : ""}`}>{`${name}`}</div>;
+const EmoteItem = ({ selected, entity: { name, char } }) => <div className={`emote-item auto-item ${selected ? "selected-item" : ""}`}><img src={`https://static-cdn.jtvnw.net/emoticons/v1/${name}/1.0`} alt=""/>{char}</div>;
+
 // const displayMotes = [
 // 	"https://static-cdn.jtvnw.net/emoticons/v1/115847/1.0",
 // 	"https://static-cdn.jtvnw.net/emoticons/v1/64138/1.0",
@@ -238,8 +244,8 @@ function App(props) {
 			socket.removeListener("chatmessage");
 			socket.on("chatmessage", msg => {
 				setMessages(m => {
-                    // by default we don't ignore messages
-                    if(messages.findIndex(message => message.id === msg.id) !== -1) return m
+					// by default we don't ignore messages
+					if (messages.findIndex(message => message.id === msg.id) !== -1) return m;
 					let ignoredMessage = false;
 
 					// check if we should ignore this user
@@ -416,7 +422,7 @@ function App(props) {
 						if (entry.isIntersecting) {
 							setUnreadMessageIds(prev => prev.filter(id => id !== entry.target.dataset.idx));
 							observerRef.current.unobserve(entry.target);
-						} 
+						}
 					});
 				});
 			}
@@ -434,6 +440,7 @@ function App(props) {
 	const [chatterInfo, setChatterInfo] = useState();
 	const [chatterCount, setChatterCount] = useState();
 	const [streamerName, setStreamerName] = useState();
+	const [allChatters, setAllChatters] = useState();
 	const userId = id;
 
 	useEffect(() => {
@@ -453,10 +460,12 @@ function App(props) {
 				const json = await response.json();
 				if (json && response.ok) {
 					const info = {};
+					const chatters = [];
 					for (let [key, value] of Object.entries(json.chatters)) {
 						if (value.length === 0 || key === "broadcaster") continue;
 						info[key] = await Promise.all(
 							value.map(async name => {
+								chatters.push(name);
 								const response = await fetch(`${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${name}&platform=twitch`);
 								return await response.json();
 							})
@@ -465,13 +474,33 @@ function App(props) {
 
 					setChatterInfo(info);
 					setChatterCount(json.chatter_count);
+					setAllChatters(chatters);
 				}
 			};
 			getChatters();
 			id = setInterval(getChatters, 120000 * 2);
 		})();
 		return () => clearInterval(id);
-	}, [userId, streamerName]);
+    }, [userId, streamerName]);
+    
+    const [userEmotes, setUserEmotes] = useState()
+    useEffect(() => {
+        (async () => {
+            const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/emotes?user=${userInfo.TwitchName}`
+            const response = await fetch(apiUrl)
+            const json = await response.json()
+            const emotes = json.emoticon_sets
+            if(emotes){
+                let allEmotes = []
+                for (let [key, value] of Object.entries(emotes)) {
+                    allEmotes = [...allEmotes, ...value.map(emote => ({...emote, channelId: key}))]
+                }
+                
+                setUserEmotes(allEmotes)
+            }
+        })()
+
+    }, [userInfo])
 
 	const [flagMatches, setFlagMatches] = useState([]);
 
@@ -481,16 +510,16 @@ function App(props) {
 
 	const sendMessage = useCallback(() => {
 		if (socket) {
-            if(chatValue.startsWith("/clear")){
-                setMessages([])
-            }
+			if (chatValue.startsWith("/clear")) {
+				setMessages([]);
+			}
 			socket.emit("sendchat", {
 				sender: userInfo?.name?.toLowerCase?.(),
 				message: chatValue,
 			});
 		}
-	}, [socket, chatValue, userInfo, setMessages]);
-
+    }, [socket, chatValue, userInfo, setMessages]);
+    
 	return showViewers ? (
 		<span style={{ fontFamily: settings.Font }}>
 			<Viewers streamer={streamerName} chatterCount={chatterCount} chatterInfo={chatterInfo} />
@@ -498,14 +527,38 @@ function App(props) {
 	) : (
 		<div style={{ fontFamily: settings.Font }} ref={bodyRef} className="overlay-container">
 			<div className={`overlay ${windowFocused ? "focused" : "unfocused"}`}>
-				<CSSTransition unmountOnExit classNames="chat-node" timeout={200} in={windowFocused}>
+				<CSSTransition unmountOnExit classNames="chat-node" timeout={200} in={windowFocused || true}>
 					<div
 						id="chat-input--container"
 						onClick={() => {
 							document.getElementById("chat-input").focus();
 						}}
 					>
-						<textarea
+						<ReactTextareaAutocomplete
+							movePopupAsYouType
+							loadingComponent={() => <span>Loading</span>}
+                            minChar={1}
+                            listClassName="auto-complete-dropdown"
+							trigger={{
+								"@": {
+									dataProvider: token => {
+										return allChatters
+											.filter(chatter => chatter.startsWith(token))
+											.map(chatter => ({ name: `${chatter}`, char: `${chatter}` }));
+									},
+									component: UserItem,
+									output: (item, trigger) => item.char,
+                                },
+                                ":": {
+									dataProvider: token => {
+										return userEmotes
+											.filter(emote => emote?.code?.toLowerCase?.()?.startsWith?.(token?.toLowerCase?.()))
+											.map(emote => ({ name: `${emote.id}`, char: `${emote.code}` }));
+									},
+									component: EmoteItem,
+									output: (item, trigger) => item.char,
+								}
+							}}
 							onKeyPress={e => {
 								if (e.which === 13 && !e.shiftKey) {
 									sendMessage();
@@ -520,7 +573,7 @@ function App(props) {
 							onChange={e => {
 								setChatValue(e.target.value);
 							}}
-						></textarea>
+						></ReactTextareaAutocomplete>
 						{/* will be used in the future */}
 						{/* <Tooltip title="Emote Picker" arrow>
 							<img

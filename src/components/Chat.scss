@@ -100,7 +100,7 @@
 	background: #212121;
 	border-radius: 0.5rem;
 	color: white;
-	overflow: hidden;
+	// overflow: hidden;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -209,6 +209,51 @@ h1 {
 
 ._1qxYA {
 	will-change: transform, opacity;
+}
+
+$item-background-color: #121212;
+$item-lightness: 10;
+
+.selected-item{
+    background: lighten($item-background-color, $item-lightness) !important
+}
+
+.auto-item{
+    
+    background: $item-background-color;
+    color: white;
+    padding: 0 .25rem;
+    cursor: pointer;
+    &:hover, &:focus{
+        background: lighten($item-background-color, $item-lightness)
+    }
+    img{
+        margin-right: .25rem;
+    }
+}
+
+.emote-item{
+    padding: .125rem .25rem;
+}
+
+.auto-complete-dropdown{
+    max-height: 300px;
+    overflow: auto;
+}
+
+
+.rta{
+    width: 100%;
+    display: flex;
+    position: relative;
+}
+
+.rta__autocomplete{
+    position: absolute;
+    transform: translateY(1rem);
+    z-index: 1000000000;
+    // max-height: 300px;
+
 }
 
 #chat-input {
