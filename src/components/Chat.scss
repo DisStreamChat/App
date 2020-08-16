@@ -214,46 +214,44 @@ h1 {
 $item-background-color: #121212;
 $item-lightness: 10;
 
-.selected-item{
-    background: lighten($item-background-color, $item-lightness) !important
+.selected-item {
+	background: lighten($item-background-color, $item-lightness) !important;
 }
 
-.auto-item{
-    
-    background: $item-background-color;
-    color: white;
-    padding: 0 .25rem;
-    cursor: pointer;
-    &:hover, &:focus{
-        background: lighten($item-background-color, $item-lightness)
-    }
-    img{
-        margin-right: .25rem;
-    }
+.auto-item {
+	background: $item-background-color;
+	color: white;
+	padding: 0 0.25rem;
+	cursor: pointer;
+	&:hover,
+	&:focus {
+		background: lighten($item-background-color, $item-lightness);
+	}
+	img {
+		margin-right: 0.25rem;
+	}
 }
 
-.emote-item{
-    padding: .125rem .25rem;
+.emote-item {
+	padding: 0.125rem 0.25rem;
 }
 
-.auto-complete-dropdown{
-    max-height: 300px;
-    overflow: auto;
+.auto-complete-dropdown {
+	max-height: 300px;
+	overflow: auto;
 }
 
-
-.rta{
-    width: 100%;
-    display: flex;
-    position: relative;
+.rta {
+	width: 100%;
+	display: flex;
+	position: relative;
 }
 
-.rta__autocomplete{
-    position: absolute;
-    transform: translateY(1rem);
-    z-index: 1000000000;
-    // max-height: 300px;
-
+.rta__autocomplete {
+	position: absolute;
+	transform: translateY(1rem);
+	z-index: 1000000000;
+	// max-height: 300px;
 }
 
 #chat-input {
@@ -517,29 +515,29 @@ pre._1K1H8._1pKVQ * {
 	background: darken(#515151, 15) !important;
 }
 
-.react-contextmenu-wrapper{
-    display: inline;
-    margin-left: .75rem;
-    @media screen and (max-width: 475px) {
-        margin-left: .25rem;
-    }
+.react-contextmenu-wrapper {
+	display: inline;
+	margin-left: 0.75rem;
+	@media screen and (max-width: 475px) {
+		margin-left: 0.25rem;
+	}
 }
 
-.react-contextmenu{
-    background: darken(#515151, 7);
-    border-radius: .5rem;
-    padding: .1rem;
-    overflow: hidden;
-    border: .5px solid darken(#515151, 100);
-    z-index: 1000;
+.react-contextmenu {
+	background: darken(#515151, 7);
+	border-radius: 0.5rem;
+	padding: 0.1rem;
+	overflow: hidden;
+	border: 0.5px solid darken(#515151, 100);
+	z-index: 1000;
 }
 
-.react-contextmenu-item{
-    font-weight: 600 !important;
-    padding: .25rem .5rem;
-    cursor: pointer;
-    color: black;
-    &:hover{
-        background: darken(#515151, 3);
-    }
+.react-contextmenu-item {
+	font-weight: 600 !important;
+	padding: 0.25rem 0.5rem;
+	cursor: pointer;
+	color: black;
+	&:hover {
+		background: darken(#515151, 3);
+	}
 }
