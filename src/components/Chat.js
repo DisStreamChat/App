@@ -544,7 +544,7 @@ function App(props) {
 									dataProvider: token => {
 										return allChatters
 											.filter(chatter => chatter.startsWith(token))
-											.map(chatter => ({ name: `${chatter}`, char: `${chatter}` }));
+											.map(chatter => ({ name: `${chatter}`, char: `@${chatter}` }));
 									},
 									component: UserItem,
 									output: (item, trigger) => item.char,
