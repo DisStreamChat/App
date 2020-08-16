@@ -28,13 +28,13 @@ const ChannelItem = React.memo(props => {
 	}, [props, setChannelName]);
 
 	const getLive = useCallback(async () => {
-		if (channelName) {
+		if (channelName && !props.addChannel) {
 			const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=${channelName?.toLowerCase?.()}&new=true`;
 			const response = await fetch(ApiUrl);
 			const data = await response.json();
 			setIsLive(() => data?.isLive && channelName);
 		}
-	}, [channelName]);
+	}, [channelName, props]);
 
 	useEffect(() => {
 		getLive();
@@ -71,16 +71,20 @@ const ChannelItem = React.memo(props => {
 									const userName = userData.name;
 									const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/checkmod?channel=${channelName}&user=${userName}`;
 									const res = await fetch(apiUrl);
-									const json = await res.json();
-									if (json) {
-										const ModChannels = [...userData.ModChannels, json].filter(
-											(thing, index, self) => index === self.findIndex(t => t.id === thing.id)
-										);
-										await firebase.db.collection("Streamers").doc(currentUser.uid).update({
-											ModChannels,
-										});
+									if (!res.ok) {
+										setError("An error occured while fetching " + channelName);
 									} else {
-										setError("You are not a moderator for " + channelName);
+										const json = await res.json();
+										if (json) {
+											const ModChannels = [...userData.ModChannels, json].filter(
+												(thing, index, self) => index === self.findIndex(t => t.id === thing.id)
+											);
+											await firebase.db.collection("Streamers").doc(currentUser.uid).update({
+												ModChannels,
+											});
+										} else {
+											setError("You are not a moderator for " + channelName);
+										}
 									}
 								}
 							} catch (err) {
