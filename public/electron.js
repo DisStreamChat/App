@@ -4,7 +4,7 @@ const path = require("path");
 const isDev = require("electron-is-dev");
 const windowStateKeeper = require("electron-window-state");
 const contextMenu = require("electron-context-menu");
-const { autoUpdater } = require("electron-updater")
+const { autoUpdater } = require("electron-updater");
 
 let mainWindow;
 let loginWindow;
@@ -61,8 +61,8 @@ function windowGenerator({ width = Width, height = Width * 1.5, x, y } = {}) {
 		frame: false, // whether or not the window has 'frame' or header
 		backgroundColor: "#001e272e", // window background color, first two values set alpha which is set to 0 for transparency
 		transparent: true, // make window transparent
-        alwaysOnTop: true, // make is so other windows won't go on top of this one
-        fullScreenable: false,
+		alwaysOnTop: true, // make is so other windows won't go on top of this one
+		fullScreenable: false,
 		webPreferences: {
 			nodeIntegration: true, // integrates the frontend with node, this is used for the custom toolbar
 		},
@@ -74,20 +74,21 @@ function windowGenerator({ width = Width, height = Width * 1.5, x, y } = {}) {
 	let window = new BrowserWindow(options);
 	window.on("page-title-updated", e => {
 		e.preventDefault();
-    });
-    window.setAlwaysOnTop(true, "screen-saver");
-    try{
-        window.setFullScreenable(false)
-    }catch(err){
-
-    }
+	});
+	window.setAlwaysOnTop(true, "screen-saver");
+	try {
+		window.setFullScreenable(false);
+	} catch (err) {}
 	return window;
 }
 
+autoUpdater.autoInstallOnAppQuit = true
+
 function createMainWindow() {
-    if(!isDev){
-        autoUpdater.checkForUpdatesAndNotify().catch(err => console.log(err.message))
-    }
+    // tests
+	if (!isDev) {
+		autoUpdater.checkForUpdates();
+	}
 	contextMenu({
 		prepend: (defaultActions, params, browserWindow) => [
 			{
