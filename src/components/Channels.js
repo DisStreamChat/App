@@ -114,11 +114,9 @@ const ChannelItem = React.memo(props => {
 					<div className="channel-info">
 						<span className="channel-name">{channelName}</span>
 						{props.popoutChat ? (
-							props.isMember && (
-								<button onClick={() => ipcRenderer.send("popoutChat", props.id)} className="to-dashboard dashboard-button">
-									{"Popout Chat"}
-								</button>
-							)
+							<button onClick={() => ipcRenderer.send("popoutChat", props.id)} className="to-dashboard dashboard-button">
+								{"Popout Chat"}
+							</button>
 						) : (
 							<Link className="dashboard-link" to={`/chat/${props.id}`}>
 								<button className="to-dashboard dashboard-button">{"Go To Chat"}</button>
@@ -158,14 +156,22 @@ const Channels = React.memo(props => {
 	}, [userData]);
 
 	useEffect(() => {
-		const channelsInfo = userData.ModChannels;
-		setModChannels(
-			channelsInfo
-				?.sort((a, b) => a.login.localeCompare(b.login))
-				?.map(channel => {
-					return { ...channel, modPlatform: "twitch", uid: sha1(channel.id) };
-				})
-		);
+		(async () => {
+			const channelsInfo = await Promise.all(
+				userData.ModChannels?.map?.(async channel => {
+					const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${channel.id}&platform=twitch`;
+					const response = await fetch(apiUrl);
+					return response.json();
+				}) || []
+			);
+			setModChannels(
+				channelsInfo
+					?.sort((a, b) => a.login.localeCompare(b.login))
+					?.map(channel => {
+						return { ...channel, modPlatform: "twitch", uid: sha1(channel.id) };
+					})
+			);
+		})();
 	}, [userData, setModChannels]);
 
 	useEffect(() => {
