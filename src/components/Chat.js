@@ -377,7 +377,11 @@ function App(props) {
 						TwitchName: userData?.display_name?.toLowerCase?.(),
 					});
 				} else {
-					const { TwitchName, guildId, liveChatId } = data;
+                    const { guildId, liveChatId, twitchId } = data;
+                    const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${twitchId}&platform=twitch`;
+					const response = await fetch(apiUrl);
+                    const userData = await response.json();
+                    const TwitchName = userData?.display_name?.toLowerCase?.() || data.TwitchName
 					setChannel({
 						TwitchName,
 						guildId,
