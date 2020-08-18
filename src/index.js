@@ -66,10 +66,13 @@ const App = () => {
 	useEffect(() => {
 		(async () => {
 			if (firebaseInit !== false && currentUser) {
-                if(!userData.TwitchName) return
-				const profilePictureResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/profilepicture?user=${userData.TwitchName}`);
+                if(!userData.TwitchId) return
+                const userResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${userData.twitchId}&platform=twitch`)
+                const userJson = await userResponse.json()
+                const TwitchName = userJson.TwitchName || userData.TwitchName
+                const profilePictureResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/profilepicture?user=${TwitchName}`);
 				const profilePicture = await profilePictureResponse.json();
-				const modChannelResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/modchannels?user=${userData.TwitchName}`);
+				const modChannelResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/modchannels?user=${TwitchName}`);
 				const removedChannels = userData.removedChannels || [];
                 const NewModChannels = (await modChannelResponse.json()).filter(channel => !removedChannels.includes(channel.id));
                 
@@ -78,7 +81,8 @@ const App = () => {
 				);
 				firebase.db.collection("Streamers").doc(currentUser.uid).update({
 					profilePicture,
-					ModChannels,
+                    ModChannels,
+                    TwitchName
 				});
 			}
 		})();

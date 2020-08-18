@@ -72,6 +72,12 @@
 .unfocused > div:first-of-type,
 .unfocused > div:nth-of-type(2) {
 	display: flex;
+	flex-direction: column-reverse;
+}
+
+.reversed.unfocused > div:first-of-type,
+.reversed.unfocused > div:nth-of-type(2) {
+	display: flex;
 	flex-direction: column;
 }
 

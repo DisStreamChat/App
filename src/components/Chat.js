@@ -547,7 +547,8 @@ function App(props) {
 	const sendMessage = useCallback(() => {
 		if (socket) {
 			if (chatValue.startsWith("/clear")) {
-				setMessages([]);
+                setMessages([]);
+                return
 			}
 			socket.emit("sendchat", {
 				sender: userInfo?.name?.toLowerCase?.(),
@@ -573,7 +574,7 @@ function App(props) {
 						<ReactTextareaAutocomplete
 							movePopupAsYouType
 							loadingComponent={() => <span>Loading</span>}
-							minChar={1}
+							minChar={2}
 							listClassName="auto-complete-dropdown"
 							trigger={{
 								"@": {
