@@ -24,7 +24,12 @@ import ReactTextareaAutocomplete from "@webscopeio/react-textarea-autocomplete";
 
 const Item = ({ selected, entity: { name, char } }) => <div className="auto-item">{`${name}: ${char}`}</div>;
 const UserItem = ({ selected, entity: { name, char } }) => <div className={`auto-item ${selected ? "selected-item" : ""}`}>{`${name}`}</div>;
-const EmoteItem = ({ selected, entity: { name, char } }) => <div className={`emote-item auto-item ${selected ? "selected-item" : ""}`}><img src={`https://static-cdn.jtvnw.net/emoticons/v1/${name}/1.0`} alt=""/>{char}</div>;
+const EmoteItem = ({ selected, entity: { name, char } }) => (
+	<div className={`emote-item auto-item ${selected ? "selected-item" : ""}`}>
+		<img src={`https://static-cdn.jtvnw.net/emoticons/v1/${name}/1.0`} alt="" />
+		{char}
+	</div>
+);
 
 // const displayMotes = [
 // 	"https://static-cdn.jtvnw.net/emoticons/v1/115847/1.0",
@@ -301,6 +306,18 @@ function App(props) {
 
 					setUnreadMessageIds(prev => [...new Set([...prev, msg.id])]);
 
+					if (settings?.ReverseMessageOrder) {
+						const shouldScroll = Math.abs(bodyRef.current.scrollTop - bodyRef.current.scrollHeight) < 1200;
+						setTimeout(() => {
+							if (shouldScroll) {
+								bodyRef.current.scrollTo({
+									top: bodyRef.current.scrollHeight,
+									behavior: "smooth",
+								});
+							}
+						}, 200);
+					}
+
 					return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
 				});
 			});
@@ -377,11 +394,11 @@ function App(props) {
 						TwitchName: userData?.display_name?.toLowerCase?.(),
 					});
 				} else {
-                    const { guildId, liveChatId, twitchId } = data;
-                    const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${twitchId}&platform=twitch`;
+					const { guildId, liveChatId, twitchId } = data;
+					const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${twitchId}&platform=twitch`;
 					const response = await fetch(apiUrl);
-                    const userData = await response.json();
-                    const TwitchName = userData?.display_name?.toLowerCase?.() || data.TwitchName
+					const userData = await response.json();
+					const TwitchName = userData?.display_name?.toLowerCase?.() || data.TwitchName;
 					setChannel({
 						TwitchName,
 						guildId,
@@ -400,6 +417,22 @@ function App(props) {
 			}
 		}
 	}, [channel, socket]);
+
+	useEffect(() => {
+		setTimeout(() => {
+			if (settings?.ReverseMessageOrder) {
+				bodyRef.current.scrollTo({
+					top: bodyRef.current.scrollHeight,
+					// behavior: "smooth",
+				});
+			} else {
+				bodyRef.current.scrollTo({
+					top: 0,
+					// behavior: "smooth",
+				});
+			}
+		}, 100);
+	}, [settings.ReverseMessageOrder]);
 
 	const handleSearch = useCallback(setSearch, []);
 
@@ -466,7 +499,7 @@ function App(props) {
 					const info = {};
 					const chatters = [];
 					for (let [key, value] of Object.entries(json.chatters)) {
-						if (value.length === 0 ) continue;
+						if (value.length === 0) continue;
 						info[key] = await Promise.all(
 							value.map(async name => {
 								chatters.push(name);
@@ -485,26 +518,25 @@ function App(props) {
 			id = setInterval(getChatters, 120000 * 2);
 		})();
 		return () => clearInterval(id);
-    }, [userId, streamerName]);
-    
-    const [userEmotes, setUserEmotes] = useState()
-    useEffect(() => {
-        (async () => {
-            const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/emotes?user=${userInfo.TwitchName}`
-            const response = await fetch(apiUrl)
-            const json = await response.json()
-            const emotes = json.emoticon_sets
-            if(emotes){
-                let allEmotes = []
-                for (let [key, value] of Object.entries(emotes)) {
-                    allEmotes = [...allEmotes, ...value.map(emote => ({...emote, channelId: key}))]
-                }
-                
-                setUserEmotes(allEmotes)
-            }
-        })()
+	}, [userId, streamerName]);
 
-    }, [userInfo])
+	const [userEmotes, setUserEmotes] = useState();
+	useEffect(() => {
+		(async () => {
+			const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/emotes?user=${userInfo.TwitchName}`;
+			const response = await fetch(apiUrl);
+			const json = await response.json();
+			const emotes = json.emoticon_sets;
+			if (emotes) {
+				let allEmotes = [];
+				for (let [key, value] of Object.entries(emotes)) {
+					allEmotes = [...allEmotes, ...value.map(emote => ({ ...emote, channelId: key }))];
+				}
+
+				setUserEmotes(allEmotes);
+			}
+		})();
+	}, [userInfo]);
 
 	const [flagMatches, setFlagMatches] = useState([]);
 
@@ -522,15 +554,15 @@ function App(props) {
 				message: chatValue,
 			});
 		}
-    }, [socket, chatValue, userInfo, setMessages]);
-    
+	}, [socket, chatValue, userInfo, setMessages]);
+
 	return showViewers ? (
 		<span style={{ fontFamily: settings.Font }}>
 			<Viewers streamer={streamerName} chatterCount={chatterCount} chatterInfo={chatterInfo} />
 		</span>
 	) : (
 		<div style={{ fontFamily: settings.Font }} ref={bodyRef} className="overlay-container">
-			<div className={`overlay ${windowFocused ? "focused" : "unfocused"}`}>
+			<div className={`overlay ${settings?.ReverseMessageOrder ? "reversed" : ""} ${windowFocused ? "focused" : "unfocused"}`}>
 				<CSSTransition unmountOnExit classNames="chat-node" timeout={200} in={windowFocused}>
 					<div
 						id="chat-input--container"
@@ -541,8 +573,8 @@ function App(props) {
 						<ReactTextareaAutocomplete
 							movePopupAsYouType
 							loadingComponent={() => <span>Loading</span>}
-                            minChar={1}
-                            listClassName="auto-complete-dropdown"
+							minChar={1}
+							listClassName="auto-complete-dropdown"
 							trigger={{
 								"@": {
 									dataProvider: token => {
@@ -552,16 +584,16 @@ function App(props) {
 									},
 									component: UserItem,
 									output: (item, trigger) => item.char,
-                                },
-                                ":": {
+								},
+								":": {
 									dataProvider: token => {
 										return userEmotes
-											.filter(emote => emote?.code?.toLowerCase?.()?.startsWith?.(token?.toLowerCase?.()))
+											.filter(emote => emote?.code?.toLowerCase?.()?.includes?.(token?.toLowerCase?.()))
 											.map(emote => ({ name: `${emote.id}`, char: `${emote.code}` }));
 									},
 									component: EmoteItem,
 									output: (item, trigger) => item.char,
-								}
+								},
 							}}
 							onKeyPress={e => {
 								if (e.which === 13 && !e.shiftKey) {
@@ -615,7 +647,7 @@ function App(props) {
 					/>
 				</CSSTransition>
 			</div>
-			<CSSTransition unmountOnExit timeout={400} classNames={"to-top-node"} in={showToTop}>
+			<CSSTransition unmountOnExit timeout={400} classNames={"to-top-node"} in={showToTop && !settings?.ReverseMessageOrder}>
 				<button className="back-to-top-button fade-in" onClick={scrollTop}>
 					<KeyboardArrowUpIcon></KeyboardArrowUpIcon>
 				</button>
