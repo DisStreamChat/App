@@ -43,16 +43,6 @@ const EmoteItem = ({ selected, entity: { name, char, bttv, ffz } }) => {
 	);
 };
 
-const useRenderCount = () => {
-	const ref = useRef(0);
-
-	useEffect(() => {
-		ref.current += 1;
-	});
-
-	return ref.current;
-};
-
 // const displayMotes = [
 // 	"https://static-cdn.jtvnw.net/emoticons/v1/115847/1.0",
 // 	"https://static-cdn.jtvnw.net/emoticons/v1/64138/1.0",
@@ -103,8 +93,7 @@ const Messages = React.memo(props => {
 });
 
 function App(props) {
-	const [socket, setSocket] = useState();
-	// const { streamerInfo: settings, pinnedMessages, setPinnedMessages, showViewers, windowFocused } = useContext(AppContext);
+	const socketRef = useRef();
 	const {
 		streamerInfo: settings,
 		messages,
@@ -141,16 +130,16 @@ function App(props) {
 
 	// this runs once on load, and starts the socket
 	useEffect(() => {
-		setSocket(openSocket(process.env.REACT_APP_SOCKET_URL));
+		socketRef.current = openSocket(process.env.REACT_APP_SOCKET_URL);
 	}, []);
 
 	useEffect(() => {
 		return () => {
-			if (socket) {
-				socket.disconnect();
+			if (socketRef.current) {
+				socketRef.current.disconnect();
 			}
 		};
-	}, [socket]);
+	}, [socketRef]);
 
 	useHotkeys(
 		(key, event, handle) => {
@@ -202,7 +191,7 @@ function App(props) {
 
 	const ban = useCallback(
 		async (id, platform) => {
-			if (platform && socket) {
+			if (platform && socketRef.current) {
 				let modName = userInfo.name;
 				if (!modName) {
 					console.log("attempting to obtain username");
@@ -211,18 +200,18 @@ function App(props) {
 				}
 
 				const banMsg = messages.find(msg => msg.id === id);
-				socket.emit(`banuser - ${platform}`, {
+				socketRef.current.emit(`banuser - ${platform}`, {
 					modName,
 					user: banMsg?.[platform === "discord" ? "userId" : "displayName"],
 				});
 			}
 		},
-		[socket, messages, userInfo, currentUser]
+		[socketRef, messages, userInfo, currentUser]
 	);
 
 	const timeout = useCallback(
 		async (id, platform) => {
-			if (platform && socket) {
+			if (platform && socketRef.current) {
 				const banMsg = messages.find(msg => msg.id === id);
 				// on discord we delete by userId and on twitch we delete by username
 				let modName = userInfo.name;
@@ -231,13 +220,13 @@ function App(props) {
 					const UserData = (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data();
 					modName = UserData.name;
 				}
-				socket.emit(`timeoutuser - ${platform}`, {
+				socketRef.current.emit(`timeoutuser - ${platform}`, {
 					modName,
 					user: banMsg?.[platform === "discord" ? "userId" : "displayName"],
 				});
 			}
 		},
-		[socket, messages, userInfo, currentUser]
+		[socketRef, messages, userInfo, currentUser]
 	);
 
 	// this is used to delete messages, in certain conditions will also send a message to backend tell it to delete the message from the sent platform
@@ -258,18 +247,18 @@ function App(props) {
 				modName = UserData.name;
 			}
 
-			if (platform && socket) {
-				socket.emit(`deletemsg - ${platform}`, { id, modName });
+			if (platform && socketRef.current) {
+				socketRef.current.emit(`deletemsg - ${platform}`, { id, modName });
 			}
 		},
-		[socket, setMessages, userInfo, currentUser]
+		[socketRef, setMessages, userInfo, currentUser]
 	);
 
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
 	useEffect(() => {
-		if (socket) {
-			socket.removeListener("chatmessage");
-			socket.on("chatmessage", msg => {
+		if (socketRef.current) {
+			socketRef.current.removeListener("chatmessage");
+			socketRef.current.on("chatmessage", msg => {
 				setMessages(m => {
 					// by default we don't ignore messages
 					if (messages.findIndex(message => message.id === msg.id) !== -1) return m;
@@ -343,22 +332,22 @@ function App(props) {
 					return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
 				});
 			});
-			return () => socket.removeListener("chatmessage");
+			return () => socketRef.current.removeListener("chatmessage");
 		}
-	}, [settings, socket, setMessages, userInfo, channel, setUnreadMessageIds, messages]);
+	}, [settings, socketRef, setMessages, userInfo, channel, setUnreadMessageIds, messages]);
 
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
 	useEffect(() => {
-		if (socket) {
-			socket.removeListener("imConnected");
-			socket.on("imConnected", () => {
+		if (socketRef.current) {
+			socketRef.current.removeListener("imConnected");
+			socketRef.current.on("imConnected", () => {
 				if (channel) {
-					socket.emit("addme", channel);
+					socketRef.current.emit("addme", channel);
 				}
 			});
-			return () => socket.removeListener("imConnected");
+			return () => socketRef.current.removeListener("imConnected");
 		}
-	}, [settings, socket, channel]);
+	}, [settings, socketRef, channel]);
 
 	useEffect(() => {
 		setMessages(m => m.slice(-Math.max(settings.MessageLimit, 100)));
@@ -366,17 +355,17 @@ function App(props) {
 
 	// this is similar to the above useEffect but for adds a listener for when messages are deleted
 	useEffect(() => {
-		if (socket) {
-			socket.removeListener("deletemessage");
-			socket.on("deletemessage", removeMessage);
-			return () => socket.removeListener("deletemessage");
+		if (socketRef.current) {
+			socketRef.current.removeListener("deletemessage");
+			socketRef.current.on("deletemessage", removeMessage);
+			return () => socketRef.current.removeListener("deletemessage");
 		}
-	}, [socket, removeMessage]);
+	}, [socketRef, removeMessage]);
 
 	useEffect(() => {
-		if (socket) {
-			socket.removeListener("updateMessage");
-			socket.on("updateMessage", newMessage => {
+		if (socketRef.current) {
+			socketRef.current.removeListener("updateMessage");
+			socketRef.current.on("updateMessage", newMessage => {
 				setMessages(m => {
 					const copy = [...m];
 					const messageToUpdate = m.find(msg => msg.id === newMessage.id);
@@ -387,20 +376,20 @@ function App(props) {
 					return copy;
 				});
 			});
-			return () => socket.removeListener("updateMessage");
+			return () => socketRef.current.removeListener("updateMessage");
 		}
-	}, [socket, removeMessage, setMessages]);
+	}, [socketRef, removeMessage, setMessages]);
 
 	// this is similar to the above useEffect but for adds a listener for when messages are deleted
 	useEffect(() => {
-		if (socket) {
-			socket.removeListener("purgeuser");
-			socket.on("purgeuser", username => {
+		if (socketRef.current) {
+			socketRef.current.removeListener("purgeuser");
+			socketRef.current.on("purgeuser", username => {
 				setMessages(prev => prev.filter(msg => msg.displayName?.toLowerCase() !== username.toLowerCase()));
 			});
-			return () => socket.removeListener("purgeuser");
+			return () => socketRef.current.removeListener("purgeuser");
 		}
-	}, [socket, removeMessage, setMessages]);
+	}, [socketRef, removeMessage, setMessages]);
 
 	useEffect(() => {
 		const unsub = firebase.db
@@ -434,11 +423,11 @@ function App(props) {
 	useEffect(() => {
 		if (channel) {
 			// send info to backend with sockets, to get proper socket connection
-			if (socket) {
-				socket.emit("addme", channel);
+			if (socketRef.current) {
+				socketRef.current.emit("addme", channel);
 			}
 		}
-    }, [channel, socket]);
+    }, [channel, socketRef]);
     
     const ReverseMessageOrder = settings?.ReverseMessageOrder
 
@@ -588,17 +577,17 @@ function App(props) {
 	);
 
 	const sendMessage = useCallback(() => {
-		if (socket) {
+		if (socketRef.current) {
 			if (chatValue.startsWith("/clear")) {
 				setMessages([]);
 				return;
 			}
-			socket.emit("sendchat", {
+			socketRef.current.emit("sendchat", {
 				sender: userInfo?.name?.toLowerCase?.(),
 				message: chatValue,
 			});
 		}
-	}, [socket, chatValue, userInfo, setMessages]);
+	}, [socketRef, chatValue, userInfo, setMessages]);
 
 	return showViewers ? (
 		<span style={{ fontFamily: settings.Font }}>
