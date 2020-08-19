@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import firebase from "../firebase";
 import { useParams } from "react-router-dom";
 import openSocket from "socket.io-client";
@@ -25,10 +25,32 @@ import ReactTextareaAutocomplete from "@webscopeio/react-textarea-autocomplete";
 const Item = ({ selected, entity: { name, char } }) => <div className="auto-item">{`${name}: ${char}`}</div>;
 const UserItem = ({ selected, entity: { name, char } }) => <div className={`auto-item ${selected ? "selected-item" : ""}`}>{`${name}`}</div>;
 const EmoteItem = ({ selected, entity: { name, char, bttv, ffz } }) => {
-    return <div className={`emote-item auto-item ${selected ? "selected-item" : ""}`}>
-		<img className="auto-fill-emote-image" src={bttv ? `https://cdn.betterttv.net/emote/${name}/1x#emote` : ffz ? `${name}#emote` : `https://static-cdn.jtvnw.net/emoticons/v1/${name}/1.0`} alt="" />
-		{char}
-	</div>
+	return (
+		<div className={`emote-item auto-item ${selected ? "selected-item" : ""}`}>
+			<img
+				className="auto-fill-emote-image"
+				src={
+					bttv
+						? `https://cdn.betterttv.net/emote/${name}/1x#emote`
+						: ffz
+						? `${name}#emote`
+						: `https://static-cdn.jtvnw.net/emoticons/v1/${name}/1.0`
+				}
+				alt=""
+			/>
+			{char}
+		</div>
+	);
+};
+
+const useRenderCount = () => {
+	const ref = useRef(0);
+
+	useEffect(() => {
+		ref.current += 1;
+	});
+
+	return ref.current;
 };
 
 // const displayMotes = [
@@ -454,11 +476,13 @@ function App(props) {
 		node => {
 			if (!node) return;
 			if (!observerRef.current) {
-				observerRef.current = new IntersectionObserver(entries => {
+				observerRef.current = new IntersectionObserver((entries, observer) => {
 					entries.forEach(entry => {
 						if (entry.isIntersecting) {
-							setUnreadMessageIds(prev => prev.filter(id => id !== entry.target.dataset.idx));
-							observerRef.current.unobserve(entry.target);
+							const idx = entry.target.dataset.idx;
+							setUnreadMessageIds(prev => prev.filter(id => id !== idx));
+							const elt = document.querySelector(`div[data-idx="${idx}"]`);
+							observer.unobserve(elt);
 						}
 					});
 				});
@@ -523,48 +547,49 @@ function App(props) {
 	const [userEmotes, setUserEmotes] = useState([]);
 	useEffect(() => {
 		(async () => {
-            const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/emotes?user=${userInfo.TwitchName}`;
-            const customApiUrl = `${process.env.REACT_APP_SOCKET_URL}/customemotes?channel=${channel?.TwitchName}`
-            let [emotes, customEmotes] = await Promise.all([
-                (async () => {
-                    const response = await fetch(apiUrl);
-                    return response.json();
-                })(),
-                (async () => {
-                    const response = await fetch(customApiUrl);
-                    return response.json();
-                })()
-            ])
-            
-            
+			const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/emotes?user=${userInfo.TwitchName}`;
+			const customApiUrl = `${process.env.REACT_APP_SOCKET_URL}/customemotes?channel=${channel?.TwitchName}`;
+			let [emotes, customEmotes] = await Promise.all([
+				(async () => {
+					const response = await fetch(apiUrl);
+					return response.json();
+				})(),
+				(async () => {
+					const response = await fetch(customApiUrl);
+					return response.json();
+				})(),
+			]);
+
 			emotes = emotes.emoticon_sets;
 			if (emotes) {
 				let allEmotes = [];
 				for (let [key, value] of Object.entries(emotes)) {
 					allEmotes = [...allEmotes, ...value.map(emote => ({ ...emote, channelId: key }))];
-                }
-                for(const [key, value] of Object.entries(customEmotes?.bttv?.bttvEmotes || {})){
-                    allEmotes.push({code: key, name: value, char: key, bttv: true})
-                }
-                for(const [key, value] of Object.entries(customEmotes?.ffz?.ffzEmotes || {})){
-                    allEmotes.push({code: key, name: value, char: key, ffz: true})
-                }
+				}
+				for (const [key, value] of Object.entries(customEmotes?.bttv?.bttvEmotes || {})) {
+					allEmotes.push({ code: key, name: value, char: key, bttv: true });
+				}
+				for (const [key, value] of Object.entries(customEmotes?.ffz?.ffzEmotes || {})) {
+					allEmotes.push({ code: key, name: value, char: key, ffz: true });
+				}
 				setUserEmotes(allEmotes);
 			}
 		})();
 	}, [userInfo, channel]);
 
-	const [flagMatches, setFlagMatches] = useState([]);
-
-	useEffect(() => {
-		setFlagMatches(handleFlags(showSearch ? search : "", [...messages, ...pinnedMessages]).filter(msg => !msg.deleted));
-	}, [messages, search, showSearch, pinnedMessages, windowFocused]);
+	const flagMatches = useMemo(
+		() =>
+			handleFlags(showSearch ? search : "", [...messages, ...pinnedMessages])
+				.filter(msg => !msg.deleted)
+				.sort((a, b) => a.sentAt - b.sentAt),
+		[messages, search, showSearch, pinnedMessages]
+	);
 
 	const sendMessage = useCallback(() => {
 		if (socket) {
 			if (chatValue.startsWith("/clear")) {
-                setMessages([]);
-                return
+				setMessages([]);
+				return;
 			}
 			socket.emit("sendchat", {
 				sender: userInfo?.name?.toLowerCase?.(),
@@ -606,7 +631,12 @@ function App(props) {
 									dataProvider: token => {
 										return userEmotes
 											.filter(emote => emote?.code?.toLowerCase?.()?.includes?.(token?.toLowerCase?.()))
-											.map(emote => ({ name: `${emote.id || emote.name}`, char: `${emote.code}`, bttv: emote.bttv, ffz: emote.ffz }));
+											.map(emote => ({
+												name: `${emote.id || emote.name}`,
+												char: `${emote.code}`,
+												bttv: emote.bttv,
+												ffz: emote.ffz,
+											}));
 									},
 									component: EmoteItem,
 									output: (item, trigger) => item.char,
@@ -640,9 +670,7 @@ function App(props) {
 					</div>
 				</CSSTransition>
 				<Messages
-					messages={flagMatches
-						// .filter(msg => !search || msg.displayName.toLowerCase().includes(search.toLowerCase()) || msg.body.toLowerCase().includes(search.toLowerCase()))
-						.sort((a, b) => a.sentAt - b.sentAt)}
+					messages={flagMatches}
 					settings={settings}
 					timeout={timeout}
 					removeMessage={removeMessage}

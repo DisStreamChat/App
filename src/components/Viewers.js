@@ -52,10 +52,10 @@ const Viewers = ({ chatterInfo, chatterCount, streamer }) => {
 					chatterInfo ? (
 						Object.entries(chatterInfo).map(([key, value]) => {
 							return (
-								<div className="viewer-type">
+								<div key={key} className="viewer-type">
 									<h2 className="viewer-type--header">{key}</h2>
 									{value.map(user => (
-										<ViewerCard streamer={streamer} {...user}></ViewerCard>
+										<ViewerCard key={user.id} streamer={streamer} {...user}></ViewerCard>
 									))}
 								</div>
 							);
