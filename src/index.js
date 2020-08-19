@@ -25,6 +25,7 @@ const App = () => {
     const [userData, setUserData] = useState({})
     const [border, setBorder] = useState(true);
     const [unreadMessageIds, setUnreadMessageIds] = useState([])
+    
 	const currentUser = firebase.auth.currentUser;
 
 	useEffect(() => {

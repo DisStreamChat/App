@@ -75,6 +75,11 @@
 	flex-direction: column-reverse;
 }
 
+.auto-fill-emote-image{
+    max-width: 28px;
+    min-width: 28px;
+}
+
 .reversed.unfocused > div:first-of-type,
 .reversed.unfocused > div:nth-of-type(2) {
 	display: flex;
