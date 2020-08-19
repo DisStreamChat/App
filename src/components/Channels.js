@@ -157,15 +157,8 @@ const Channels = React.memo(props => {
 
 	useEffect(() => {
 		(async () => {
-			const channelsInfo = await Promise.all(
-				userData.ModChannels?.map?.(async channel => {
-					const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${channel.id}&platform=twitch`;
-					const response = await fetch(apiUrl);
-					return response.json();
-				}) || []
-			);
 			setModChannels(
-				channelsInfo
+				userData.modChannels
 					?.sort((a, b) => a.login.localeCompare(b.login))
 					?.map(channel => {
 						return { ...channel, modPlatform: "twitch", uid: sha1(channel.id) };

@@ -77,9 +77,13 @@ const App = () => {
 				const removedChannels = userData.removedChannels || [];
                 const NewModChannels = (await modChannelResponse.json()).filter(channel => !removedChannels.includes(channel.id));
                 
-				const ModChannels = [...NewModChannels, ...(userData.ModChannels || [])].filter(
+				const ModChannels = await Promise.all([...NewModChannels, ...(userData.ModChannels || [])].filter(
 					(thing, index, self) => index === self.findIndex(t => t.id === thing.id)
-				);
+				).map(async channel => {
+					const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${channel.id}&platform=twitch`;
+					const response = await fetch(apiUrl);
+					return response.json();
+				}));
 				firebase.db.collection("Streamers").doc(currentUser.uid).update({
 					profilePicture,
                     ModChannels,
