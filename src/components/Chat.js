@@ -438,11 +438,13 @@ function App(props) {
 				socket.emit("addme", channel);
 			}
 		}
-	}, [channel, socket]);
+    }, [channel, socket]);
+    
+    const ReverseMessageOrder = settings?.ReverseMessageOrder
 
 	useEffect(() => {
 		setTimeout(() => {
-			if (settings?.ReverseMessageOrder) {
+			if (ReverseMessageOrder) {
 				bodyRef.current.scrollTo({
 					top: bodyRef.current.scrollHeight,
 					// behavior: "smooth",
@@ -454,7 +456,7 @@ function App(props) {
 				});
 			}
 		}, 100);
-	}, [settings.ReverseMessageOrder]);
+	}, [ReverseMessageOrder]);
 
 	const handleSearch = useCallback(setSearch, []);
 
