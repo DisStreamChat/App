@@ -155,17 +155,25 @@ const Channels = React.memo(props => {
 		setMyChannel({ name: user?.displayName, isMember: true, profilePicture: user?.profilePicture, uid: userData.uid, id: userData.twitchId });
 	}, [userData]);
 
+
+    const uid = userData.uid
 	useEffect(() => {
-		(async () => {
-			setModChannels(
-				userData.modChannels
-					?.sort((a, b) => a.login.localeCompare(b.login))
-					?.map(channel => {
-						return { ...channel, modPlatform: "twitch", uid: sha1(channel.id) };
-					})
-			);
-		})();
-	}, [userData, setModChannels]);
+		const unsub = firebase.db
+			.collection("Streamers")
+			.doc(uid || " ")
+			.onSnapshot(snapshot => {
+				const data = snapshot.data();
+				if (!data) return;
+				setModChannels(
+					data.modChannels
+						?.sort((a, b) => a.login.localeCompare(b.login))
+						?.map(channel => {
+							return { ...channel, modPlatform: "twitch", uid: sha1(channel.id) };
+						})
+				);
+            });
+        return unsub
+	}, [uid, setModChannels]);
 
 	useEffect(() => {
 		const handleKeyDown = e => {

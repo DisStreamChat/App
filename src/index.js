@@ -66,8 +66,9 @@ const App = () => {
 	// retrieve the profile picture and mod channels for a user on load
 	useEffect(() => {
 		(async () => {
+            console.log(firebaseInit, currentUser, userData)
 			if (firebaseInit !== false && currentUser) {
-                if(!userData.TwitchId) return
+                if(!userData.twitchId) return
                 const userResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${userData.twitchId}&platform=twitch`)
                 const userJson = await userResponse.json()
                 const TwitchName = userJson.TwitchName || userData.TwitchName
