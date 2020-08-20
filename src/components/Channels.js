@@ -158,14 +158,16 @@ const Channels = React.memo(props => {
 
     const uid = userData.uid
 	useEffect(() => {
+        console.log({uid})
 		const unsub = firebase.db
 			.collection("Streamers")
 			.doc(uid || " ")
 			.onSnapshot(snapshot => {
-				const data = snapshot.data();
+                const data = snapshot.data();
+                console.log(`snapshot data: `, data)
 				if (!data) return;
 				setModChannels(
-					data.modChannels
+					data.ModChannels
 						?.sort((a, b) => a.login.localeCompare(b.login))
 						?.map(channel => {
 							return { ...channel, modPlatform: "twitch", uid: sha1(channel.id) };
@@ -173,7 +175,9 @@ const Channels = React.memo(props => {
 				);
             });
         return unsub
-	}, [uid, setModChannels]);
+    }, [uid, setModChannels]);
+    
+    console.log({modChannels})
 
 	useEffect(() => {
 		const handleKeyDown = e => {

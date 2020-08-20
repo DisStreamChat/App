@@ -84,7 +84,8 @@ const App = () => {
 					const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${channel.id}&platform=twitch`;
 					const response = await fetch(apiUrl);
 					return response.json();
-				}));
+                }));
+                console.log("got mod channels: ", ModChannels)
 				firebase.db.collection("Streamers").doc(currentUser.uid).update({
 					profilePicture,
                     ModChannels,
