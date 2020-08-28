@@ -73,7 +73,6 @@ const ChannelItem = React.memo(props => {
 
 	useInterval(getLive, 60000);
 
-	console.log(props);
 
 	return (
 		<div className={`channel-item ${props.addChannel ? "add-channel" : ""}`}>
@@ -90,7 +89,7 @@ const ChannelItem = React.memo(props => {
 									setError("Missing Channel Name");
 								} else {
 									const userName = userData.name;
-									const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/checkmod?channel=${channelName}&user=${userName}`;
+                                    const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/checkmod?channel=${channelName}&user=${userName}`;
 									const res = await fetch(apiUrl);
 									if (!res.ok) {
 										setError(`An error occured while fetching ${channelName}, make sure you entered the name correctly`);
@@ -130,7 +129,7 @@ const ChannelItem = React.memo(props => {
 								</button>
 							</Tooltip>
 							<Tooltip title="Remove Channel" arrow placement="top">
-								<button onClick={removeChannel} className="channel-btn pin-btn">
+								<button onClick={props.pinned ? unpinChannel : pinChannel} className="channel-btn pin-btn">
 									<img src={`${process.env.PUBLIC_URL}/${props.pinned ? "unpin.svg" : "pin.svg"}`} alt=""/>
 								</button>
 							</Tooltip>
