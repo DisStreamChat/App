@@ -113,8 +113,8 @@ const Header = props => {
 			const response = await fetch("https://api.github.com/repos/disstreamchat/App/releases");
 			const json = await response.json();
 			const latestVersionInfo = json[0];
-			const latestVersion = latestVersionInfo.tag_name;
-			const updateable = compare(latestVersion, currentVersion) > 0;
+			const latestVersion = latestVersionInfo?.tag_name;
+			const updateable = compare(latestVersion||"", currentVersion||"") > 0;
 			if (updateable) {
 				let downLoadUrl;
 				if (platform === "win32") {

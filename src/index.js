@@ -66,7 +66,6 @@ const App = () => {
 	// retrieve the profile picture and mod channels for a user on load
 	useEffect(() => {
 		(async () => {
-            console.log(firebaseInit, currentUser, userData)
 			if (firebaseInit !== false && currentUser) {
                 if(!userData.twitchId) return
                 const userResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${userData.twitchId}&platform=twitch`)
@@ -79,21 +78,20 @@ const App = () => {
                 const NewModChannels = (await modChannelResponse.json()).filter(channel => !removedChannels.includes(channel.id));
                 
 				const ModChannels = await Promise.all([...NewModChannels, ...(userData.ModChannels || [])].filter(
-					(thing, index, self) => index === self.findIndex(t => t.id === thing.id)
+					(thing, index, self) => thing.pinned || index === self.findIndex(t => t.id === thing.id)
 				).map(async channel => {
 					const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${channel.id}&platform=twitch`;
 					const response = await fetch(apiUrl);
-					return response.json();
+					return {...channel, ...response.json()};
                 }));
-                console.log("got mod channels: ", ModChannels)
-				firebase.db.collection("Streamers").doc(currentUser.uid).update({
+				await firebase.db.collection("Streamers").doc(currentUser.uid).update({
 					profilePicture,
                     ModChannels,
                     TwitchName
 				});
 			}
 		})();
-	}, [firebaseInit, currentUser, userData]);
+	}, [firebaseInit, currentUser, userData.twitchId]);
 
 	useEffect(() => {
 		ipcRenderer.on("focus", (event, data) => setWindowFocused(data));

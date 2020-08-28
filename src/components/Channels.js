@@ -10,6 +10,7 @@ import { Tooltip } from "@material-ui/core";
 import Loader from "react-loader";
 import sha1 from "sha1";
 import { useLocalStorage } from "react-use";
+import { useMemo } from "react";
 
 const { ipcRenderer } = window.require("electron");
 
@@ -52,7 +53,27 @@ const ChannelItem = React.memo(props => {
 		});
 	}, [currentUser, props, userData]);
 
+	const pinChannel = useCallback(async () => {
+		const Append = firebase.firestore.FieldValue.arrayUnion;
+		const userRef = firebase.db.collection("Streamers").doc(currentUser.uid);
+		props.setPinnedChannels(prev => [...prev, props.id]);
+		await userRef.update({
+			pinnedChannels: Append(props.id),
+		});
+	}, [currentUser, props]);
+
+	const unpinChannel = useCallback(async () => {
+		const Filter = firebase.firestore.FieldValue.arrayRemove;
+		const userRef = firebase.db.collection("Streamers").doc(currentUser.uid);
+		props.setPinnedChannels(prev => prev.filter(id => id !== props.id));
+		await userRef.update({
+			pinnedChannels: Filter(props.id),
+		});
+	}, []);
+
 	useInterval(getLive, 60000);
+
+	console.log(props);
 
 	return (
 		<div className={`channel-item ${props.addChannel ? "add-channel" : ""}`}>
@@ -102,11 +123,18 @@ const ChannelItem = React.memo(props => {
 			) : (
 				<>
 					{!props.mine && (
-						<Tooltip title="Remove Channel" arrow placement="top">
-							<button onClick={removeChannel} className="remove-btn">
-								<ClearIcon />
-							</button>
-						</Tooltip>
+						<>
+							<Tooltip title="Remove Channel" arrow placement="top">
+								<button onClick={removeChannel} className="remove-btn">
+									<ClearIcon />
+								</button>
+							</Tooltip>
+							<Tooltip title="Remove Channel" arrow placement="top">
+								<button onClick={removeChannel} className="remove-btn">
+									<ClearIcon />
+								</button>
+							</Tooltip>
+						</>
 					)}
 					<div className={`channel-profile-pic ${isLive ? "live" : ""}`}>
 						<img src={props["profile_image_url"] || props.profilePicture} alt="" />
@@ -132,6 +160,7 @@ const ChannelItem = React.memo(props => {
 const Channels = React.memo(props => {
 	const [myChannel, setMyChannel] = useState();
 	const [modChannels, setModChannels] = useLocalStorage("channels", []);
+	const [pinnedChannels, setPinnedChannels] = useLocalStorage("pinned channels", []);
 	const { setMessages, setPinnedMessages, setShowViewers, userData } = useContext(AppContext);
 	const [popout, setPopout] = useState(false);
 
@@ -155,29 +184,29 @@ const Channels = React.memo(props => {
 		setMyChannel({ name: user?.displayName, isMember: true, profilePicture: user?.profilePicture, uid: userData.uid, id: userData.twitchId });
 	}, [userData]);
 
-
-    const uid = userData.uid
 	useEffect(() => {
-        console.log({uid})
+		setPinnedChannels(userData.pinnedChannels);
+	}, [userData]);
+
+	const uid = userData.uid;
+	useEffect(() => {
+		console.log({ uid });
 		const unsub = firebase.db
 			.collection("Streamers")
 			.doc(uid || " ")
 			.onSnapshot(snapshot => {
-                const data = snapshot.data();
-                console.log(`snapshot data: `, data)
+				const data = snapshot.data();
 				if (!data) return;
 				setModChannels(
-					data.ModChannels
-						?.sort((a, b) => a.login.localeCompare(b.login))
+					data.ModChannels?.sort((a, b) => a.login.localeCompare(b.login))
+						?.sort((a, b) => ((pinnedChannels || []).includes(a.id) ? -1 : 1))
 						?.map(channel => {
-							return { ...channel, modPlatform: "twitch", uid: sha1(channel.id) };
+							return { ...channel, pinned: (pinnedChannels || []).includes(channel.id), modPlatform: "twitch", uid: sha1(channel.id) };
 						})
 				);
-            });
-        return unsub
-    }, [uid, setModChannels]);
-    
-    console.log({modChannels})
+			});
+		return unsub;
+	}, [uid, setModChannels, userData, pinnedChannels]);
 
 	useEffect(() => {
 		const handleKeyDown = e => {
@@ -210,7 +239,14 @@ const Channels = React.memo(props => {
 				<div className="modchannels channel-div">
 					{modChannels ? (
 						modChannels?.map?.(channel => (
-							<ChannelItem setModChannels={setModChannels} popoutChat={popout} key={channel.id} {...channel} moderator />
+							<ChannelItem
+								setPinnedChannels={setPinnedChannels}
+								setModChannels={setModChannels}
+								popoutChat={popout}
+								key={channel.id}
+								{...channel}
+								moderator
+							/>
 						))
 					) : (
 						<Loader

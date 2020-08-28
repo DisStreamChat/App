@@ -12,7 +12,8 @@ notifier.notify(
 	{
 		appName: "com.disstreamchat.id",
 		title: "Whatever",
-		message: `whatever`,
+        message: `whatever`,
+        icon: path.join(__dirname, "icon.png"),
 		sound: false,
 		wait: true,
 	},
