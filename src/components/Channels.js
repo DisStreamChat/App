@@ -125,13 +125,13 @@ const ChannelItem = React.memo(props => {
 					{!props.mine && (
 						<>
 							<Tooltip title="Remove Channel" arrow placement="top">
-								<button onClick={removeChannel} className="remove-btn">
+								<button onClick={removeChannel} className="channel-btn remove-btn">
 									<ClearIcon />
 								</button>
 							</Tooltip>
 							<Tooltip title="Remove Channel" arrow placement="top">
-								<button onClick={removeChannel} className="remove-btn">
-									<ClearIcon />
+								<button onClick={removeChannel} className="channel-btn pin-btn">
+									<img src={`${process.env.PUBLIC_URL}/${props.pinned ? "unpin.svg" : "pin.svg"}`} alt=""/>
 								</button>
 							</Tooltip>
 						</>

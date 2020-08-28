@@ -12,12 +12,12 @@ hr {
 	position: absolute;
 	top: 0;
 	padding-top: 1rem;
-    width: 100%;
-    .window-focused &{
-        height: calc(100vh - 111px);
-    }
-    height: calc(100vh - 45px);
-    transition: 400ms;
+	width: 100%;
+	.window-focused & {
+		height: calc(100vh - 111px);
+	}
+	height: calc(100vh - 45px);
+	transition: 400ms;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -25,29 +25,45 @@ hr {
 }
 
 .remove-btn {
-	position: absolute;
-	svg {
-		width: 20px;
-        height: 20px;
-        fill: red;
-    }
-    &:active{
-        transform: scale(.85) !important;
-    }
-    border: none;
-    outline: none !important;
-    color: red !important;
+    position: absolute;
+    $pos: -6px;
+    top: $pos;
+	right: $pos;
+}
+
+.pin-btn{
+    position: absolute;
+    $pos: -6px;
+    top: $pos;
+	left: $pos;
+}
+
+.channel-btn {
+	&:active {
+		transform: scale(0.85) !important;
+	}
+	border: none;
+	outline: none !important;
+	color: red !important;
 	width: 28px;
 	height: 28px;
-	$pos: -6px;
-	top: $pos;
-	right: $pos;
 	padding: 4px;
 	box-sizing: border-box !important;
 	background: darken(#2a2c30, 5);
 	border-radius: 50%;
 	display: flex;
-	justify-content: center;
+    justify-content: center;
+    color: red;
+    fill: red;
+    img{
+        transform: scale(.75);
+    }
+    svg {
+		width: 20px;
+		height: 20px;
+        fill: red;
+        color: red;
+	}
 }
 
 #root .channel-item.add-channel {
@@ -218,8 +234,8 @@ hr {
 .modchannels {
 	height: 65vh;
 	overflow-y: auto;
-    margin-bottom: 0.5rem;
-    position: relative;
+	margin-bottom: 0.5rem;
+	position: relative;
 	/* padding-bottom: .5rem; */
 }
 
