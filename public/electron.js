@@ -6,6 +6,19 @@ const windowStateKeeper = require("electron-window-state");
 const contextMenu = require("electron-context-menu");
 const { autoUpdater } = require("electron-updater");
 
+const notifier = require("node-notifier");
+
+notifier.notify(
+	{
+		appName: "com.disstreamchat.id",
+		title: "Whatever",
+		message: `whatever`,
+		sound: false,
+		wait: true,
+	},
+	console.log
+);
+
 let mainWindow;
 let loginWindow;
 let unfocusKey = "f20";
@@ -82,10 +95,10 @@ function windowGenerator({ width = Width, height = Width * 1.5, x, y } = {}) {
 	return window;
 }
 
-autoUpdater.autoInstallOnAppQuit = true
+autoUpdater.autoInstallOnAppQuit = true;
 
 function createMainWindow() {
-    // tests
+	// tests
 	if (!isDev) {
 		autoUpdater.checkForUpdates();
 	}

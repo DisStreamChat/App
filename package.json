@@ -1,11 +1,11 @@
 {
   "name": "DisStreamChat",
-  "version": "v1.3.5",
+  "version": "v1.3.6",
   "description": "Cross platform stream chat manager",
   "author": "David Snyder",
   "license": "MIT",
   "build": {
-    "appId": "react.electron",
+    "appId": "com.disstreamchat.id",
     "win": {
       "icon": "build/icon.ico",
       "publish": [
@@ -39,6 +39,7 @@
     "lodash": "^4.17.19",
     "marked": "^1.0.0",
     "mousetrap": "^1.6.5",
+    "node-notifier": "^8.0.0",
     "node-sass": "^4.14.1",
     "react": "^16.11.0",
     "react-animate-height": "^2.0.21",
