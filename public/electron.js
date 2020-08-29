@@ -8,8 +8,7 @@ const { autoUpdater } = require("electron-updater");
 
 const notifier = require("node-notifier");
 
-
-
+let updateWindow;
 let mainWindow;
 let loginWindow;
 let unfocusKey = "f20";
@@ -54,17 +53,18 @@ const unfocus = () => {
 	Object.values(windows).forEach(unfocusAction);
 };
 
-const baseUrl = () => (isDev ? "http://localhost:3005" : `file://${path.join(__dirname, "../build/index.html")}`);
+const baseUrl = (fpath="index.html") => (isDev ? (`http://localhost:3005/${fpath}`) : `file://${path.join(__dirname, `../build/${fpath}`)}`);
 
-function windowGenerator({ width = Width, height = Width * 1.5, x, y } = {}) {
+function windowGenerator({ width = Width, height = Width * 1.5, x, y, small } = {}, frame) {
+    console.log(width, height)
 	const options = {
 		width: width, // width of the window
 		height: height, // height of the window
-		minWidth: 290,
-		minHeight: 300,
-		frame: false, // whether or not the window has 'frame' or header
+		minWidth: small ? 0 : 290,
+		minHeight: small ? 0 : 300,
+		frame: frame, // whether or not the window has 'frame' or header
 		backgroundColor: "#001e272e", // window background color, first two values set alpha which is set to 0 for transparency
-		transparent: true, // make window transparent
+		transparent: !frame, // make window transparent
 		alwaysOnTop: true, // make is so other windows won't go on top of this one
 		fullScreenable: false,
 		webPreferences: {
@@ -85,8 +85,6 @@ function windowGenerator({ width = Width, height = Width * 1.5, x, y } = {}) {
 	} catch (err) {}
 	return window;
 }
-
-
 
 autoUpdater.on("checking-for-update", () => {
 	sendMessageToWindow("update", "Checking for update...");
@@ -115,7 +113,8 @@ autoUpdater.on("download-progress", progressObj => {
 	let log_message = "Download speed: " + progressObj.bytesPerSecond;
 	log_message = log_message + " - Downloaded " + progressObj.percent + "%";
 	log_message = log_message + " (" + progressObj.transferred + "/" + progressObj.total + ")";
-	sendMessageToWindow("update", log_message);
+    sendMessageToWindow("update", log_message);
+    sendMessageToWindow("update-progress", Math.round(progressObj.percent) + "%", updateWindow)
 });
 
 autoUpdater.on("update-downloaded", info => {
@@ -214,7 +213,11 @@ app.on("activate", () => {
 	}
 });
 
-ipcMain.on("update", () => {
+ipcMain.on("update", async () => {
+    if(updateWindow) updateWindow.close()
+    updateWindow = windowGenerator({width: 350, height: 115, small: true})
+    await updateWindow.loadURL(baseUrl("update.html"))
+    updateWindow.on("closed", () => (updateWindow = null));
 	if (!isDev) {
         autoUpdater.downloadUpdate()
 	}

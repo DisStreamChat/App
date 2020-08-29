@@ -1,0 +1,32 @@
+body {
+	font-family: "Montserrat", sans-serif;
+	background: #1c1d21;
+	color: white;
+}
+
+.container {
+	position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+	text-align: center;
+}
+
+.progress2 {
+	border-radius: 30px;
+	background-color: #fff;
+}
+
+.progress-bar2 {
+	height: 18px;
+	border-radius: 30px;
+	transition: 0.4s linear;
+    transition-property: width, background-color;
+    background: linear-gradient(90deg,#f9af15,#f95515);
+    width: 0%;
+}
+
+h2{
+    margin-top: 0;
+}
