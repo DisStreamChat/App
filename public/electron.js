@@ -12,8 +12,8 @@ notifier.notify(
 	{
 		appName: "com.disstreamchat.id",
 		title: "Whatever",
-        message: `whatever`,
-        icon: path.join(__dirname, "icon.png"),
+		message: `whatever`,
+		icon: path.join(__dirname, "icon.png"),
 		sound: false,
 		wait: true,
 	},
@@ -97,6 +97,29 @@ function windowGenerator({ width = Width, height = Width * 1.5, x, y } = {}) {
 }
 
 autoUpdater.autoInstallOnAppQuit = true;
+
+autoUpdater.on("checking-for-update", () => {
+	sendMessageToWindow("update", "Checking for update...");
+});
+autoUpdater.on("update-available", info => {
+	sendMessageToWindow("update", "Update available.");
+});
+autoUpdater.on("update-not-available", info => {
+	sendMessageToWindow("update", "Update not available.");
+});
+autoUpdater.on("error", err => {
+	sendMessageToWindow("update", "Error in auto-updater. " + err);
+});
+autoUpdater.on("download-progress", progressObj => {
+	let log_message = "Download speed: " + progressObj.bytesPerSecond;
+	log_message = log_message + " - Downloaded " + progressObj.percent + "%";
+	log_message = log_message + " (" + progressObj.transferred + "/" + progressObj.total + ")";
+	sendMessageToWindow("update", log_message);
+});
+autoUpdater.on("update-downloaded", info => {
+    sendMessageToWindow("update", "Update downloaded");
+    autoUpdater.quitAndInstall()
+});
 
 function createMainWindow() {
 	// tests

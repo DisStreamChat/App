@@ -31,7 +31,8 @@ const App = () => {
 	useEffect(() => {
 		ipcRenderer.on("toggle-border", (event, text) => {
 			setBorder(text);
-		});
+        });
+        ipcRenderer.on("update", (event, text) => console.log(text))
 		return () => ipcRenderer.removeAllListeners("toggle-border");
 	}, []);
 
