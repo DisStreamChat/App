@@ -42,7 +42,7 @@
 	justify-content: center;
 	position: absolute;
 	transition: 400ms;
-	&.window-unfocused {
+	&.window-unfocused > :not(.Modal-Overlay) {
 		transform: translateY(-65px);
 	}
 	top: 65px;
