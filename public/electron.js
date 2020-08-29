@@ -96,8 +96,6 @@ function windowGenerator({ width = Width, height = Width * 1.5, x, y } = {}) {
 	return window;
 }
 
-autoUpdater.autoInstallOnAppQuit = true;
-
 autoUpdater.on("checking-for-update", () => {
 	sendMessageToWindow("update", "Checking for update...");
 });
@@ -116,16 +114,14 @@ autoUpdater.on("download-progress", progressObj => {
 	log_message = log_message + " (" + progressObj.transferred + "/" + progressObj.total + ")";
 	sendMessageToWindow("update", log_message);
 });
+
 autoUpdater.on("update-downloaded", info => {
-    sendMessageToWindow("update", "Update downloaded");
-    autoUpdater.quitAndInstall()
+	sendMessageToWindow("update", "Update downloaded");
+	autoUpdater.quitAndInstall();
+	app.exit();
 });
 
 function createMainWindow() {
-	// tests
-	if (!isDev) {
-		autoUpdater.checkForUpdates();
-	}
 	contextMenu({
 		prepend: (defaultActions, params, browserWindow) => [
 			{
@@ -208,6 +204,12 @@ app.on("window-all-closed", () => {
 app.on("activate", () => {
 	if (mainWindow === null) {
 		createMainWindow();
+	}
+});
+
+app.on("check-for-update", () => {
+	if (!isDev) {
+		autoUpdater.checkForUpdates();
 	}
 });
 
