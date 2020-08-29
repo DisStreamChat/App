@@ -217,6 +217,9 @@ ipcMain.on("update", async () => {
     if(updateWindow) updateWindow.close()
     updateWindow = windowGenerator({width: 350, height: 115, small: true})
     await updateWindow.loadURL(baseUrl("update.html"))
+    autoUpdater.on("download-progress", progressObj => {
+        sendMessageToWindow("update-progress", Math.round(+progressObj.percent) + "%", updateWindow)
+    });
     updateWindow.on("closed", () => (updateWindow = null));
 	if (!isDev) {
         autoUpdater.downloadUpdate()
