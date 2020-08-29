@@ -24,7 +24,15 @@ body {
 	transition: 0.4s linear;
     transition-property: width, background-color;
     background: linear-gradient(90deg,#f9af15,#f95515);
-    width: 0%;
+    animation: load 4s infinite ease-in-out
+}
+
+@keyframes load{
+    from{
+        width: 0%
+    }to{
+        width: 100%;
+    }
 }
 
 h2{
