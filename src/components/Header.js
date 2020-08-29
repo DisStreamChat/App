@@ -269,7 +269,7 @@ const Header = props => {
 							Sign Out
 						</Button>
 					)}
-					{!updateLink && (
+					{updateLink && (
 						<Tooltip title="update available" arrow>
 							<button id="update-link" onClick={() => {
                                 ipcRenderer.send("update")
