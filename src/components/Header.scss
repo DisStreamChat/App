@@ -219,7 +219,12 @@ button.clear{
 	display: flex;
 	align-items: center;
 	justify-content: space-around;
-	padding: 0 .5rem .5rem 0.5rem !important;
+    padding: 0 .5rem .5rem 0.5rem !important;
+    button{
+        background: none;
+        outline: none;
+        border: none;
+    }
 }
 
 

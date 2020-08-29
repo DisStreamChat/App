@@ -8,17 +8,7 @@ const { autoUpdater } = require("electron-updater");
 
 const notifier = require("node-notifier");
 
-notifier.notify(
-	{
-		appName: "com.disstreamchat.id",
-		title: "Whatever",
-		message: `whatever`,
-		icon: path.join(__dirname, "icon.png"),
-		sound: false,
-		wait: true,
-	},
-	console.log
-);
+
 
 let mainWindow;
 let loginWindow;
@@ -96,11 +86,24 @@ function windowGenerator({ width = Width, height = Width * 1.5, x, y } = {}) {
 	return window;
 }
 
+
+
 autoUpdater.on("checking-for-update", () => {
 	sendMessageToWindow("update", "Checking for update...");
 });
 autoUpdater.on("update-available", info => {
-	sendMessageToWindow("update", "Update available.");
+    sendMessageToWindow("update", "Update available.");
+    notifier.notify(
+        {
+            appName: "com.disstreamchat.id",
+            title: "Update Available",
+            message: `Version ${info.version}`,
+            icon: path.join(__dirname, "icon.png"),
+            sound: false,
+            wait: true,
+        },
+        console.log
+    );
 });
 autoUpdater.on("update-not-available", info => {
 	sendMessageToWindow("update", "Update not available.");
@@ -122,6 +125,10 @@ autoUpdater.on("update-downloaded", info => {
 });
 
 function createMainWindow() {
+    if(!isDev){
+        autoUpdater.autoDownload = false
+        autoUpdater.checkForUpdates()
+    }
 	contextMenu({
 		prepend: (defaultActions, params, browserWindow) => [
 			{
@@ -207,9 +214,9 @@ app.on("activate", () => {
 	}
 });
 
-app.on("check-for-update", () => {
+ipcMain.on("update", () => {
 	if (!isDev) {
-		autoUpdater.checkForUpdates();
+        autoUpdater.downloadUpdate()
 	}
 });
 

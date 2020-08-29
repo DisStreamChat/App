@@ -271,10 +271,12 @@ const Header = props => {
 					)}
 					{updateLink && (
 						<Tooltip title="update available" arrow>
-							<a id="update-link" href={updateLink}>
+							<button id="update-link" onClick={() => {
+                                ipcRenderer.send("update")
+                            }}>
 								<GetAppIcon></GetAppIcon>
 								<div id="notification-light"></div>
-							</a>
+							</button>
 						</Tooltip>
 					)}
 				</nav>
