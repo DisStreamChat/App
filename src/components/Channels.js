@@ -160,7 +160,7 @@ const Channels = React.memo(props => {
 	const [myChannel, setMyChannel] = useState();
 	const [modChannels, setModChannels] = useLocalStorage("channels", []);
 	const [pinnedChannels, setPinnedChannels] = useLocalStorage("pinned channels", []);
-	const { setMessages, setPinnedMessages, setShowViewers, userData } = useContext(AppContext);
+	const { setMessages, setPinnedMessages, setShowViewers, userData, unreadMessageIds, setUnreadMessageIds } = useContext(AppContext);
 	const [popout, setPopout] = useState(false);
 
 	useEffect(() => {
@@ -175,8 +175,9 @@ const Channels = React.memo(props => {
 	useEffect(() => {
 		setMessages([]);
 		setPinnedMessages([]);
-		setShowViewers(false);
-	}, [setMessages, setPinnedMessages, setShowViewers]);
+        setShowViewers(false);
+        setUnreadMessageIds([])
+	}, [setMessages, setPinnedMessages, setShowViewers, setUnreadMessageIds]);
 
 	useEffect(() => {
 		const user = userData;

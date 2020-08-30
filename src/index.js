@@ -21,18 +21,18 @@ const App = () => {
 	const [messages, setMessages] = useState([]);
 	const [pinnedMessages, setPinnedMessages] = useState([]);
 	const [showViewers, setShowViewers] = useState(false);
-    const [windowFocused, setWindowFocused] = useState(true);
-    const [userData, setUserData] = useState({})
-    const [border, setBorder] = useState(true);
-    const [unreadMessageIds, setUnreadMessageIds] = useState([])
-    
+	const [windowFocused, setWindowFocused] = useState(true);
+	const [userData, setUserData] = useState({});
+	const [border, setBorder] = useState(true);
+	const [unreadMessageIds, setUnreadMessageIds] = useState([]);
+
 	const currentUser = firebase.auth.currentUser;
 
 	useEffect(() => {
 		ipcRenderer.on("toggle-border", (event, text) => {
 			setBorder(text);
-        });
-        ipcRenderer.on("update", (event, text) => console.log(text))
+		});
+		ipcRenderer.on("update", (event, text) => console.log(text));
 		return () => ipcRenderer.removeAllListeners("toggle-border");
 	}, []);
 
@@ -43,8 +43,8 @@ const App = () => {
 			.onSnapshot(snapshot => {
 				const data = snapshot.data();
 				if (data) {
-                    setUserData(data)
-                    setStreamerInfo(data.appSettings);
+					setUserData(data);
+					setStreamerInfo(data.appSettings);
 					const opacity = data.appSettings.ClickThroughOpacity;
 					const unfocusKey = data.appSettings.UnfocusKeybind;
 					const focusKey = data.appSettings.FocusKeybind;
@@ -68,27 +68,29 @@ const App = () => {
 	useEffect(() => {
 		(async () => {
 			if (firebaseInit !== false && currentUser) {
-                if(!userData.twitchId) return
-                const userResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${userData.twitchId}&platform=twitch`)
-                const userJson = await userResponse.json()
-                const TwitchName = userJson.TwitchName || userData.TwitchName
-                const profilePictureResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/profilepicture?user=${TwitchName}`);
+				if (!userData.twitchId) return;
+				const userResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${userData.twitchId}&platform=twitch`);
+				const userJson = await userResponse.json();
+				const TwitchName = userJson.TwitchName || userData.TwitchName;
+				const profilePictureResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/profilepicture?user=${TwitchName}`);
 				const profilePicture = await profilePictureResponse.json();
 				const modChannelResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/modchannels?user=${TwitchName}`);
 				const removedChannels = userData.removedChannels || [];
-                const NewModChannels = (await modChannelResponse.json()).filter(channel => !removedChannels.includes(channel.id));
-                
-				const ModChannels = await Promise.all([...NewModChannels, ...(userData.ModChannels || [])].filter(
-					(thing, index, self) => thing.pinned || index === self.findIndex(t => t.id === thing.id)
-				).map(async channel => {
-					const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${channel.id}&platform=twitch`;
-					const response = await fetch(apiUrl);
-					return {...channel, ...response.json()};
-                }));
+				const NewModChannels = (await modChannelResponse.json()).filter(channel => !removedChannels.includes(channel.id));
+
+				const ModChannels = await Promise.all(
+					[...NewModChannels, ...(userData.ModChannels || [])]
+						.filter((thing, index, self) => thing.pinned || index === self.findIndex(t => t.id === thing.id))
+						.map(async channel => {
+							const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${channel.id}&platform=twitch`;
+							const response = await fetch(apiUrl);
+							return { ...channel, ...response.json() };
+						})
+				);
 				await firebase.db.collection("Streamers").doc(currentUser.uid).update({
 					profilePicture,
-                    ModChannels,
-                    TwitchName
+					ModChannels,
+					TwitchName,
 				});
 			}
 		})();
@@ -124,16 +126,17 @@ const App = () => {
 				showViewers,
 				setShowViewers,
 				windowFocused,
-                setWindowFocused,
-                userData,
-                setUserData,
-                unreadMessageIds,
-                setUnreadMessageIds
+				setWindowFocused,
+				userData,
+				setUserData,
+				unreadMessageIds,
+				setUnreadMessageIds,
 			}}
 		>
 			<Router>
 				<Header />
 				<main
+					style={{ fontFamily: streamerInfo.Font }}
 					className={`body ${
 						streamerInfo?.HideHeaderOnUnfocus ? (windowFocused ? "window-focused" : "window-unfocused") : "window-focused"
 					}`}
