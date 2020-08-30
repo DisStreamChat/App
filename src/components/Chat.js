@@ -23,10 +23,10 @@ import sha1 from "sha1";
 import ReactTextareaAutocomplete from "@webscopeio/react-textarea-autocomplete";
 
 const Item = ({ selected, entity: { name, char } }) => <div className="auto-item">{`${name}: ${char}`}</div>;
-const UserItem = ({ selected, entity: { name, char } }) => <div className={`auto-item ${selected ? "selected-item" : ""}`}>{`${name}`}</div>;
+const UserItem = ({ selected, entity: { name, char } }) => <div id={name} className={`auto-item ${selected ? "selected-item" : ""}`}>{`${name}`}</div>;
 const EmoteItem = ({ selected, entity: { name, char, bttv, ffz } }) => {
 	return (
-		<div className={`emote-item auto-item ${selected ? "selected-item" : ""}`}>
+		<div id={name} className={`emote-item auto-item ${selected ? "selected-item" : ""}`}>
 			<img
 				className="auto-fill-emote-image"
 				src={
@@ -427,9 +427,9 @@ function App(props) {
 				socketRef.current.emit("addme", channel);
 			}
 		}
-    }, [channel, socketRef]);
-    
-    const ReverseMessageOrder = settings?.ReverseMessageOrder
+	}, [channel, socketRef]);
+
+	const ReverseMessageOrder = settings?.ReverseMessageOrder;
 
 	useEffect(() => {
 		setTimeout(() => {
@@ -604,6 +604,20 @@ function App(props) {
 						}}
 					>
 						<ReactTextareaAutocomplete
+							onItemHighlighted={({item}) => {
+                                setTimeout(() => {
+                                    const name = item?.name
+                                    const node = document.getElementById(name)
+                                    if(node){
+                                        const _ = node.parentNode?.parentNode?.parentNode?.scrollTo?.({
+                                            top: node?.offsetTop,
+                                            left: 0,
+                                            behavior: 'smooth'
+                                          });
+                                    }
+                                }, 100)
+                                
+                            }}
 							movePopupAsYouType
 							loadingComponent={() => <span>Loading</span>}
 							minChar={2}
