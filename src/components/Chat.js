@@ -669,7 +669,7 @@ function App(props) {
 					unreadMessageHandler={checkReadMessage}
 					pin={pinMessage}
 				/>
-				<CSSTransition unmountOnExit timeout={200} classNames="search-node" in={showSearch}>
+				<CSSTransition unmountOnExit timeout={200} classNames="search-node" in={showSearch && windowFocused ? true : !!search.length}>
 					<SearchBox
 						onKeyDown={e => {
 							if (e.key === "Escape") {
