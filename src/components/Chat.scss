@@ -552,7 +552,8 @@ pre._1K1H8._1pKVQ * {
 
 .react-contextmenu-item {
 	font-weight: 600 !important;
-	padding: 0.25rem 0.5rem;
+    padding: 0.25rem 0.5rem;
+    font-size: .8rem;
 	cursor: pointer;
 	color: black;
 	&:hover {
@@ -562,5 +563,10 @@ pre._1K1H8._1pKVQ * {
 
 #root .overlay .reply-header{
     // font-weight: bold;
+    display: block;
     color: rgb(173, 173, 184) !important;
+    white-space: nowrap;
+    max-width: 90vw;
+    text-overflow: ellipsis;
+    overflow: hidden !important;
 }

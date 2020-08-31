@@ -262,7 +262,7 @@ function App(props) {
 			socketRef.current.removeListener("chatmessage");
 			socketRef.current.on("chatmessage", msg => {
 				if (msg.replyParentDisplayName) {
-					msg.body = `<span class="reply-header">Replying to ${msg.replyParentDisplayName}</span>\n${msg.body}`.replace(`@${msg.replyParentDisplayName}`, "");
+					msg.body = `<span class="reply-header">Replying to ${msg.replyParentDisplayName}: ${msg.replyParentMessageBody}</span>${msg.body}`.replace(`@${msg.replyParentDisplayName}`, "");
                 }
                 if (settings?.ReverseMessageOrder) {
                     const shouldScroll = Math.abs(bodyRef.current.scrollTop - bodyRef.current.scrollHeight) < 1200;
