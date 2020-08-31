@@ -263,7 +263,18 @@ function App(props) {
 			socketRef.current.on("chatmessage", msg => {
 				if (msg.replyParentDisplayName) {
 					msg.body = `<span class="reply-header">Replying to ${msg.replyParentDisplayName}</span>\n${msg.body}`.replace(`@${msg.replyParentDisplayName}`, "");
-				}
+                }
+                if (settings?.ReverseMessageOrder) {
+                    const shouldScroll = Math.abs(bodyRef.current.scrollTop - bodyRef.current.scrollHeight) < 1200;
+                    setTimeout(() => {
+                        if (shouldScroll) {
+                            bodyRef.current.scrollTo({
+                                top: bodyRef.current.scrollHeight,
+                                behavior: "smooth",
+                            });
+                        }
+                    }, 200);
+                }
 				setMessages(m => {
 					// by default we don't ignore messages
 					if (messages.findIndex(message => message.id === msg.id) !== -1) return m;
@@ -322,17 +333,7 @@ function App(props) {
 
 					setUnreadMessageIds(prev => [...new Set([...prev, msg.id])]);
 
-					if (settings?.ReverseMessageOrder) {
-						const shouldScroll = Math.abs(bodyRef.current.scrollTop - bodyRef.current.scrollHeight) < 1200;
-						setTimeout(() => {
-							if (shouldScroll) {
-								bodyRef.current.scrollTo({
-									top: bodyRef.current.scrollHeight,
-									behavior: "smooth",
-								});
-							}
-						}, 200);
-					}
+					
 
 					return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
 				});
