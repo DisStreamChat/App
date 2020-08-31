@@ -189,8 +189,8 @@ const Header = props => {
 
 	useEffect(() => {
 		(async () => {
-			const settingsRef = await firebase.db.collection("defaults").doc("settings15").get();
-			const settingsData = settingsRef.data().settings;
+			const settingsRef = await firebase.db.collection("defaults").doc("settings16").get();
+            const settingsData = settingsRef.data().settings;
 			setDefaultSettings(settingsData);
 		})();
 	}, []);
