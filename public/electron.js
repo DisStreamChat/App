@@ -56,7 +56,6 @@ const unfocus = () => {
 const baseUrl = (fpath="index.html") => (isDev ? (`http://localhost:3005/${fpath}`) : `file://${path.join(__dirname, `../build/${fpath}`)}`);
 
 function windowGenerator({ width = Width, height = Width * 1.5, x, y, small } = {}, frame) {
-    console.log(width, height)
 	const options = {
 		width: width, // width of the window
 		height: height, // height of the window

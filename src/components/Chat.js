@@ -23,7 +23,9 @@ import sha1 from "sha1";
 import ReactTextareaAutocomplete from "@webscopeio/react-textarea-autocomplete";
 
 const Item = ({ selected, entity: { name, char } }) => <div className="auto-item">{`${name}: ${char}`}</div>;
-const UserItem = ({ selected, entity: { name, char } }) => <div id={name} className={`auto-item ${selected ? "selected-item" : ""}`}>{`${name}`}</div>;
+const UserItem = ({ selected, entity: { name, char } }) => (
+	<div id={name} className={`auto-item ${selected ? "selected-item" : ""}`}>{`${name}`}</div>
+);
 const EmoteItem = ({ selected, entity: { name, char, bttv, ffz } }) => {
 	return (
 		<div id={name} className={`emote-item auto-item ${selected ? "selected-item" : ""}`}>
@@ -259,6 +261,9 @@ function App(props) {
 		if (socketRef.current) {
 			socketRef.current.removeListener("chatmessage");
 			socketRef.current.on("chatmessage", msg => {
+				if (msg.replyParentDisplayName) {
+					msg.body = `<span class="reply-header">Replying to ${msg.replyParentDisplayName}</span>\n${msg.body}`.replace(`@${msg.replyParentDisplayName}`, "");
+				}
 				setMessages(m => {
 					// by default we don't ignore messages
 					if (messages.findIndex(message => message.id === msg.id) !== -1) return m;
@@ -604,20 +609,19 @@ function App(props) {
 						}}
 					>
 						<ReactTextareaAutocomplete
-							onItemHighlighted={({item}) => {
-                                setTimeout(() => {
-                                    const name = item?.name
-                                    const node = document.getElementById(name)
-                                    if(node){
-                                        const _ = node.parentNode?.parentNode?.parentNode?.scrollTo?.({
-                                            top: node?.offsetTop,
-                                            left: 0,
-                                            behavior: 'smooth'
-                                          });
-                                    }
-                                }, 100)
-                                
-                            }}
+							onItemHighlighted={({ item }) => {
+								setTimeout(() => {
+									const name = item?.name;
+									const node = document.getElementById(name);
+									if (node) {
+										const _ = node.parentNode?.parentNode?.parentNode?.scrollTo?.({
+											top: node?.offsetTop,
+											left: 0,
+											behavior: "smooth",
+										});
+									}
+								}, 100);
+							}}
 							movePopupAsYouType
 							loadingComponent={() => <span>Loading</span>}
 							minChar={2}
