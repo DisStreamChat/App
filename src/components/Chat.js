@@ -340,14 +340,6 @@ function App(props) {
         });
     })
     
-    // useEffect(() => {
-	// 	if (socketRef.current) {
-	// 		socketRef.current.removeListener("chatmessage");
-	// 		socketRef.current.on("chatmessage", );
-	// 		return () => socketRef.current.removeListener("chatmessage");
-	// 	}
-	// }, [settings, socketRef, setMessages, userInfo, channel, setUnreadMessageIds, messages]);
-
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
 	useEffect(() => {
 		if (socketRef.current) {
