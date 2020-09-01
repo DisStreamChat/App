@@ -126,9 +126,12 @@ function App(props) {
 	}, []);
 
 	useEffect(() => {
-		setStoredMessages(messages);
-		setStoredPinnedMessages(pinnedMessages);
-	}, [messages, setStoredMessages, pinnedMessages, setStoredPinnedMessages]);
+        if(!settings.DisableLocalStorage){
+
+            setStoredMessages(messages);
+            setStoredPinnedMessages(pinnedMessages);
+        }
+	}, [messages, settings, setStoredMessages, pinnedMessages, setStoredPinnedMessages]);
 
 	// this runs once on load, and starts the socket
 	useEffect(() => {
@@ -600,7 +603,7 @@ function App(props) {
 			<Viewers streamer={streamerName} chatterCount={chatterCount} chatterInfo={chatterInfo} />
 		</span>
 	) : (
-		<div style={{ fontFamily: settings.Font }} ref={bodyRef} className="overlay-container">
+		<div style={{ fontFamily: settings.Font }} ref={bodyRef} className={`overlay-container ${settings.ShowScrollbar && windowFocused ? "scroll-bar" : ""}`}>
 			<div className={`overlay ${settings?.ReverseMessageOrder ? "reversed" : ""} ${windowFocused ? "focused" : "unfocused"}`}>
 				<CSSTransition unmountOnExit classNames="chat-node" timeout={200} in={windowFocused}>
 					<div
