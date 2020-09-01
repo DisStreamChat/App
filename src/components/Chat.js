@@ -127,11 +127,10 @@ function App(props) {
 	}, []);
 
 	useEffect(() => {
-        if(!settings.DisableLocalStorage){
-
-            setStoredMessages(messages);
-            setStoredPinnedMessages(pinnedMessages);
-        }
+		if (!settings.DisableLocalStorage) {
+			setStoredMessages(messages);
+			setStoredPinnedMessages(pinnedMessages);
+		}
 	}, [messages, settings, setStoredMessages, pinnedMessages, setStoredPinnedMessages]);
 
 	// this runs once on load, and starts the socket
@@ -261,128 +260,108 @@ function App(props) {
 	);
 
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
-    useSocketEvent(socketRef.current, "chatmessage", msg => {
-        if (msg.replyParentDisplayName) {
-            msg.body = `<span class="reply-header">Replying to ${msg.replyParentDisplayName}: ${msg.replyParentMessageBody}</span>${msg.body}`.replace(`@${msg.replyParentDisplayName}`, "");
+	useSocketEvent(socketRef.current, "chatmessage", msg => {
+		if (msg.replyParentDisplayName) {
+			msg.body = `<span class="reply-header">Replying to ${msg.replyParentDisplayName}: ${msg.replyParentMessageBody}</span>${msg.body}`.replace(
+				`@${msg.replyParentDisplayName}`,
+				""
+			);
+		}
+		if (settings?.ReverseMessageOrder) {
+			const shouldScroll = Math.abs(bodyRef.current.scrollTop - bodyRef.current.scrollHeight) < 1200;
+			setTimeout(() => {
+				if (shouldScroll) {
+					bodyRef.current.scrollTo({
+						top: bodyRef.current.scrollHeight,
+						behavior: "smooth",
+					});
+				}
+			}, 200);
+		}
+		// by default we don't ignore messages
+		if (messages.findIndex(message => message.id === msg.id) !== -1) return;
+		let ignoredMessage = false;
+
+		// check if we should ignore this user
+		if (settings?.IgnoredUsers?.map?.(item => item.value.toLowerCase()).includes(msg.displayName.toLowerCase())) {
+			ignoredMessage = true;
+		}
+
+		// check if the message is a command
+		const _ = settings?.IgnoredCommandPrefixes?.forEach(prefix => {
+			if (msg.body.startsWith(prefix.value)) {
+				ignoredMessage = true;
+			}
+		});
+
+		// don't allow ignoring of notifications from 'disstreamchat'
+		if (msg.displayName.toLowerCase() === "disstreamchat") ignoredMessage = false;
+
+		if (settings?.IgnoreCheers && msg.messageId === "cheer") {
+			ignoredMessage = true;
+		}
+		if (settings?.IgnoreFollows && msg.messageId === "follow") {
+			ignoredMessage = true;
+		}
+		if (settings?.IgnoreSubscriptions && msg.messageId === "subscription" && msg.messageType !== "channel-points") {
+			ignoredMessage = true;
+		}
+		if (settings?.IgnoreChannelPoints && msg.messageType === "channel-points") {
+			ignoredMessage = true;
+		}
+
+		// if ignored don't add the message
+		if (ignoredMessage) return;
+
+		// add a <p></p> around the message to make formatting work properly also hightlight pings
+		msg.body = `<p>${msg.body.replace(new RegExp(`(?<=\s|^)(${userInfo?.name}|@${userInfo?.name})`, "ig"), "<span class='ping'>$&</span>")}</p>`;
+
+		// check if the message can have mod actions done on it
+		msg.moddable =
+			msg?.displayName?.toLowerCase?.() !== userInfo?.name?.toLowerCase?.() &&
+			!Object.keys(msg.badges).includes("moderator") &&
+			!Object.keys(msg.badges).includes("broadcaster");
+
+		if (
+			msg.platform !== "discord" &&
+			msg?.displayName?.toLowerCase?.() !== userInfo?.name?.toLowerCase?.() &&
+			channel?.TwitchName?.toLowerCase?.() === userInfo?.name?.toLowerCase?.()
+		)
+			msg.moddable = true;
+		if (msg.displayName.toLowerCase() === "disstreamchat") msg.moddable = false;
+
+		setUnreadMessageIds(prev => [...new Set([...prev, msg.id])]);
+		setMessages(m => {
+			return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
+		});
+	});
+
+	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
+    useSocketEvent(socketRef.current, "imConnected", () => {
+        if (channel) {
+            socketRef.current.emit("addme", channel);
         }
-        if (settings?.ReverseMessageOrder) {
-            const shouldScroll = Math.abs(bodyRef.current.scrollTop - bodyRef.current.scrollHeight) < 1200;
-            setTimeout(() => {
-                if (shouldScroll) {
-                    bodyRef.current.scrollTo({
-                        top: bodyRef.current.scrollHeight,
-                        behavior: "smooth",
-                    });
-                }
-            }, 200);
-        }
-        setMessages(m => {
-            // by default we don't ignore messages
-            if (messages.findIndex(message => message.id === msg.id) !== -1) return m;
-            let ignoredMessage = false;
-
-            // check if we should ignore this user
-            if (settings?.IgnoredUsers?.map?.(item => item.value.toLowerCase()).includes(msg.displayName.toLowerCase())) {
-                ignoredMessage = true;
-            }
-
-            // check if the message is a command
-            const _ = settings?.IgnoredCommandPrefixes?.forEach(prefix => {
-                if (msg.body.startsWith(prefix.value)) {
-                    ignoredMessage = true;
-                }
-            });
-
-            // don't allow ignoring of notifications from 'disstreamchat'
-            if (msg.displayName.toLowerCase() === "disstreamchat") ignoredMessage = false;
-
-            if (settings?.IgnoreCheers && msg.messageId === "cheer") {
-                ignoredMessage = true;
-            }
-            if (settings?.IgnoreFollows && msg.messageId === "follow") {
-                ignoredMessage = true;
-            }
-            if (settings?.IgnoreSubscriptions && msg.messageId === "subscription" && msg.messageType !== "channel-points") {
-                ignoredMessage = true;
-            }
-            if (settings?.IgnoreChannelPoints && msg.messageType === "channel-points") {
-                ignoredMessage = true;
-            }
-
-            // if ignored don't add the message
-            if (ignoredMessage) return m;
-
-            // add a <p></p> around the message to make formatting work properly also hightlight pings
-            msg.body = `<p>${msg.body.replace(
-                new RegExp(`(?<=\s|^)(${userInfo?.name}|@${userInfo?.name})`, "ig"),
-                "<span class='ping'>$&</span>"
-            )}</p>`;
-
-            // check if the message can have mod actions done on it
-            msg.moddable =
-                msg?.displayName?.toLowerCase?.() !== userInfo?.name?.toLowerCase?.() &&
-                !Object.keys(msg.badges).includes("moderator") &&
-                !Object.keys(msg.badges).includes("broadcaster");
-
-            if (
-                msg.platform !== "discord" &&
-                msg?.displayName?.toLowerCase?.() !== userInfo?.name?.toLowerCase?.() &&
-                channel?.TwitchName?.toLowerCase?.() === userInfo?.name?.toLowerCase?.()
-            )
-                msg.moddable = true;
-            if (msg.displayName.toLowerCase() === "disstreamchat") msg.moddable = false;
-
-            setUnreadMessageIds(prev => [...new Set([...prev, msg.id])]);
-
-            
-
-            return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
-        });
     })
     
-	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
-	useEffect(() => {
-		if (socketRef.current) {
-			socketRef.current.removeListener("imConnected");
-			socketRef.current.on("imConnected", () => {
-				if (channel) {
-					socketRef.current.emit("addme", channel);
-				}
-			});
-			return () => socketRef.current.removeListener("imConnected");
-		}
-	}, [settings, socketRef, channel]);
-
 	useEffect(() => {
 		setMessages(m => m.slice(-Math.max(settings.MessageLimit, 100)));
 	}, [settings, setMessages]);
 
-	// this is similar to the above useEffect but for adds a listener for when messages are deleted
-	useEffect(() => {
-		if (socketRef.current) {
-			socketRef.current.removeListener("deletemessage");
-			socketRef.current.on("deletemessage", removeMessage);
-			return () => socketRef.current.removeListener("deletemessage");
-		}
-	}, [socketRef, removeMessage]);
+    // this is similar to the above useEffect but for adds a listener for when messages are deleted
+    
+    useSocketEvent(socketRef.current, "deletemessage", removeMessage)
 
-	useEffect(() => {
-		if (socketRef.current) {
-			socketRef.current.removeListener("updateMessage");
-			socketRef.current.on("updateMessage", newMessage => {
-				setMessages(m => {
-					const copy = [...m];
-					const messageToUpdate = m.find(msg => msg.id === newMessage.id);
-					if (!messageToUpdate) return m;
-					const updatedMessage = { ...messageToUpdate, body: newMessage.body };
-					const messageToUpdateIndex = m.findIndex(msg => msg.id === newMessage.id);
-					copy.splice(messageToUpdateIndex, 1, updatedMessage);
-					return copy;
-				});
-			});
-			return () => socketRef.current.removeListener("updateMessage");
-		}
-	}, [socketRef, removeMessage, setMessages]);
+    useSocketEvent(socketRef.current, "updateMessage", newMessage => {
+        setMessages(m => {
+            const copy = [...m];
+            const messageToUpdate = m.find(msg => msg.id === newMessage.id);
+            if (!messageToUpdate) return m;
+            const updatedMessage = { ...messageToUpdate, body: newMessage.body };
+            const messageToUpdateIndex = m.findIndex(msg => msg.id === newMessage.id);
+            copy.splice(messageToUpdateIndex, 1, updatedMessage);
+            return copy;
+        });
+    })
 
 	// this is similar to the above useEffect but for adds a listener for when messages are deleted
 	useEffect(() => {
@@ -598,7 +577,11 @@ function App(props) {
 			<Viewers streamer={streamerName} chatterCount={chatterCount} chatterInfo={chatterInfo} />
 		</span>
 	) : (
-		<div style={{ fontFamily: settings.Font }} ref={bodyRef} className={`overlay-container ${settings.ShowScrollbar && windowFocused ? "scroll-bar" : ""}`}>
+		<div
+			style={{ fontFamily: settings.Font }}
+			ref={bodyRef}
+			className={`overlay-container ${settings.ShowScrollbar && windowFocused ? "scroll-bar" : ""}`}
+		>
 			<div className={`overlay ${settings?.ReverseMessageOrder ? "reversed" : ""} ${windowFocused ? "focused" : "unfocused"}`}>
 				<CSSTransition unmountOnExit classNames="chat-node" timeout={200} in={windowFocused}>
 					<div
