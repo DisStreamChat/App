@@ -337,42 +337,39 @@ function App(props) {
 	});
 
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
-    useSocketEvent(socketRef.current, "imConnected", () => {
-        if (channel) {
-            socketRef.current.emit("addme", channel);
-        }
-    })
-    
+	useSocketEvent(socketRef.current, "imConnected", () => {
+		if (channel) {
+			socketRef.current.emit("addme", channel);
+		}
+	});
+
 	useEffect(() => {
 		setMessages(m => m.slice(-Math.max(settings.MessageLimit, 100)));
 	}, [settings, setMessages]);
 
-    // this is similar to the above useEffect but for adds a listener for when messages are deleted
-    
-    useSocketEvent(socketRef.current, "deletemessage", removeMessage)
-
-    useSocketEvent(socketRef.current, "updateMessage", newMessage => {
-        setMessages(m => {
-            const copy = [...m];
-            const messageToUpdate = m.find(msg => msg.id === newMessage.id);
-            if (!messageToUpdate) return m;
-            const updatedMessage = { ...messageToUpdate, body: newMessage.body };
-            const messageToUpdateIndex = m.findIndex(msg => msg.id === newMessage.id);
-            copy.splice(messageToUpdateIndex, 1, updatedMessage);
-            return copy;
-        });
-    })
-
 	// this is similar to the above useEffect but for adds a listener for when messages are deleted
-	useEffect(() => {
-		if (socketRef.current) {
-			socketRef.current.removeListener("purgeuser");
-			socketRef.current.on("purgeuser", username => {
-				setMessages(prev => prev.filter(msg => msg.displayName?.toLowerCase() !== username.toLowerCase()));
-			});
-			return () => socketRef.current.removeListener("purgeuser");
-		}
-	}, [socketRef, removeMessage, setMessages]);
+
+	useSocketEvent(socketRef.current, "deletemessage", removeMessage);
+
+	useSocketEvent(socketRef.current, "updateMessage", newMessage => {
+		setMessages(m => {
+			const copy = [...m];
+			const messageToUpdate = m.find(msg => msg.id === newMessage.id);
+			if (!messageToUpdate) return m;
+			const updatedMessage = { ...messageToUpdate, body: newMessage.body };
+			const messageToUpdateIndex = m.findIndex(msg => msg.id === newMessage.id);
+			copy.splice(messageToUpdateIndex, 1, updatedMessage);
+			return copy;
+		});
+	});
+
+	useSocketEvent(socketRef.current, "purgeuser", username => {
+		setMessages(prev => prev.filter(msg => msg.displayName?.toLowerCase() !== username.toLowerCase()));
+    });
+    
+    useSocketEvent(socketRef.current, "clearchat", () => {
+        setMessages([])
+    })
 
 	useEffect(() => {
 		const unsub = firebase.db
