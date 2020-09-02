@@ -4,10 +4,13 @@ import "./EmotePicker.scss";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import { Tooltip } from "@material-ui/core";
 
-const EmoteItem = ({ name, char, bttv, ffz }) => {
+const EmoteItem = ({ name, char, bttv, ffz, onClick }) => {
 	return (
 		<Tooltip title={char} placement="top" arrow>
 			<img
+                onClick={() => {
+                    if(onClick) onClick(char)
+                }}
 				title={char}
 				className="auto-fill-emote-image"
 				src={
@@ -23,7 +26,7 @@ const EmoteItem = ({ name, char, bttv, ffz }) => {
 	);
 };
 
-const EmotePicker = memo(({ emotes, visible, onClickAway }) => {
+const EmotePicker = memo(({ emotes, visible, onClickAway, onEmoteSelect }) => {
 	return (
 		<CSSTransition in={visible} timeout={400} unmountOnExit classNames="emote-picker-node">
 			<ClickAwayListener
@@ -35,7 +38,7 @@ const EmotePicker = memo(({ emotes, visible, onClickAway }) => {
 					<div className="emote-picker__header"></div>
 					<div className="emote-picker__body">
 						{emotes?.map(emote => (
-							<EmoteItem {...emote} name={emote.id} char={emote.code} />
+							<EmoteItem onClick={onEmoteSelect} {...emote} name={emote.id} char={emote.code} />
 						))}
 					</div>
 					<div className="emote-picker__footer"></div>
