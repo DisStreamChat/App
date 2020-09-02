@@ -10,6 +10,11 @@
 
 .emote-picker__header{
     height: 50px;
+    display: flex;
+    align-items: center;
+    img{
+        margin: 0 .1rem;
+    }
 }
 
 .emote-picker__footer{

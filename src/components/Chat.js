@@ -692,7 +692,7 @@ function App(props) {
 					<KeyboardArrowUpIcon></KeyboardArrowUpIcon>
 				</button>
 			</CSSTransition>
-			<EmotePicker onEmoteSelect={emote => setChatValue(prev => `${prev} ${emote}`)} emotes={userEmotes} onClickAway={() => setEmotePickerVisible(false)} visible={emotePickerVisible && windowFocused} />
+			<EmotePicker onEmoteSelect={emote => setChatValue(prev => `${prev} ${emote}`)} emotes={userEmotes} onClickAway={() => setEmotePickerVisible(false)} visible={emotePickerVisible && (windowFocused || true)} />
 		</div>
 	);
 }
