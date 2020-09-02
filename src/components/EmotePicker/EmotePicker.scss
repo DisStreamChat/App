@@ -5,7 +5,20 @@
 	z-index: 1000;
 	width: calc(28px * 10.35);
     min-height: 300px;
-    background: #121212aa
+    background: #181818aa;
+    img{
+        cursor: pointer;
+    }
+}
+
+.emote-picker__header, .emote-picker__footer{
+    background: #121212;
+}
+
+#root .emote-picker .emote-picker__header .emote-picker--searchbar{
+    width: 165px;
+    padding: .5rem;
+    margin-left: -5px;
 }
 
 .emote-picker__header{
@@ -19,6 +32,14 @@
 
 .emote-picker__footer{
     height: 75px;
+    display: flex;
+    align-items: center;
+    // justify-content: center;
+    img{
+        width: 50px;
+        height: 50px;
+        margin: 0 1rem;
+    }
 }
 
 .emote-picker__body{
@@ -26,9 +47,12 @@
     overflow: auto;
     flex-wrap: wrap;
     max-height: 300px;
+    height: 300px;
+    align-content: start;
     img{
         cursor: pointer;
         margin: .25rem;
+        height: 28px !important
     }
 }
 

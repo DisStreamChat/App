@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import ClearRoundedIcon from "@material-ui/icons/ClearRounded";
 
-const SearchBox = React.memo(({ value, onChange, placeHolder, placeholder, onClick, id, onKeyDown }) => {
+const SearchBox = React.memo(({ className, value, onChange, placeHolder, placeholder, onClick, id, onKeyDown }) => {
     const clickHandler = useCallback(() => {
         onChange("")
 		const _ = onClick?.();
@@ -22,7 +22,7 @@ const SearchBox = React.memo(({ value, onChange, placeHolder, placeholder, onCli
 					name=""
 					id={id}
 					placeholder={placeHolder || placeholder}
-					className="settings--searchbox"
+					className={`settings--searchbox ${className ? className : ""}`}
 				/>
 				<ClearRoundedIcon className="clear-button" onClick={clickHandler} />
 			</div>
