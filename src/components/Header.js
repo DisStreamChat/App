@@ -17,6 +17,7 @@ import MailTwoToneIcon from "@material-ui/icons/MailTwoTone";
 import { Tooltip } from "@material-ui/core";
 import { useInterval } from "react-use";
 import { CSSTransition } from "react-transition-group";
+import HomeIcon from "@material-ui/icons/Home";
 const { remote, ipcRenderer } = window.require("electron");
 const customTitlebar = window.require("custom-electron-titlebar");
 
@@ -89,16 +90,16 @@ const Header = props => {
 	const [isPopoutOut, setIsPopOut] = useState();
 	const [unreadMessages, setUnreadMessages] = useState(false);
 	const absoluteLocation = window.location;
-    const [platform, setPlatform] = useState("");
-    const [unreadTimeout, setUnreadTimeout] = useState(0)
+	const [platform, setPlatform] = useState("");
+	const [unreadTimeout, setUnreadTimeout] = useState(0);
 
 	useEffect(() => {
 		setUnreadTimeout(prev => {
-            clearTimeout(prev)
-            return setTimeout(() => {
-                setUnreadMessages(!!unreadMessageIds.length);
-            }, 200);
-        }) 
+			clearTimeout(prev);
+			return setTimeout(() => {
+				setUnreadMessages(!!unreadMessageIds.length);
+			}, 200);
+		});
 	}, [setUnreadMessages, unreadMessageIds]);
 
 	useEffect(() => {
@@ -114,7 +115,7 @@ const Header = props => {
 			const json = await response.json();
 			const latestVersionInfo = json[0];
 			const latestVersion = latestVersionInfo?.tag_name;
-			const updateable = compare(latestVersion||"", currentVersion||"") > 0;
+			const updateable = compare(latestVersion || "", currentVersion || "") > 0;
 			if (updateable) {
 				let downLoadUrl;
 				if (platform === "win32") {
@@ -190,7 +191,7 @@ const Header = props => {
 	useEffect(() => {
 		(async () => {
 			const settingsRef = await firebase.db.collection("defaults").doc("settings16").get();
-            const settingsData = settingsRef.data().settings;
+			const settingsData = settingsRef.data().settings;
 			setDefaultSettings(settingsData);
 		})();
 	}, []);
@@ -226,29 +227,24 @@ const Header = props => {
 		<CSSTransition in={streamerInfo?.HideHeaderOnUnfocus ? windowFocused : true} timeout={100} unmountOnExit classNames="header-node">
 			<header className={`header ${settingsOpen && "open"}`}>
 				<nav className="nav">
-					<button className="clear" onClick={() => setSettingsOpen(o => !o)}>
-						{!settingsOpen ? <SettingsTwoToneIcon /> : <ClearIcon />}
-					</button>
 					{chatHeader && (
-						<div className="stats">
-							<div className={`live-status ${viewingUserStats?.isLive ? "live" : ""}`}></div>
-							{!viewingUserStats ? (
-								<Skeleton variant="text" animation="wave" />
-							) : (
-								<a href={`https://twitch.tv/${viewingUserStats?.name?.toLowerCase?.()}`} className="name">
-									{viewingUserStats?.name}
-								</a>
-							)}
-							<Tooltip arrow title="Viewers in Chat">
-								<div className={"live-viewers"} onClick={() => setShowViewers(true)}>
-									<PeopleAltTwoToneIcon />
-									{viewingUserStats?.viewers}
-								</div>
-							</Tooltip>
-						</div>
-					)}
-					{chatHeader ? (
 						<>
+							<div className="stats">
+								<div className={`live-status ${viewingUserStats?.isLive ? "live" : ""}`}></div>
+								{!viewingUserStats ? (
+									<Skeleton variant="text" animation="wave" />
+								) : (
+									<a href={`https://twitch.tv/${viewingUserStats?.name?.toLowerCase?.()}`} className="name">
+										{viewingUserStats?.name}
+									</a>
+								)}
+								<Tooltip arrow title="Viewers in Chat">
+									<div className={"live-viewers"} onClick={() => setShowViewers(true)}>
+										<PeopleAltTwoToneIcon />
+										{viewingUserStats?.viewers}
+									</div>
+								</Tooltip>
+							</div>
 							<Tooltip title={`${unreadMessages ? "Mark as Read" : "No unread Messages"}`} arrow>
 								<div onClick={() => setUnreadMessageIds([])} className={`messages-notification ${unreadMessages ? "unread" : ""}`}>
 									{unreadMessages ? (unreadMessageIds.length > maxDisplayNum ? `${maxDisplayNum}+` : unreadMessageIds.length) : ""}
@@ -256,29 +252,41 @@ const Header = props => {
 									<MailTwoToneIcon />
 								</div>
 							</Tooltip>
-							{!isPopoutOut && (
-								<Link to="/channels">
-									<Button variant="contained" color="primary">
-										{isPopoutOut ? "Close" : "Channels"}
-									</Button>
-								</Link>
-							)}
 						</>
-					) : (
-						<Button variant="contained" color="primary" onClick={signout}>
-							Sign Out
-						</Button>
 					)}
-					{updateLink && (
-						<Tooltip title="update available" arrow>
-							<button id="update-link" onClick={() => {
-                                ipcRenderer.send("update")
-                            }}>
-								<GetAppIcon></GetAppIcon>
-								<div id="notification-light"></div>
-							</button>
+					<div className="icons">
+						{chatHeader ? (
+							<>
+								{!isPopoutOut && (
+									<Tooltip title="Channels">
+										<Link to="/channels">{isPopoutOut ? <ClearIcon /> : <HomeIcon />}</Link>
+									</Tooltip>
+								)}
+							</>
+						) : (
+							<Button variant="contained" color="primary" onClick={signout}>
+								Sign Out
+							</Button>
+						)}
+						{updateLink && (
+							<Tooltip title="update available" arrow>
+								<button
+									id="update-link"
+									onClick={() => {
+										ipcRenderer.send("update");
+									}}
+								>
+									<GetAppIcon></GetAppIcon>
+									<div id="notification-light"></div>
+								</button>
+							</Tooltip>
+						)}
+						<Tooltip title={`${settingsOpen ? "Close" : ""} Settings`}>
+						<button className="clear" onClick={() => setSettingsOpen(o => !o)}>
+							{!settingsOpen ? <SettingsTwoToneIcon /> : <ClearIcon />}
+						</button>
 						</Tooltip>
-					)}
+					</div>
 				</nav>
 				<div className="header-settings">
 					<SearchBox value={search} onChange={setSearch} placeHolder="Search Settings" />

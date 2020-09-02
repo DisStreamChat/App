@@ -224,7 +224,14 @@ button.clear{
         background: none;
         outline: none;
         border: none;
-    }
+	}
+	.icons{
+		display: flex;
+		flex: .35;
+		border-left: .5px solid #aaa;
+		padding-left: .5rem; 
+		justify-content: space-between;
+	}
 }
 
 
