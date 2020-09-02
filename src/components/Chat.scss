@@ -75,9 +75,9 @@
 	flex-direction: column-reverse;
 }
 
-.auto-fill-emote-image{
-    max-width: 28px;
-    min-width: 28px;
+.auto-fill-emote-image {
+	max-width: 28px;
+	min-width: 28px;
 }
 
 .reversed.unfocused > div:first-of-type,
@@ -175,8 +175,8 @@
 	height: 5px;
 }
 
-.scroll-bar::-webkit-scrollbar{
-    width: 8px;
+.scroll-bar::-webkit-scrollbar {
+	width: 8px;
 }
 
 /* Track */
@@ -533,8 +533,8 @@ pre._1K1H8._1pKVQ * {
 }
 
 #root ._28Kac {
-    border: none;
-    // background: darken(#515151, 15) !important;
+	border: none;
+	// background: darken(#515151, 15) !important;
 }
 
 .react-contextmenu-wrapper {
@@ -545,7 +545,7 @@ pre._1K1H8._1pKVQ * {
 	}
 }
 
-.react-contextmenu {
+.react-contextmenu > :not(.viewer-context){
 	background: darken(#515151, 7);
 	border-radius: 0.5rem;
 	padding: 0.1rem;
@@ -556,8 +556,8 @@ pre._1K1H8._1pKVQ * {
 
 .react-contextmenu-item {
 	font-weight: 600 !important;
-    padding: 0.25rem 0.5rem;
-    font-size: .8rem;
+	padding: 0.25rem 0.5rem;
+	font-size: 0.8rem;
 	cursor: pointer;
 	color: black;
 	&:hover {
@@ -565,12 +565,12 @@ pre._1K1H8._1pKVQ * {
 	}
 }
 
-#root .overlay .reply-header{
-    // font-weight: bold;
-    display: block;
-    color: rgb(173, 173, 184) !important;
-    white-space: nowrap;
-    max-width: 90vw;
-    text-overflow: ellipsis;
-    overflow: hidden !important;
+#root .overlay .reply-header {
+	// font-weight: bold;
+	display: block;
+	color: rgb(173, 173, 184) !important;
+	white-space: nowrap;
+	max-width: 90vw;
+	text-overflow: ellipsis;
+	overflow: hidden !important;
 }

@@ -4,15 +4,59 @@ import "./Viewer.scss";
 import { AppContext } from "../contexts/AppContext";
 import ClearTwoToneIcon from "@material-ui/icons/ClearTwoTone";
 import Loader from "react-loader";
+import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import BlockIcon from "@material-ui/icons/Block";
+import AccessTimeIcon from "@material-ui/icons/AccessTime";
+import { Tooltip } from "@material-ui/core";
 
 const ViewerTab = props => {};
 
 const ViewerCard = props => {
+	console.log(props);
 	return (
-		<div>
-			<a href={`https://www.twitch.tv/popout/${props.streamer}/viewercard/${props.login}?popout=`} className="viewer-card">
-				{props.login}
-			</a>
+		<div className="viewer-card">
+			<ContextMenuTrigger id={props.id}>{props.login}</ContextMenuTrigger>
+			<ContextMenu id={props.id}>
+				<div className="viewer-context">
+					<div className="viewer-header">
+						<div className="viewer-info">
+							<img src={props.profile_image_url} alt="" />
+							{props.login}
+						</div>
+						<div className="viewer-icon">
+							<a href={`https://www.twitch.tv/popout/${props.streamer}/viewercard/${props.login}?popout=`}>
+								<ExitToAppIcon />
+							</a>
+						</div>
+					</div>
+					<div className="viewer-body">
+						<div className="mod-icons">
+							<div title={`Ban ${props.login}`}>
+								<BlockIcon />
+							</div>
+							<div title={`Timeout ${props.login}`}>
+								<AccessTimeIcon />
+							</div>
+							<div title={`Purge User`}>
+								1s
+							</div>
+							<div title={`Timeout 10min`}>
+								10m
+							</div>
+							<div title={`Timeout 1hr`}>
+								1h
+							</div>
+							<div title={`Timeout 8hr`}>
+								8h
+							</div>
+							<div title={`Timeout 24hr`}>
+								24h
+							</div>
+						</div>
+					</div>
+				</div>
+			</ContextMenu>
 		</div>
 	);
 };
@@ -20,7 +64,7 @@ const ViewerCard = props => {
 const Viewers = ({ chatterInfo, chatterCount, streamer }) => {
 	const [tab, setTab] = useState("twitch");
 	const { setShowViewers } = useContext(AppContext);
-    const currentUser = firebase.auth.currentUser;
+	const currentUser = firebase.auth.currentUser;
 
 	return (
 		<main className="viewer-body">
