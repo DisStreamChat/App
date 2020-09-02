@@ -264,12 +264,7 @@ function App(props) {
 
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
 	useSocketEvent(socketRef.current, "chatmessage", msg => {
-		if (msg.replyParentDisplayName) {
-			msg.body = `<span class="reply-header">Replying to ${msg.replyParentDisplayName}: ${msg.replyParentMessageBody}</span>${msg.body}`.replace(
-				`@${msg.replyParentDisplayName}`,
-				""
-			);
-		}
+		
 		if (settings?.ReverseMessageOrder) {
 			const shouldScroll = Math.abs(bodyRef.current.scrollTop - bodyRef.current.scrollHeight) < 1200;
 			setTimeout(() => {
@@ -315,6 +310,13 @@ function App(props) {
 
 		// if ignored don't add the message
 		if (ignoredMessage) return;
+
+		if (msg.replyParentDisplayName) {
+			msg.body = `<span class="reply-header">Replying to ${msg.replyParentDisplayName}: ${msg.replyParentMessageBody}</span>${msg.body}`.replace(
+				`@${msg.replyParentDisplayName}`,
+				""
+			);
+		}
 
 		// add a <p></p> around the message to make formatting work properly also hightlight pings
 		msg.body = `<p>${msg.body.replace(new RegExp(`(?<=\s|^)(${userInfo?.name}|@${userInfo?.name})`, "ig"), "<span class='ping'>$&</span>")}</p>`;
