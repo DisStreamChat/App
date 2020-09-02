@@ -214,8 +214,7 @@ button.clear{
 }
 
 .bl-light{
-
-	border-left: .5px solid #aaa;
+	border-left: .5px solid #cccccc88;
 }
 
 .nav {
@@ -234,7 +233,11 @@ button.clear{
 		display: flex;
 		flex: .35;
 		padding-left: .5rem; 
-		justify-content: space-around;
+        justify-content: space-around;
+        &:not(.bl-light){
+            flex: 1;
+            flex-direction: row-reverse;
+        }
 	}
 }
 

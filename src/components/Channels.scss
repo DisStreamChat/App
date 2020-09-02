@@ -140,9 +140,11 @@ hr {
 		border-radius: 50%;
 		right: 24px;
 		bottom: 0;
-		background: #515151;
+        background: #515151;
+        // display:none;
 	}
 	&.live:after {
+        display: block;
 		background: #e91916;
 	}
 }

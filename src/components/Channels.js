@@ -160,7 +160,7 @@ const Channels = React.memo(props => {
 	const [myChannel, setMyChannel] = useState();
 	const [modChannels, setModChannels] = useLocalStorage("channels", []);
 	const [pinnedChannels, setPinnedChannels] = useLocalStorage("pinned channels", []);
-	const { setMessages, setPinnedMessages, setShowViewers, userData, unreadMessageIds, setUnreadMessageIds } = useContext(AppContext);
+	const { setMessages, setPinnedMessages, setShowViewers, userData, unreadMessageIds, setUnreadMessageIds, streamerInfo } = useContext(AppContext);
 	const [popout, setPopout] = useState(false);
 
 	useEffect(() => {
@@ -235,7 +235,7 @@ const Channels = React.memo(props => {
 				</div>
 				<hr />
 				<h1>Channels you moderate</h1>
-				<div className={`modchannels channel-div ${userData.CompactChannels ? "compact-channels" : ""}`}>
+				<div className={`modchannels channel-div ${streamerInfo.CompactChannels ? "compact-channels" : ""}`}>
 					{modChannels ? (
 						modChannels?.map?.(channel => (
 							<ChannelItem
