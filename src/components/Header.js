@@ -254,7 +254,7 @@ const Header = props => {
 							</Tooltip>
 						</>
 					)}
-					<div className="icons">
+					<div className={`icons ${chatHeader ? "bl-light" : ""}`}>
 						{chatHeader ? (
 							<>
 								{!isPopoutOut && (

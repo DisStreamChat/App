@@ -24,6 +24,8 @@ hr {
 	background: linear-gradient(119.36deg, #17181ba1 21.35%, #24252aa1 76.56%);
 }
 
+
+
 .remove-btn {
     position: absolute;
     $pos: -6px;
@@ -331,5 +333,26 @@ hr {
 
 	.to-dashboard:disabled {
 		font-size: 10px !important;
+	}
+}
+
+
+.compact-channels{
+	.channel-item{
+		margin: .25rem 0;
+		min-height: 50px;
+	}
+	.channel-profile-pic {
+		width: 0px;
+		padding-left: 2rem;
+		// outline: solid;
+		&:after {
+			top: 50%;
+			left: 50%;
+			transform: translate(0%, -50%);
+		}
+		img{
+			display: none;
+		}
 	}
 }

@@ -37,7 +37,6 @@ const EmotePicker = memo(({ emotes, visible, onClickAway, onEmoteSelect, }) => {
 			return emoteType === "twitch" ? !emote.bttv && !emote.ffz : emoteType === "ffz" ? emote.ffz : emoteType === "bttv" ? emote.bttv : true;
 		}).filter(emote => emoteSearch ? emote.code.match(new RegExp(emoteSearch.replace(/[#-.]|[[-^]|[?|{}]/g, '\\$&'), "i")) : true).sort((a, b) => a.code.localeCompare(b.code, "en", {numeric: true}));
 	}, [emotes, emoteType, emoteSearch]);
-	console.log(hoveredEmote)
 	return (
 		<CSSTransition in={visible} timeout={400} unmountOnExit classNames="emote-picker-node">
 			<ClickAwayListener

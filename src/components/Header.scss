@@ -213,6 +213,11 @@ button.clear{
     border: none;
 }
 
+.bl-light{
+
+	border-left: .5px solid #aaa;
+}
+
 .nav {
 	/* position: absolute; */
 	width: 100%;
@@ -228,7 +233,6 @@ button.clear{
 	.icons{
 		display: flex;
 		flex: .35;
-		border-left: .5px solid #aaa;
 		padding-left: .5rem; 
 		justify-content: space-between;
 	}

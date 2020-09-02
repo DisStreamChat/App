@@ -190,7 +190,6 @@ const Channels = React.memo(props => {
 
 	const uid = userData.uid;
 	useEffect(() => {
-		console.log({ uid });
 		const unsub = firebase.db
 			.collection("Streamers")
 			.doc(uid || " ")
@@ -236,7 +235,7 @@ const Channels = React.memo(props => {
 				</div>
 				<hr />
 				<h1>Channels you moderate</h1>
-				<div className="modchannels channel-div">
+				<div className={`modchannels channel-div ${userData.CompactChannels ? "compact-channels" : ""}`}>
 					{modChannels ? (
 						modChannels?.map?.(channel => (
 							<ChannelItem
