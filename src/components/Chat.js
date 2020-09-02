@@ -21,7 +21,6 @@ import Viewers from "./Viewers";
 import { useLocalStorage } from "react-use";
 import sha1 from "sha1";
 import ReactTextareaAutocomplete from "@webscopeio/react-textarea-autocomplete";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import useSocketEvent from "../hooks/useSocketEvent";
 import { Tooltip } from "@material-ui/core";
 import EmotePicker from "./EmotePicker/EmotePicker";
@@ -584,88 +583,86 @@ function App(props) {
 			className={`overlay-container ${settings.ShowScrollbar && windowFocused ? "scroll-bar" : ""}`}
 		>
 			<div className={`overlay ${settings?.ReverseMessageOrder ? "reversed" : ""} ${windowFocused ? "focused" : "unfocused"}`}>
-				<ClickAwayListener onClickAway={() => setEmotePickerVisible(false)}>
-					<CSSTransition unmountOnExit classNames="chat-node" timeout={200} in={windowFocused}>
-						<div
-							id="chat-input--container"
-							onClick={() => {
-								document.getElementById("chat-input").focus();
-							}}
-						>
-							<ReactTextareaAutocomplete
-								onItemHighlighted={({ item }) => {
-									setTimeout(() => {
-										const name = item?.name;
-										const node = document.getElementById(name);
-										if (node) {
-											const _ = node.parentNode?.parentNode?.parentNode?.scrollTo?.({
-												top: node?.offsetTop,
-												left: 0,
-												behavior: "smooth",
-											});
-										}
-									}, 100);
-								}}
-								movePopupAsYouType
-								loadingComponent={() => <span>Loading</span>}
-								minChar={2}
-								listClassName="auto-complete-dropdown"
-								trigger={{
-									"@": {
-										dataProvider: token => {
-											return allChatters
-												.filter(chatter => chatter.startsWith(token))
-												.map(chatter => ({ name: `${chatter}`, char: `@${chatter}` }));
-										},
-										component: UserItem,
-										output: (item, trigger) => item.char,
-									},
-									":": {
-										dataProvider: token => {
-											return userEmotes
-												.filter(emote => emote?.code?.toLowerCase?.()?.includes?.(token?.toLowerCase?.()))
-												.map(emote => ({
-													name: `${emote.id || emote.name}`,
-													char: `${emote.code}`,
-													bttv: emote.bttv,
-													ffz: emote.ffz,
-												}));
-										},
-										component: EmoteItem,
-										output: (item, trigger) => item.char,
-									},
-								}}
-								onKeyPress={e => {
-									if (e.which === 13 && !e.shiftKey) {
-										sendMessage();
-										setChatValue("");
-										e.preventDefault();
+				<CSSTransition unmountOnExit classNames="chat-node" timeout={200} in={windowFocused}>
+					<div
+						id="chat-input--container"
+						onClick={() => {
+							document.getElementById("chat-input").focus();
+						}}
+					>
+						<ReactTextareaAutocomplete
+							onItemHighlighted={({ item }) => {
+								setTimeout(() => {
+									const name = item?.name;
+									const node = document.getElementById(name);
+									if (node) {
+										const _ = node.parentNode?.parentNode?.parentNode?.scrollTo?.({
+											top: node?.offsetTop,
+											left: 0,
+											behavior: "smooth",
+										});
 									}
+								}, 100);
+							}}
+							movePopupAsYouType
+							loadingComponent={() => <span>Loading</span>}
+							minChar={2}
+							listClassName="auto-complete-dropdown"
+							trigger={{
+								"@": {
+									dataProvider: token => {
+										return allChatters
+											.filter(chatter => chatter.startsWith(token))
+											.map(chatter => ({ name: `${chatter}`, char: `@${chatter}` }));
+									},
+									component: UserItem,
+									output: (item, trigger) => item.char,
+								},
+								":": {
+									dataProvider: token => {
+										return userEmotes
+											.filter(emote => emote?.code?.toLowerCase?.()?.includes?.(token?.toLowerCase?.()))
+											.map(emote => ({
+												name: `${emote.id || emote.name}`,
+												char: `${emote.code}`,
+												bttv: emote.bttv,
+												ffz: emote.ffz,
+											}));
+									},
+									component: EmoteItem,
+									output: (item, trigger) => item.char,
+								},
+							}}
+							onKeyPress={e => {
+								if (e.which === 13 && !e.shiftKey) {
+									sendMessage();
+									setChatValue("");
+									e.preventDefault();
+								}
+							}}
+							name="chat-input"
+							id="chat-input"
+							rows="4"
+							value={chatValue}
+							onChange={e => {
+								setChatValue(e.target.value);
+							}}
+						></ReactTextareaAutocomplete>
+						{/* will be used in the future */}
+						<Tooltip title="Emote Picker" arrow>
+							<img
+								src={displayMotes[emoteIndex]}
+								onClick={() => {
+									setEmotePickerVisible(prev => !prev);
 								}}
-								name="chat-input"
-								id="chat-input"
-								rows="4"
-								value={chatValue}
-								onChange={e => {
-									setChatValue(e.target.value);
+								onMouseEnter={() => {
+									setEmoteIndex(Math.floor(Math.random() * displayMotes.length));
 								}}
-							></ReactTextareaAutocomplete>
-							{/* will be used in the future */}
-							<Tooltip title="Emote Picker" arrow>
-								<img
-									src={displayMotes[emoteIndex]}
-									onClick={() => {
-										setEmotePickerVisible(prev => !prev);
-									}}
-									onMouseEnter={() => {
-										setEmoteIndex(Math.floor(Math.random() * displayMotes.length));
-									}}
-									alt=""
-								/>
-							</Tooltip>
-						</div>
-					</CSSTransition>
-				</ClickAwayListener>
+								alt=""
+							/>
+						</Tooltip>
+					</div>
+				</CSSTransition>
 				<Messages
 					messages={flagMatches}
 					settings={settings}
@@ -695,7 +692,7 @@ function App(props) {
 					<KeyboardArrowUpIcon></KeyboardArrowUpIcon>
 				</button>
 			</CSSTransition>
-			<EmotePicker visible={emotePickerVisible && windowFocused} />
+			<EmotePicker onClickAway={() => setEmotePickerVisible(false)} visible={emotePickerVisible && windowFocused} />
 		</div>
 	);
 }
