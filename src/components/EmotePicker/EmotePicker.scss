@@ -1,0 +1,28 @@
+.emote-picker {
+	outline: solid;
+	position: absolute;
+	right: 25px;
+	bottom: 100px;
+	z-index: 1000;
+	width: 300px;
+	height: 300px;
+}
+
+.emote-picker-node-enter {
+	opacity: 0;
+	transform: translateY(10%);
+}
+.emote-picker-node-enter-active {
+	opacity: 1;
+	transform: translateY(0);
+	transition: 400ms;
+}
+.emote-picker-node-exit {
+	transform: translateY(0);
+	opacity: 1;
+}
+.emote-picker-node-exit-active {
+	opacity: 0;
+	transform: translateY(10%);
+	transition: 400ms;
+}
