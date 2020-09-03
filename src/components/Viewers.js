@@ -32,25 +32,25 @@ const ViewerCard = props => {
 					</div>
 					<div className="viewer-body">
 						<div className="mod-icons">
-							<div title={`Ban ${props.login}`}>
+							<div data-title={`Ban ${props.login}`}>
 								<BlockIcon />
 							</div>
-							<div title={`Timeout ${props.login}`}>
+							<div data-title={`Timeout ${props.login}`}>
 								<AccessTimeIcon />
 							</div>
-							<div title={`Purge User`}>
+							<div data-title={`Purge User`}>
 								1s
 							</div>
-							<div title={`Timeout 10min`}>
+							<div data-title={`Timeout 10min`}>
 								10m
 							</div>
-							<div title={`Timeout 1hr`}>
+							<div data-title={`Timeout 1hr`}>
 								1h
 							</div>
-							<div title={`Timeout 8hr`}>
+							<div data-title={`Timeout 8hr`}>
 								8h
 							</div>
-							<div title={`Timeout 24hr`}>
+							<div data-title={`Timeout 24hr`}>
 								24h
 							</div>
 						</div>

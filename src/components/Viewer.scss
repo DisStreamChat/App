@@ -1,149 +1,179 @@
-.viewer-type{
-    width: 100%;
+.viewer-type {
+	width: 100%;
 }
 
-.viewers{
-    width: 100%;
-    box-sizing: border-box !important;
+.viewers {
+	width: 100%;
+	box-sizing: border-box !important;
 }
 
 $background: #040109;
-.viewer-card{
-    background: $background;
-    &:hover{
-        background: lighten($color: $background, $amount: 5)
-    }
-    padding: .25rem 1.75rem;
-    box-sizing: border-box !important;
-    cursor: pointer;
-    // display: block;
-    width: 100vw;
+.viewer-card {
+	background: $background;
+	&:hover {
+		background: lighten($color: $background, $amount: 5);
+	}
+	padding: 0.25rem 1.75rem;
+	box-sizing: border-box !important;
+	cursor: pointer;
+	// display: block;
+	width: 100vw;
 }
 
-.viewers-header{
-    height: 50px;
-    position: sticky;
-    top: 0px;
-    background: #17181ba1;
-    width: 100vw;
-    display: flex;
-    align-items: center;
-    padding: 0 .5rem;
-    justify-content: space-around;
-    .platform-tab{
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: grey;
-        height: 100%;
-        cursor: pointer;
-        filter: brightness(.5);
-        text-transform: uppercase;
-        font-size: 1.5rem;
-        &#twitch-tab{
-            background: var(--disstreamchat-purple)
-        }
-        &#discord-tab{
-            background: var(--disstreamchat-blue)
-        }
-        &:hover{
-            filter: brightness(.75)
-        }
-        &.open{
-            filter: brightness(1)
-        }
-    }
-    button{
-        flex: .25;
-        background: none;
-        outline: none !important;
-        border: none;
-        padding: .25rem;
-        border-radius: .25rem;
-        transition: .25s;
-        height: 95%;
-        svg{
-            transition: .25s;
-            transform: scale(1.25)
-        }
-        &:active svg{
-            transform: scale(.95)
-        }
-        &:focus svg, &:hover svg{
-            background: #ffffff26
-        }
-    }
+.viewers-header {
+	height: 50px;
+	position: sticky;
+	top: 0px;
+	background: #17181ba1;
+	width: 100vw;
+	display: flex;
+	align-items: center;
+	padding: 0 0.5rem;
+	justify-content: space-around;
+	.platform-tab {
+		flex: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: grey;
+		height: 100%;
+		cursor: pointer;
+		filter: brightness(0.5);
+		text-transform: uppercase;
+		font-size: 1.5rem;
+		&#twitch-tab {
+			background: var(--disstreamchat-purple);
+		}
+		&#discord-tab {
+			background: var(--disstreamchat-blue);
+		}
+		&:hover {
+			filter: brightness(0.75);
+		}
+		&.open {
+			filter: brightness(1);
+		}
+	}
+	button {
+		flex: 0.25;
+		background: none;
+		outline: none !important;
+		border: none;
+		padding: 0.25rem;
+		border-radius: 0.25rem;
+		transition: 0.25s;
+		height: 95%;
+		svg {
+			transition: 0.25s;
+			transform: scale(1.25);
+		}
+		&:active svg {
+			transform: scale(0.95);
+		}
+		&:focus svg,
+		&:hover svg {
+			background: #ffffff26;
+		}
+	}
 }
 
-.viewer-type{
-    display: flex;
-    flex-direction: column;
-    // align-items: center;
+[data-title] {
+	position: relative;
+    $ytrans: -100%;
+	&:hover:after {
+        display: inline-block;
+		font-size: 12px;
+		position: absolute;
+		content: attr(data-title);
+		background: grey;
+		z-index: 10000000;
+		bottom: 0;
+		left: 50%;
+		transform: translate(-30%, $ytrans);
+        padding: 0.25rem;
+        min-width: max-content;
+		// min-width: 100px;
+    }
+    &:first-child:hover:after{
+        transform: translate(-20%, $ytrans);
+    }
+	&:last-child:hover:after {
+        transform: translate(-80%, $ytrans);
+		// right: 0;
+		// left: 0 !important;
+	}
 }
 
-.viewer-type--header{
-    background: $background;
-    padding: .25rem;
-    margin: 0;
-    align-self: center;
-    width: 90%;
-    border-bottom: .5px solid #ffffffaa !important
+.viewer-type {
+	display: flex;
+	flex-direction: column;
+	// align-items: center;
 }
 
-.viewer-body{
-    width: 100%;
-    padding: 0 .1rem;
-    overflow: auto;
-    overflow-x: hidden;
-    background: $background;
-    height: calc(100vh - 95px);
-    &, & *{
-        font-family: inherit;
-        text-transform: capitalize;
-    }
+.viewer-type--header {
+	background: $background;
+	padding: 0.25rem;
+	margin: 0;
+	align-self: center;
+	width: 90%;
+	border-bottom: 0.5px solid #ffffffaa !important;
 }
 
-#root .viewer-context{
-    height: 200px;
-    width: 300px;
-    outline: none !important;
-    border: none;
-    overflow: hidden;
-    & > *{
-        background: green;
-        height: 100px;
-        width: 300px;
-        border: none;
-        border-radius: 0;
-    }
-    .viewer-header{
-        height: 50px;
-        display: flex;
-        align-items: center;
-        padding: .5rem;
-        background: #141414;
-        justify-content: space-between;
-        .viewer-icon{
-            margin-right: 1rem;
-        }
-        img{
-            width: 50px;
-            border-radius: 50%;
-            margin-right: .5rem;
-        }
-    }
-    .viewer-body{
-        background: #1f1f23;
-        display: flex;
-        align-items: flex-start;
-        justify-content: center;
-        .mod-icons{
-            padding: .25rem;
-            display: flex;
-            justify-content: space-between;
-            width: 90%;
-            border-bottom: .5px solid #cccccc88;
-        }
-    }
+.viewer-body {
+	width: 100%;
+	padding: 0 0.1rem;
+	overflow: auto;
+	overflow-x: hidden;
+	background: $background;
+	height: calc(100vh - 95px);
+	&,
+	& * {
+		font-family: inherit;
+		text-transform: capitalize;
+	}
+}
+
+#root .viewer-context {
+	height: 200px;
+	width: 300px;
+	outline: none !important;
+	border: none;
+	overflow: hidden;
+	& > * {
+		background: green;
+		height: 100px;
+		width: 300px;
+		border: none;
+		border-radius: 0;
+	}
+	.viewer-header {
+		height: 50px;
+		display: flex;
+		align-items: center;
+		padding: 0.5rem;
+		background: #141414;
+		justify-content: space-between;
+		.viewer-icon {
+			margin-right: 1rem;
+		}
+		img {
+			width: 50px;
+			border-radius: 50%;
+			margin-right: 0.5rem;
+		}
+	}
+	.viewer-body {
+		background: #1f1f23;
+		display: flex;
+		align-items: flex-start;
+		justify-content: center;
+		overflow: visible;
+		.mod-icons {
+			padding: 0.25rem;
+			display: flex;
+			justify-content: space-between;
+			width: 90%;
+			border-bottom: 0.5px solid #cccccc88;
+		}
+	}
 }
