@@ -318,8 +318,10 @@ function App(props) {
 			);
 		}
 
-		// add a <p></p> around the message to make formatting work properly also hightlight pings
-		msg.body = `<p>${msg.body.replace(new RegExp(`(?<=\s|^)(${userInfo?.name}|@${userInfo?.name})`, "ig"), "<span class='ping'>$&</span>")}</p>`;
+        // add a <p></p> around the message to make formatting work properly also hightlight pings
+        const nameRegex = new RegExp(`(?<=\\s|^)(@?${userInfo?.name})`, "igm")
+        console.log(msg.body, nameRegex, msg.body.matchAll(nameRegex))
+		msg.body = `<p>${msg.body.replace(nameRegex, "<span class='ping'>$&</span>")}</p>`;
 
 		// check if the message can have mod actions done on it
 		msg.moddable =
