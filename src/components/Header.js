@@ -260,7 +260,7 @@ const Header = props => {
 							</Tooltip>
 							<Tooltip arrow title={`${unreadMessages ? "Mark as Read" : "No unread Messages"}`} arrow>
 								<div onClick={() => setUnreadMessageIds([])} className={`messages-notification ${unreadMessages ? "unread" : ""}`}>
-									{(unreadMessages && unreadMessageIds.length) ? (unreadMessageIds.length > maxDisplayNum ? `${maxDisplayNum}+` : unreadMessageIds.length) : ""}
+									{(unreadMessages) ? (unreadMessageIds.length > maxDisplayNum ? `${maxDisplayNum}+` : unreadMessageIds.length) : ""}
 									{unreadMessages ? " " : ""}
 									<MailTwoToneIcon />
 								</div>
