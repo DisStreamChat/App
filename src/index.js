@@ -69,7 +69,7 @@ const App = () => {
 		(async () => {
 			if (firebaseInit !== false && currentUser) {
 				if (!userData.twitchId) return;
-				const userResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${userData.twitchId}&platform=twitch`);
+				const userResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${userData.twitchId}&platform=twitch&place=index`);
 				const userJson = await userResponse.json();
 				const TwitchName = userJson.TwitchName || userData.TwitchName;
 				const profilePictureResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/profilepicture?user=${TwitchName}`);
@@ -82,7 +82,7 @@ const App = () => {
 					[...NewModChannels, ...(userData.ModChannels || [])]
 						.filter((thing, index, self) => thing.pinned || index === self.findIndex(t => t.id === thing.id))
 						.map(async channel => {
-							const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${channel.id}&platform=twitch`;
+							const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${channel.id}&platform=twitch&place=channelsindex`;
 							const response = await fetch(apiUrl);
 							return { ...channel, ...response.json() };
 						})

@@ -147,7 +147,7 @@ const Header = props => {
 		(async () => {
 			if (chatHeader && show) {
 				try {
-					const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${viewingUserId}&platform=twitch`;
+					const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${viewingUserId}&platform=twitch&place=header`;
 					const response = await fetch(apiUrl);
 					const userData = await response.json();
 					setViewingUserInfo(userData);
