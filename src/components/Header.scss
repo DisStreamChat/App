@@ -12,8 +12,8 @@
 	position: fixed;
 	z-index: 100;
 	padding-top: calc(5px + .5rem);
-	padding-left: 1rem;
-	padding-right: 1rem;
+	// padding-left: 1rem;
+	// padding-right: 1rem;
     box-sizing: border-box !important;
     &, *:not(.item){ 
         font-family: Montserrat !important;
@@ -223,7 +223,7 @@ button.clear{
 	display: flex;
 	align-items: center;
 	justify-content: space-around;
-    padding: 0 .5rem .5rem 0.5rem !important;
+    // padding: 0 .5rem !important;
     button{
         background: none;
         outline: none;
@@ -234,6 +234,11 @@ button.clear{
 		flex: .5;
 		padding-left: .5rem; 
         justify-content: space-around;
+        align-items: center;
+        & > *{
+            margin: 0 .25rem;
+            // min-height: fit-content;
+        }
         &:not(.bl-light){
             flex: 1;
             flex-direction: row-reverse;
