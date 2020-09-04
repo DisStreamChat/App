@@ -71,7 +71,7 @@ const ChannelItem = React.memo(props => {
 		});
 	}, []);
 
-	useInterval(getLive, 60000);
+	useInterval(getLive, 60000 * 4);
 
 
 	return (
