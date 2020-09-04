@@ -18,6 +18,8 @@ import { Tooltip } from "@material-ui/core";
 import { useInterval } from "react-use";
 import { CSSTransition } from "react-transition-group";
 import HomeIcon from "@material-ui/icons/Home";
+import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
+import FavoriteIcon from "@material-ui/icons/Favorite";
 const { remote, ipcRenderer } = window.require("electron");
 const customTitlebar = window.require("custom-electron-titlebar");
 
@@ -92,6 +94,7 @@ const Header = props => {
 	const absoluteLocation = window.location;
 	const [platform, setPlatform] = useState("");
 	const [unreadTimeout, setUnreadTimeout] = useState(0);
+	const [following, setFollowing] = useState();
 
 	useEffect(() => {
 		setUnreadTimeout(prev => {
@@ -268,7 +271,15 @@ const Header = props => {
 								Sign Out
 							</Button>
 						)}
-						{updateLink && (
+						<Tooltip title={`${settingsOpen ? "Close" : ""} Settings`}>
+							<button className="clear" onClick={() => setSettingsOpen(o => !o)}>
+								{!settingsOpen ? <SettingsTwoToneIcon /> : <ClearIcon />}
+							</button>
+						</Tooltip>
+						<Tooltip title={`${following ? "Unfollow" : "Follow"}`}>
+							<div>{following ? <FavoriteIcon /> : <FavoriteBorderIcon />}</div>
+						</Tooltip>
+						{!updateLink && (
 							<Tooltip title="update available" arrow>
 								<button
 									id="update-link"
@@ -281,11 +292,6 @@ const Header = props => {
 								</button>
 							</Tooltip>
 						)}
-						<Tooltip title={`${settingsOpen ? "Close" : ""} Settings`}>
-						<button className="clear" onClick={() => setSettingsOpen(o => !o)}>
-							{!settingsOpen ? <SettingsTwoToneIcon /> : <ClearIcon />}
-						</button>
-						</Tooltip>
 					</div>
 				</nav>
 				<div className="header-settings">
