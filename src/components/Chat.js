@@ -482,6 +482,7 @@ function App(props) {
 	const [allChatters, setAllChatters] = useState();
 	const userId = id;
 
+    //TODO: use the useInterval hook
 	useEffect(() => {
 		let id;
 		(async () => {
@@ -505,13 +506,7 @@ function App(props) {
 						info[key] = await Promise.all(
 							value.map(async name => {
 								chatters.push(name);
-								const response = await fetch(`${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${name}&platform=twitch`);
-								try {
-									if (response.ok) return await response.json();
-									else return {};
-								} catch (err) {
-									return {};
-								}
+								return {login: name, id: name}
 							})
 						);
 					}

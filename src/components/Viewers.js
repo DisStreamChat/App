@@ -10,19 +10,37 @@ import BlockIcon from "@material-ui/icons/Block";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import { Tooltip } from "@material-ui/core";
 
-const ViewerTab = props => {};
+//TODO: load data on click
+const ViewerCard = ({ login, ...props }) => {
+	const [clicked, setClicked] = useState();
+	const [viewerData, setViewerData] = useState({});
+	// const [loading, setLoading] = useState()
 
-const ViewerCard = props => {
-	console.log(props);
+	useEffect(() => {
+		(async () => {
+			if (clicked) {
+                console.log("getting data")
+				const response = await fetch(`${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${login}&platform=twitch`);
+				if (response.ok) {
+					try {
+						setViewerData(await response.json());
+					} catch (err) {
+                        alert(err.message)
+                    }
+				}
+			}
+		})();
+	}, [clicked, login]);
+
 	return (
 		<div className="viewer-card">
-			<ContextMenuTrigger id={props.id}>{props.login}</ContextMenuTrigger>
-			<ContextMenu id={props.id}>
+			<ContextMenuTrigger id={props.id}>{login}</ContextMenuTrigger>
+			<ContextMenu onShow={() => setClicked(true)} id={props.id}>
 				<div className="viewer-context">
 					<div className="viewer-header">
 						<div className="viewer-info">
-							<img src={props.profile_image_url} alt="" />
-							{props.login}
+							<img src={viewerData.profile_image_url} alt="" />
+							{login}
 						</div>
 						<div className="viewer-icon">
 							<a href={`https://www.twitch.tv/popout/${props.streamer}/viewercard/${props.login}?popout=`}>
@@ -38,21 +56,11 @@ const ViewerCard = props => {
 							<div data-title={`Timeout ${props.login}`}>
 								<AccessTimeIcon />
 							</div>
-							<div data-title={`Purge User`}>
-								1s
-							</div>
-							<div data-title={`Timeout 10min`}>
-								10m
-							</div>
-							<div data-title={`Timeout 1hr`}>
-								1h
-							</div>
-							<div data-title={`Timeout 8hr`}>
-								8h
-							</div>
-							<div data-title={`Timeout 24hr`}>
-								24h
-							</div>
+							<div data-title={`Purge User`}>1s</div>
+							<div data-title={`Timeout 10min`}>10m</div>
+							<div data-title={`Timeout 1hr`}>1h</div>
+							<div data-title={`Timeout 8hr`}>8h</div>
+							<div data-title={`Timeout 24hr`}>24h</div>
 						</div>
 					</div>
 				</div>
