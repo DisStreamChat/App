@@ -233,12 +233,21 @@ button.clear{
         justify-self: flex-end;
         justify-content: flex-end;
         max-width: 300px;
+        &.channel-icons{
+            flex: 1;
+            max-width: none;
+            justify-content: center;
+            .icons{
+                flex: 1;
+                max-width: none;
+            }
+        }
         // outline: solid;
     }
 	.icons{
 		display: flex;
 		flex: .4;
-        padding-left: .5rem; 
+        // padding-left: .5rem; 
         justify-content: space-around;
         align-items: center;
         max-width: 100px;
@@ -321,15 +330,11 @@ button.clear{
 
 @media screen and (max-width: 575px) {
 	.nav button {
-		font-size: 0.6rem !important;
 		outline: none !important;
 	}
 }
 
 @media screen and (max-width: 500px) {
-	.nav button {
-		font-size: 0.5rem !important;
-	}
 	.stats {
 		font-size: 0.75rem;
 	}

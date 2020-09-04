@@ -248,30 +248,39 @@ const Header = props => {
 							</div>
 						</>
 					)}
-					<div className="all-icons">
-						<div className="icons icons-left">
-							<Tooltip arrow title={`${following ? "Unfollow" : "Follow"}`}>
-								<div>{following ? <FavoriteIcon /> : <FavoriteTwoToneIcon />}</div>
-							</Tooltip>
-							<Tooltip arrow title="Channel details">
-								<div>
-									<VisibilityIcon />
-								</div>
-							</Tooltip>
-							<Tooltip arrow title={`${unreadMessages ? "Mark as Read" : "No unread Messages"}`} arrow>
-								<div onClick={() => setUnreadMessageIds([])} className={`messages-notification ${unreadMessages ? "unread" : ""}`}>
-									{(unreadMessages) ? (unreadMessageIds.length > maxDisplayNum ? `${maxDisplayNum}+` : unreadMessageIds.length) : ""}
-									{unreadMessages ? " " : ""}
-									<MailTwoToneIcon />
-								</div>
-							</Tooltip>
-							<Tooltip arrow title="Viewers in Chat">
-								<div className={"live-viewers"} onClick={() => setShowViewers(true)}>
-									<PeopleAltTwoToneIcon />
-									{viewingUserStats?.viewers}
-								</div>
-							</Tooltip>
-						</div>
+					<div className={`all-icons ${!chatHeader ? "channel-icons" : ""}`}>
+						{chatHeader && (
+							<div className="icons icons-left">
+								<Tooltip arrow title={`${following ? "Unfollow" : "Follow"}`}>
+									<div>{following ? <FavoriteIcon /> : <FavoriteTwoToneIcon />}</div>
+								</Tooltip>
+								<Tooltip arrow title="Channel details">
+									<div>
+										<VisibilityIcon />
+									</div>
+								</Tooltip>
+								<Tooltip arrow title={`${unreadMessages ? "Mark as Read" : "No unread Messages"}`} arrow>
+									<div
+										onClick={() => setUnreadMessageIds([])}
+										className={`messages-notification ${unreadMessages ? "unread" : ""}`}
+									>
+										{unreadMessages
+											? unreadMessageIds.length > maxDisplayNum
+												? `${maxDisplayNum}+`
+												: unreadMessageIds.length
+											: ""}
+										{unreadMessages ? " " : ""}
+										<MailTwoToneIcon />
+									</div>
+								</Tooltip>
+								<Tooltip arrow title="Viewers in Chat">
+									<div className={"live-viewers"} onClick={() => setShowViewers(true)}>
+										<PeopleAltTwoToneIcon />
+										{viewingUserStats?.viewers}
+									</div>
+								</Tooltip>
+							</div>
+						)}
 
 						<div className={`icons ${chatHeader ? "bl-light" : ""}`}>
 							{chatHeader ? (
@@ -293,22 +302,24 @@ const Header = props => {
 								</button>
 							</Tooltip>
 
-							<ClickAwayListener onClickAway={() => setMoreMenuOpen(false)}>
-								<div className="more">
-									<Tooltip arrow title="More">
-										<button onClick={() => setMoreMenuOpen(prev => !prev)}>
-											<MoreVertIcon />
-										</button>
-									</Tooltip>
-									<CSSTransition in={moreMenuOpen} unmountOnExit>
-										<div className="menu">
-											<div className="menu-item">Open In Browser</div>
-											<div className="menu-item">Open In Popout</div>
-											<div className="menu-item">sub</div>
-										</div>
-									</CSSTransition>
-								</div>
-							</ClickAwayListener>
+							{chatHeader && (
+								<ClickAwayListener onClickAway={() => setMoreMenuOpen(false)}>
+									<div className="more">
+										<Tooltip arrow title="More">
+											<button onClick={() => setMoreMenuOpen(prev => !prev)}>
+												<MoreVertIcon />
+											</button>
+										</Tooltip>
+										<CSSTransition in={moreMenuOpen} unmountOnExit>
+											<div className="menu">
+												<div className="menu-item">Open In Browser</div>
+												<div className="menu-item">Open In Popout</div>
+												<div className="menu-item">sub</div>
+											</div>
+										</CSSTransition>
+									</div>
+								</ClickAwayListener>
+							)}
 
 							{updateLink && (
 								<Tooltip arrow title="update available" arrow>
