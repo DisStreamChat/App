@@ -578,3 +578,22 @@ button.clear{
     min-width: 100px;
     max-width: 300px;
 }
+
+.more {
+    position: relative;
+    .menu{
+        position: absolute;
+        right: 0;
+        background: white;
+        *{
+            color: black;
+        }
+        .menu-item{
+            padding: .125rem .5rem;
+            cursor: pointer;
+            &:hover{
+                background: #121212aa
+            }
+        }
+    }
+}

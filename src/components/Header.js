@@ -96,6 +96,7 @@ const Header = props => {
 	const [platform, setPlatform] = useState("");
 	const [unreadTimeout, setUnreadTimeout] = useState(0);
 	const [following, setFollowing] = useState();
+	const [moreMenuOpen, setMoreMenuOpen] = useState();
 
 	useEffect(() => {
 		setUnreadTimeout(prev => {
@@ -280,14 +281,20 @@ const Header = props => {
 						<Tooltip title={`${following ? "Unfollow" : "Follow"}`}>
 							<div>{following ? <FavoriteIcon /> : <FavoriteTwoToneIcon />}</div>
 						</Tooltip>
-						<Tooltip title="More">
-							<div className="more">
-								<button>
+						<div className="more">
+							<Tooltip title="More">
+								<button onClick={() => setMoreMenuOpen(prev => !prev)}>
 									<MoreVertIcon />
 								</button>
-								<div className="menu"></div>
-							</div>
-						</Tooltip>
+							</Tooltip>
+							<CSSTransition in={moreMenuOpen} unmountOnExit>
+								<div className="menu">
+									<div className="menu-item">download</div>
+									<div className="menu-item">popout</div>
+									<div className="menu-item">sub</div>
+								</div>
+							</CSSTransition>
+						</div>
 						{updateLink && (
 							<Tooltip title="update available" arrow>
 								<button
