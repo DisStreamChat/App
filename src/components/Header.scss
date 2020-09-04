@@ -610,13 +610,17 @@ button.clear{
 .more {
     position: relative;
     .menu{
+        width: max-content;
         position: absolute;
         right: 0;
         background: white;
+        display: flex;
+        flex-direction: column;
         *{
             color: black;
         }
         .menu-item{
+            min-width: 100%;
             padding: .125rem .5rem;
             cursor: pointer;
             &:hover{

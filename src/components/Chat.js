@@ -125,8 +125,10 @@ function App(props) {
 	const [emotePickerVisible, setEmotePickerVisible] = useState(false);
 
 	useEffect(() => {
-		setMessages(storedMessages);
-		setPinnedMessages(storedPinnedMessages);
+		setTimeout(() => {
+			setMessages(storedMessages);
+			setPinnedMessages(storedPinnedMessages);
+		}, 200);
 	}, []);
 
 	useEffect(() => {
@@ -264,7 +266,7 @@ function App(props) {
 
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
 	useSocketEvent(socketRef.current, "chatmessage", msg => {
-        msg.streamer = channel.TwitchName
+		msg.streamer = channel.TwitchName;
 		if (settings?.ReverseMessageOrder) {
 			const shouldScroll = Math.abs(bodyRef.current.scrollTop - bodyRef.current.scrollHeight) < 1200;
 			setTimeout(() => {
@@ -482,7 +484,7 @@ function App(props) {
 	const [allChatters, setAllChatters] = useState();
 	const userId = id;
 
-    //TODO: use the useInterval hook
+	//TODO: use the useInterval hook
 	useEffect(() => {
 		let id;
 		(async () => {
@@ -506,7 +508,7 @@ function App(props) {
 						info[key] = await Promise.all(
 							value.map(async name => {
 								chatters.push(name);
-								return {login: name, id: name}
+								return { login: name, id: name };
 							})
 						);
 					}

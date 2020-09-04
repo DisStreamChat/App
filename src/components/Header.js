@@ -87,7 +87,7 @@ const Header = props => {
 	const currentUser = firebase.auth.currentUser;
 	const id = currentUser?.uid || " ";
 	const { location } = props;
-	const { setShowViewers, windowFocused, streamerInfo, userData, unreadMessageIds, setUnreadMessageIds } = useContext(AppContext);
+	const { setShowViewers, windowFocused, streamerInfo, userData, unreadMessageIds, setUnreadMessageIds, setMessages } = useContext(AppContext);
 	const [viewingUserId, setViewingUserId] = useState();
 	const [viewingUserInfo, setViewingUserInfo] = useState();
 	const [viewingUserStats, setViewingUserStats] = useState();
@@ -314,7 +314,7 @@ const Header = props => {
 											<div className="menu">
 												<div className="menu-item">Open In Browser</div>
 												<div className="menu-item">Open In Popout</div>
-												<div className="menu-item">sub</div>
+												<div onClick={() => setMessages([])} className="menu-item">Clear Chat</div>
 											</div>
 										</CSSTransition>
 									</div>
