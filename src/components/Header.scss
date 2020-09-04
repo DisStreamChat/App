@@ -214,34 +214,56 @@ button.clear{
 }
 
 .bl-light{
-	border-left: .5px solid #cccccc88;
+	border-left: 1px solid #cccccc88;
 }
 
 .nav {
-	/* position: absolute; */
-	width: 100%;
+	width: 98%;
 	display: flex;
 	align-items: center;
-	justify-content: space-around;
-    // padding: 0 .5rem !important;
+	justify-content: space-between;
     button{
         background: none;
         outline: none;
         border: none;
-	}
+    }
+    .all-icons{
+        flex: .9;
+        display: flex;
+        justify-self: flex-end;
+        justify-content: flex-end;
+        max-width: 300px;
+        // outline: solid;
+    }
 	.icons{
 		display: flex;
-		flex: .5;
-		padding-left: .5rem; 
+		flex: .4;
+        padding-left: .5rem; 
         justify-content: space-around;
         align-items: center;
+        max-width: 100px;
+        // outline: solid;
+        .live-viewers{
+            width: max-content;
+            display: flex;
+            align-items: center;
+            text-align: center;
+        }
+        .messages-notification{
+            width: max-content
+        }
         & > *{
+            transform: scale(.85);
             margin: 0 .25rem;
             // min-height: fit-content;
         }
         &:not(.bl-light){
             flex: 1;
             flex-direction: row-reverse;
+        }
+        &.icons-left{
+            max-width: max-content;
+            flex: .4 !important;
         }
 	}
 }
@@ -345,7 +367,8 @@ button.clear{
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	justify-self: start;
+    justify-self: start;
+    margin-left: .5rem;
 }
 
 .stats * {

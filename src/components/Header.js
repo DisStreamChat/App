@@ -14,13 +14,15 @@ import "./Header.scss";
 import compare from "semver-compare";
 import ClearIcon from "@material-ui/icons/Clear";
 import MailTwoToneIcon from "@material-ui/icons/MailTwoTone";
-import { Tooltip } from "@material-ui/core";
+import { Tooltip, ClickAwayListener } from "@material-ui/core";
 import { useInterval } from "react-use";
 import { CSSTransition } from "react-transition-group";
 import HomeIcon from "@material-ui/icons/Home";
 import FavoriteTwoToneIcon from "@material-ui/icons/FavoriteTwoTone";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
+import VisibilityIcon from "@material-ui/icons/Visibility";
+import BuildIcon from "@material-ui/icons/Build";
 const { remote, ipcRenderer } = window.require("electron");
 const customTitlebar = window.require("custom-electron-titlebar");
 
@@ -243,71 +245,85 @@ const Header = props => {
 										{viewingUserStats?.name}
 									</a>
 								)}
-								<Tooltip arrow title="Viewers in Chat">
-									<div className={"live-viewers"} onClick={() => setShowViewers(true)}>
-										<PeopleAltTwoToneIcon />
-										{viewingUserStats?.viewers}
-									</div>
-								</Tooltip>
 							</div>
-							<Tooltip title={`${unreadMessages ? "Mark as Read" : "No unread Messages"}`} arrow>
+						</>
+					)}
+					<div className="all-icons">
+						<div className="icons icons-left">
+							<Tooltip arrow title={`${following ? "Unfollow" : "Follow"}`}>
+								<div>{following ? <FavoriteIcon /> : <FavoriteTwoToneIcon />}</div>
+							</Tooltip>
+							<Tooltip arrow title="Channel details">
+								<div>
+									<VisibilityIcon />
+								</div>
+							</Tooltip>
+							<Tooltip arrow title={`${unreadMessages ? "Mark as Read" : "No unread Messages"}`} arrow>
 								<div onClick={() => setUnreadMessageIds([])} className={`messages-notification ${unreadMessages ? "unread" : ""}`}>
-									{unreadMessages ? (unreadMessageIds.length > maxDisplayNum ? `${maxDisplayNum}+` : unreadMessageIds.length) : ""}
+									{(unreadMessages && unreadMessageIds.length) ? (unreadMessageIds.length > maxDisplayNum ? `${maxDisplayNum}+` : unreadMessageIds.length) : ""}
 									{unreadMessages ? " " : ""}
 									<MailTwoToneIcon />
 								</div>
 							</Tooltip>
-						</>
-					)}
-					<div className={`icons ${chatHeader ? "bl-light" : ""}`}>
-						{chatHeader ? (
-							<>
-								{!isPopoutOut && (
-									<Tooltip title="Channels">
-										<Link to="/channels">{isPopoutOut ? <ClearIcon /> : <HomeIcon />}</Link>
-									</Tooltip>
-								)}
-							</>
-						) : (
-							<Button variant="contained" color="primary" onClick={signout}>
-								Sign Out
-							</Button>
-						)}
-						<Tooltip title={`${settingsOpen ? "Close" : ""} Settings`}>
-							<button className="clear" onClick={() => setSettingsOpen(o => !o)}>
-								{!settingsOpen ? <SettingsTwoToneIcon /> : <ClearIcon />}
-							</button>
-						</Tooltip>
-						<Tooltip title={`${following ? "Unfollow" : "Follow"}`}>
-							<div>{following ? <FavoriteIcon /> : <FavoriteTwoToneIcon />}</div>
-						</Tooltip>
-						<div className="more">
-							<Tooltip title="More">
-								<button onClick={() => setMoreMenuOpen(prev => !prev)}>
-									<MoreVertIcon />
-								</button>
-							</Tooltip>
-							<CSSTransition in={moreMenuOpen} unmountOnExit>
-								<div className="menu">
-									<div className="menu-item">download</div>
-									<div className="menu-item">popout</div>
-									<div className="menu-item">sub</div>
+							<Tooltip arrow title="Viewers in Chat">
+								<div className={"live-viewers"} onClick={() => setShowViewers(true)}>
+									<PeopleAltTwoToneIcon />
+									{viewingUserStats?.viewers}
 								</div>
-							</CSSTransition>
+							</Tooltip>
 						</div>
-						{updateLink && (
-							<Tooltip title="update available" arrow>
-								<button
-									id="update-link"
-									onClick={() => {
-										ipcRenderer.send("update");
-									}}
-								>
-									<GetAppIcon></GetAppIcon>
-									<div id="notification-light"></div>
+
+						<div className={`icons ${chatHeader ? "bl-light" : ""}`}>
+							{chatHeader ? (
+								<>
+									{!isPopoutOut && (
+										<Tooltip arrow title="Channels">
+											<Link to="/channels">{isPopoutOut ? <ClearIcon /> : <HomeIcon />}</Link>
+										</Tooltip>
+									)}
+								</>
+							) : (
+								<Button variant="contained" color="primary" onClick={signout}>
+									Sign Out
+								</Button>
+							)}
+							<Tooltip arrow title={`${settingsOpen ? "Close" : ""} Settings`}>
+								<button className="clear" onClick={() => setSettingsOpen(o => !o)}>
+									{!settingsOpen ? <SettingsTwoToneIcon /> : <ClearIcon />}
 								</button>
 							</Tooltip>
-						)}
+
+							<ClickAwayListener onClickAway={() => setMoreMenuOpen(false)}>
+								<div className="more">
+									<Tooltip arrow title="More">
+										<button onClick={() => setMoreMenuOpen(prev => !prev)}>
+											<MoreVertIcon />
+										</button>
+									</Tooltip>
+									<CSSTransition in={moreMenuOpen} unmountOnExit>
+										<div className="menu">
+											<div className="menu-item">Open In Browser</div>
+											<div className="menu-item">Open In Popout</div>
+											<div className="menu-item">sub</div>
+										</div>
+									</CSSTransition>
+								</div>
+							</ClickAwayListener>
+
+							{updateLink && (
+								<Tooltip arrow title="update available" arrow>
+									<button
+										id="update-link"
+										onClick={() => {
+											ipcRenderer.send("update");
+										}}
+									>
+										<GetAppIcon></GetAppIcon>
+										<div id="notification-light"></div>
+									</button>
+								</Tooltip>
+							)}
+						</div>
 					</div>
 				</nav>
 				<div className="header-settings">

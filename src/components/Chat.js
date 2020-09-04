@@ -264,7 +264,6 @@ function App(props) {
 
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
 	useSocketEvent(socketRef.current, "chatmessage", msg => {
-		
 		if (settings?.ReverseMessageOrder) {
 			const shouldScroll = Math.abs(bodyRef.current.scrollTop - bodyRef.current.scrollHeight) < 1200;
 			setTimeout(() => {
@@ -318,9 +317,9 @@ function App(props) {
 			);
 		}
 
-        // add a <p></p> around the message to make formatting work properly also hightlight pings
-        const nameRegex = new RegExp(`(?<=\\s|^)(@?${userInfo?.name})`, "igm")
-        console.log(msg.body, nameRegex, msg.body.matchAll(nameRegex))
+		// add a <p></p> around the message to make formatting work properly also hightlight pings
+		const nameRegex = new RegExp(`(?<=\\s|^)(@?${userInfo?.name})`, "igm");
+		console.log(msg.body, nameRegex, msg.body.matchAll(nameRegex));
 		msg.body = `<p>${msg.body.replace(nameRegex, "<span class='ping'>$&</span>")}</p>`;
 
 		// check if the message can have mod actions done on it
@@ -506,7 +505,12 @@ function App(props) {
 							value.map(async name => {
 								chatters.push(name);
 								const response = await fetch(`${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${name}&platform=twitch`);
-								return await response.json();
+								try {
+									if (response.ok) return await response.json();
+									else return {};
+								} catch (err) {
+									return {};
+								}
 							})
 						);
 					}
@@ -696,7 +700,12 @@ function App(props) {
 					<KeyboardArrowUpIcon></KeyboardArrowUpIcon>
 				</button>
 			</CSSTransition>
-			<EmotePicker onEmoteSelect={emote => setChatValue(prev => `${prev} ${emote}`)} emotes={userEmotes} onClickAway={() => setEmotePickerVisible(false)} visible={emotePickerVisible && (windowFocused)} />
+			<EmotePicker
+				onEmoteSelect={emote => setChatValue(prev => `${prev} ${emote}`)}
+				emotes={userEmotes}
+				onClickAway={() => setEmotePickerVisible(false)}
+				visible={emotePickerVisible && windowFocused}
+			/>
 		</div>
 	);
 }
