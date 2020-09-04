@@ -18,8 +18,9 @@ import { Tooltip } from "@material-ui/core";
 import { useInterval } from "react-use";
 import { CSSTransition } from "react-transition-group";
 import HomeIcon from "@material-ui/icons/Home";
-import FavoriteTwoToneIcon from '@material-ui/icons/FavoriteTwoTone';
+import FavoriteTwoToneIcon from "@material-ui/icons/FavoriteTwoTone";
 import FavoriteIcon from "@material-ui/icons/Favorite";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 const { remote, ipcRenderer } = window.require("electron");
 const customTitlebar = window.require("custom-electron-titlebar");
 
@@ -278,6 +279,14 @@ const Header = props => {
 						</Tooltip>
 						<Tooltip title={`${following ? "Unfollow" : "Follow"}`}>
 							<div>{following ? <FavoriteIcon /> : <FavoriteTwoToneIcon />}</div>
+						</Tooltip>
+						<Tooltip title="More">
+							<div className="more">
+								<button>
+									<MoreVertIcon />
+								</button>
+								<div className="menu"></div>
+							</div>
 						</Tooltip>
 						{updateLink && (
 							<Tooltip title="update available" arrow>
