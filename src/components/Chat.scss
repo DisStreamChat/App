@@ -539,14 +539,18 @@ pre._1K1H8._1pKVQ * {
 
 .react-contextmenu-wrapper {
 	display: inline;
-    margin-left: 0.75rem;
-    // z-index: 10000;
+	margin-left: 0.75rem;
+	// z-index: 10000;
 	@media screen and (max-width: 475px) {
 		margin-left: 0.25rem;
 	}
 }
 
-._1Zsx4  .react-contextmenu {
+.react-contextmenu{
+    z-index: 1000;
+}
+
+._1Zsx4 .react-contextmenu {
 	background: darken(#515151, 7);
 	border-radius: 0.5rem;
 	padding: 0.1rem;
