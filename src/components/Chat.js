@@ -264,6 +264,7 @@ function App(props) {
 
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
 	useSocketEvent(socketRef.current, "chatmessage", msg => {
+        msg.streamer = channel.TwitchName
 		if (settings?.ReverseMessageOrder) {
 			const shouldScroll = Math.abs(bodyRef.current.scrollTop - bodyRef.current.scrollHeight) < 1200;
 			setTimeout(() => {

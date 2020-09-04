@@ -134,11 +134,18 @@ $background: #040109;
 }
 
 #root .viewer-context {
+    font-weight: normal;
 	height: 200px;
 	width: 300px;
 	outline: none !important;
 	border: none;
-	overflow: hidden;
+    overflow: hidden;
+    *{
+        font-weight: normal !important;
+        &:not(svg){
+            font-size: 16px;
+        }
+    }
 	& > * {
 		background: green;
 		height: 100px;
