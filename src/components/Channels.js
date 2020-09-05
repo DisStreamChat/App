@@ -89,7 +89,7 @@ const ChannelItem = React.memo(props => {
 									setError("Missing Channel Name");
 								} else {
 									const userName = userData.name;
-                                    const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/checkmod?channel=${channelName}&user=${userName}`;
+                                    const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${channelName}&platform=twitch`;
 									const res = await fetch(apiUrl);
 									if (!res.ok) {
 										setError(`An error occured while fetching ${channelName}, make sure you entered the name correctly`);

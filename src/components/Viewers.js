@@ -71,8 +71,15 @@ const ViewerCard = ({ login, ...props }) => {
 
 const Viewers = ({ chatterInfo, chatterCount, streamer }) => {
 	const [tab, setTab] = useState("twitch");
-	const { setShowViewers } = useContext(AppContext);
-	const currentUser = firebase.auth.currentUser;
+    const [displayChatters, setDisplayChatters] = useState()
+    const { setShowViewers } = useContext(AppContext);
+    const currentUser = firebase.auth.currentUser;
+
+    useEffect(() => {
+        setTimeout(() => {
+            setDisplayChatters(chatterInfo)
+        }, 10) 
+    }, [])
 
 	return (
 		<main className="viewer-body">
@@ -101,8 +108,8 @@ const Viewers = ({ chatterInfo, chatterCount, streamer }) => {
 			</nav>
 			<div className="viewers">
 				{tab === "twitch" ? (
-					chatterInfo ? (
-						Object.entries(chatterInfo).map(([key, value]) => {
+					displayChatters ? (
+						Object.entries(displayChatters).map(([key, value]) => {
 							return (
 								<div key={key} className="viewer-type">
 									<h2 className="viewer-type--header">{key}</h2>
