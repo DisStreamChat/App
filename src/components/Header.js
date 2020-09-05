@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect, useContext } from "react";
+import React, { useCallback, useState, useEffect, useContext, useMemo } from "react";
 import { withRouter, Link } from "react-router-dom";
 import { AppContext } from "../contexts/AppContext";
 import SettingsTwoToneIcon from "@material-ui/icons/SettingsTwoTone";
@@ -97,8 +97,23 @@ const Header = props => {
 	const absoluteLocation = window.location;
 	const [platform, setPlatform] = useState("");
 	const [unreadTimeout, setUnreadTimeout] = useState(0);
-	const [following, setFollowing] = useState();
+	const [follows, setFollows] = useState([]);
 	const [moreMenuOpen, setMoreMenuOpen] = useState();
+
+	const viewingName = viewingUserStats?.name;
+	const following = useMemo(() => follows.includes(viewingName?.toLowerCase?.()), [follows, viewingName]);
+
+	useEffect(() => {
+		(async () => {
+			if (userData.TwitchName) {
+				try {
+					const response = await fetch(`${process.env.REACT_APP_SOCKET_URL}/twitch/follows?user=${userData.TwitchName}&key=name`);
+					const json = await response.json();
+					setFollows(prev => (json.follows ? json.follows : json));
+				} catch (err) {}
+			}
+		})();
+	}, [userData]);
 
 	useEffect(() => {
 		setUnreadTimeout(prev => {
@@ -228,6 +243,18 @@ const Header = props => {
 		props.history.push("/");
 	}, [props.history]);
 
+	const handleFollow = useCallback(async () => {
+        const otc = (await firebase.db.collection("Secret").doc(currentUser.uid).get()).data().value
+		const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/twitch/follow?user=${userData.TwitchName}&channel=${viewingName}&otc=${otc}&id=${currentUser.uid}`;
+		const method = following ? "DELETE" : "PUT";
+		if(following){
+            setFollows(prev => prev.filter(name => name?.toLowerCase?.() !== viewingName?.toLowerCase?.()))
+        }else{
+            setFollows(prev => [...prev, viewingName?.toLowerCase?.()])
+        }
+		await fetch(apiUrl, { method });
+	}, [userData, following, viewingName, currentUser]);
+
 	return !show ? (
 		<></>
 	) : (
@@ -252,14 +279,14 @@ const Header = props => {
 						{chatHeader && (
 							<div className="icons icons-left">
 								<Tooltip arrow title={`${following ? "Unfollow" : "Follow"}`}>
-									<div>{following ? <FavoriteIcon /> : <FavoriteTwoToneIcon />}</div>
+									<div onClick={handleFollow}>{following ? <FavoriteIcon /> : <FavoriteTwoToneIcon />}</div>
 								</Tooltip>
 								<Tooltip arrow title="Channel details">
 									<div>
 										<VisibilityIcon />
 									</div>
 								</Tooltip>
-								<Tooltip arrow title={`${unreadMessages ? "Mark as Read" : "No unread Messages"}`} arrow>
+								<Tooltip arrow title={`${unreadMessages ? "Mark as Read" : "No unread Messages"}`}>
 									<div
 										onClick={() => setUnreadMessageIds([])}
 										className={`messages-notification ${unreadMessages ? "unread" : ""}`}
@@ -314,7 +341,9 @@ const Header = props => {
 											<div className="menu">
 												<div className="menu-item">Open In Browser</div>
 												<div className="menu-item">Open In Popout</div>
-												<div onClick={() => setMessages([])} className="menu-item">Clear Chat</div>
+												<div onClick={() => setMessages([])} className="menu-item">
+													Clear Chat
+												</div>
 											</div>
 										</CSSTransition>
 									</div>
