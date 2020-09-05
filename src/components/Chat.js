@@ -267,9 +267,10 @@ function App(props) {
 
 	const isMod = useAsyncMemo(async () => {
 		try {
+			if (userInfo?.name?.toLowerCase?.() === channel?.TwitchName) return true;
 			const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/checkmod?user=${userInfo?.name?.toLowerCase?.()}&channel=${channel?.TwitchName}`;
-            const response = await fetch(apiUrl);
-            const json = await response.json();
+			const response = await fetch(apiUrl);
+			const json = await response.json();
 			return !!json;
 		} catch (err) {
 			return false;
@@ -336,8 +337,7 @@ function App(props) {
 		const nameRegex = new RegExp(`(?<=\\s|^)(@?${userInfo?.name})`, "igm");
 		msg.body = `<p>${msg.body.replace(nameRegex, "<span class='ping'>$&</span>")}</p>`;
 
-        // check if the message can have mod actions done on it
-        console.log(msg?.displayName?.toLowerCase?.() === userInfo?.name?.toLowerCase?.(), isMod)
+		// check if the message can have mod actions done on it
 		msg.moddable =
 			msg?.displayName?.toLowerCase?.() === userInfo?.name?.toLowerCase?.() ||
 			(!Object.keys(msg.badges).includes("moderator") && !Object.keys(msg.badges).includes("broadcaster"));
