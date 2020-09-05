@@ -58,6 +58,7 @@
     "twitch": "^4.0.10",
     "twitch-electron-auth-provider": "^4.0.10",
     "uid": "^1.0.0",
+    "use-async-memo": "^1.2.2",
     "use-hotkeys": "^1.1.0"
   },
   "scripts": {

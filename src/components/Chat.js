@@ -24,6 +24,7 @@ import ReactTextareaAutocomplete from "@webscopeio/react-textarea-autocomplete";
 import useSocketEvent from "../hooks/useSocketEvent";
 import { Tooltip } from "@material-ui/core";
 import EmotePicker from "./EmotePicker/EmotePicker";
+import { useAsyncMemo } from "use-async-memo";
 
 const Item = ({ selected, entity: { name, char } }) => <div className="auto-item">{`${name}: ${char}`}</div>;
 const UserItem = ({ selected, entity: { name, char } }) => (
@@ -264,6 +265,17 @@ function App(props) {
 		[socketRef, setMessages, userInfo, currentUser]
 	);
 
+	const isMod = useAsyncMemo(async () => {
+		try {
+			const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/checkmod?user=${userInfo?.name?.toLowerCase?.()}&channel=${channel?.TwitchName}`;
+            const response = await fetch(apiUrl);
+            const json = await response.json();
+			return !!json;
+		} catch (err) {
+			return false;
+		}
+	}, [channel, userInfo]);
+
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
 	useSocketEvent(socketRef.current, "chatmessage", msg => {
 		msg.streamer = channel.TwitchName;
@@ -322,14 +334,13 @@ function App(props) {
 
 		// add a <p></p> around the message to make formatting work properly also hightlight pings
 		const nameRegex = new RegExp(`(?<=\\s|^)(@?${userInfo?.name})`, "igm");
-		console.log(msg.body, nameRegex, msg.body.matchAll(nameRegex));
 		msg.body = `<p>${msg.body.replace(nameRegex, "<span class='ping'>$&</span>")}</p>`;
 
-		// check if the message can have mod actions done on it
+        // check if the message can have mod actions done on it
+        console.log(msg?.displayName?.toLowerCase?.() === userInfo?.name?.toLowerCase?.(), isMod)
 		msg.moddable =
-			msg?.displayName?.toLowerCase?.() !== userInfo?.name?.toLowerCase?.() &&
-			!Object.keys(msg.badges).includes("moderator") &&
-			!Object.keys(msg.badges).includes("broadcaster");
+			msg?.displayName?.toLowerCase?.() === userInfo?.name?.toLowerCase?.() ||
+			(!Object.keys(msg.badges).includes("moderator") && !Object.keys(msg.badges).includes("broadcaster"));
 
 		if (
 			msg.platform !== "discord" &&
@@ -338,6 +349,8 @@ function App(props) {
 		)
 			msg.moddable = true;
 		if (msg.displayName.toLowerCase() === "disstreamchat") msg.moddable = false;
+
+		msg.moddable = msg.moddable && isMod;
 
 		setUnreadMessageIds(prev => [...new Set([...prev, msg.id])]);
 		setMessages(m => {
