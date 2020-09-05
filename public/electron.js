@@ -272,6 +272,21 @@ ipcMain.on("setopacity", (event, data) => {
 	opacity = Math.min(Math.max(+data, 0.1), 1);
 });
 
+ipcMain.on("notify-live", (event, {stream}) => {
+    console.log(stream)
+    notifier.notify(
+        {
+            appName: "com.disstreamchat.id",
+            title: `${stream.user_name} is Live`,
+            message: `Stream Title: ${stream.title}`,
+            icon: path.join(__dirname, "icon.png"),
+            sound: false,
+            wait: true,
+        },
+        console.log
+    );
+})
+
 function clearHotKeys() {
 	try {
 		globalShortcut.unregister(unfocusKey);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import { HashRouter as Router, Route, Switch, Redirect } from "react-router-dom";
@@ -13,6 +13,8 @@ import { AppContext } from "./contexts/AppContext";
 import Channels from "./components/Channels";
 import Header from "./components/Header";
 import Viewers from "./components/Viewers";
+import openSocket from "socket.io-client";
+import useSocketEvent from "./hooks/useSocketEvent";
 const { ipcRenderer } = window.require("electron");
 
 const App = () => {
@@ -25,8 +27,25 @@ const App = () => {
 	const [userData, setUserData] = useState({});
 	const [border, setBorder] = useState(true);
 	const [unreadMessageIds, setUnreadMessageIds] = useState([]);
+	const globalSocket = useRef();
 
 	const currentUser = firebase.auth.currentUser;
+
+	useEffect(() => {
+		if (!globalSocket.current) {
+			globalSocket.current = openSocket(process.env.REACT_APP_SOCKET_URL);
+			globalSocket.current.emit("addme", { TwitchName: "dscnotifications" });
+		}
+	}, []);
+
+	useSocketEvent(globalSocket.current, "stream-up", data => {
+		console.log(data);
+		ipcRenderer.send("notify-live", data);
+	});
+
+	useSocketEvent(globalSocket.current, "imConnected", () => {
+		globalSocket.current.emit("addme", "dscnotifications");
+	});
 
 	useEffect(() => {
 		ipcRenderer.on("toggle-border", (event, text) => {
@@ -69,7 +88,9 @@ const App = () => {
 		(async () => {
 			if (firebaseInit !== false && currentUser) {
 				if (!userData.twitchId) return;
-				const userResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${userData.twitchId}&platform=twitch&place=index`);
+				const userResponse = await fetch(
+					`${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${userData.twitchId}&platform=twitch&place=index`
+				);
 				const userJson = await userResponse.json();
 				const TwitchName = userJson.TwitchName || userData.TwitchName;
 				const profilePictureResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/profilepicture?user=${TwitchName}`);
