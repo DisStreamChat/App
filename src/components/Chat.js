@@ -277,6 +277,88 @@ function App(props) {
 		}
 	}, [channel, userInfo]);
 
+	useSocketEvent(socketRef.current, "auto-mod", msg => {
+		msg.streamer = channel.TwitchName;
+		msg.autoMod = true;
+		if (settings?.ReverseMessageOrder) {
+			const shouldScroll = Math.abs(bodyRef.current.scrollTop - bodyRef.current.scrollHeight) < 1200;
+			setTimeout(() => {
+				if (shouldScroll) {
+					bodyRef.current.scrollTo({
+						top: bodyRef.current.scrollHeight,
+						behavior: "smooth",
+					});
+				}
+			}, 200);
+		}
+		// by default we don't ignore messages
+		if (messages.findIndex(message => message.id === msg.id) !== -1) return;
+		let ignoredMessage = false;
+
+		// check if we should ignore this user
+		if (settings?.IgnoredUsers?.map?.(item => item.value.toLowerCase()).includes(msg.displayName.toLowerCase())) {
+			ignoredMessage = true;
+		}
+
+		// check if the message is a command
+		const _ = settings?.IgnoredCommandPrefixes?.forEach(prefix => {
+			if (msg.body.startsWith(prefix.value)) {
+				ignoredMessage = true;
+			}
+		});
+
+		// don't allow ignoring of notifications from 'disstreamchat'
+		if (msg.displayName.toLowerCase() === "disstreamchat") ignoredMessage = false;
+
+		if (settings?.IgnoreCheers && msg.messageId === "cheer") {
+			ignoredMessage = true;
+		}
+		if (settings?.IgnoreFollows && msg.messageId === "follow") {
+			ignoredMessage = true;
+		}
+		if (settings?.IgnoreSubscriptions && msg.messageId === "subscription" && msg.messageType !== "channel-points") {
+			ignoredMessage = true;
+		}
+		if (settings?.IgnoreChannelPoints && msg.messageType === "channel-points") {
+			ignoredMessage = true;
+		}
+
+		// if ignored don't add the message
+		if (ignoredMessage) return;
+
+		msg.body = `${msg.body}\n<span onClick="alert('automod')" class="automod-button" style="color: #19ff19 !important">Accept</span>  <span onClick="alert('automod')" class="automod-button" style="color: red !important">Deny</span>`;
+
+		if (msg.replyParentDisplayName) {
+			msg.body = `<span class="reply-header">Replying to ${msg.replyParentDisplayName}: ${msg.replyParentMessageBody}</span>${msg.body}`.replace(
+				`@${msg.replyParentDisplayName}`,
+				""
+			);
+		}
+
+		// add a <p></p> around the message to make formatting work properly also hightlight pings
+		const nameRegex = new RegExp(`(?<=\\s|^)(@?${userInfo?.name})`, "igm");
+		msg.body = `<p>${msg.body.replace(nameRegex, "<span class='ping'>$&</span>")}</p>`;
+
+		// check if the message can have mod actions done on it
+		msg.moddable =
+			msg?.displayName?.toLowerCase?.() === userInfo?.name?.toLowerCase?.() ||
+			(!Object.keys(msg.badges).includes("moderator") && !Object.keys(msg.badges).includes("broadcaster"));
+
+		if (
+			msg.platform !== "discord" &&
+			msg?.displayName?.toLowerCase?.() !== userInfo?.name?.toLowerCase?.() &&
+			channel?.TwitchName?.toLowerCase?.() === userInfo?.name?.toLowerCase?.()
+		)
+			msg.moddable = true;
+		if (msg.displayName.toLowerCase() === "disstreamchat") msg.moddable = false;
+
+		// msg.moddable = msg.moddable && isMod;
+
+		// setUnreadMessageIds(prev => [...new Set([...prev, msg.id])]);
+		setMessages(m => {
+			return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
+		});
+	});
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
 	useSocketEvent(socketRef.current, "chatmessage", msg => {
 		msg.streamer = channel.TwitchName;
@@ -471,14 +553,14 @@ function App(props) {
 			if (!observerRef.current) {
 				observerRef.current = new IntersectionObserver((entries, observer) => {
 					entries.forEach(entry => {
-                        const idx = entry.target.dataset.idx;
+						const idx = entry.target.dataset.idx;
 						if (entry.isIntersecting) {
 							setUnreadMessageIds(prev => prev.filter(id => id !== idx));
 							const elt = document.querySelector(`div[data-idx="${idx}"]`);
 							observer.unobserve(elt);
-						}else{
-                            setUnreadMessageIds(prev => [...new Set([...prev, idx])]);
-                        }
+						} else {
+							setUnreadMessageIds(prev => [...new Set([...prev, idx])]);
+						}
 					});
 				});
 			}
@@ -576,9 +658,10 @@ function App(props) {
 		() =>
 			handleFlags(showSearch ? search : "", [...messages, ...pinnedMessages])
 				.filter(msg => !msg.deleted)
-                .sort((a, b) => a.sentAt - b.sentAt)
-                .map(message => ({...message, moddable: message.moddable && isMod})),
-		[messages, search, showSearch, pinnedMessages, isMod]
+				.filter(msg => (msg.autoMod ? settings.ShowAutomodMessages && (isMod || true) : true))
+				.sort((a, b) => a.sentAt - b.sentAt)
+				.map(message => ({ ...message, moddable: message.moddable && isMod })),
+		[messages, search, showSearch, pinnedMessages, isMod, settings]
 	);
 
 	const sendMessage = useCallback(() => {
