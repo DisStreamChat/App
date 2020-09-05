@@ -350,7 +350,7 @@ function App(props) {
 			msg.moddable = true;
 		if (msg.displayName.toLowerCase() === "disstreamchat") msg.moddable = false;
 
-		msg.moddable = msg.moddable && isMod;
+		// msg.moddable = msg.moddable && isMod;
 
 		setUnreadMessageIds(prev => [...new Set([...prev, msg.id])]);
 		setMessages(m => {
@@ -574,8 +574,9 @@ function App(props) {
 		() =>
 			handleFlags(showSearch ? search : "", [...messages, ...pinnedMessages])
 				.filter(msg => !msg.deleted)
-				.sort((a, b) => a.sentAt - b.sentAt),
-		[messages, search, showSearch, pinnedMessages]
+                .sort((a, b) => a.sentAt - b.sentAt)
+                .map(message => ({...message, moddable: message.moddable && isMod})),
+		[messages, search, showSearch, pinnedMessages, isMod]
 	);
 
 	const sendMessage = useCallback(() => {
@@ -593,7 +594,7 @@ function App(props) {
 
 	return showViewers ? (
 		<span style={{ fontFamily: settings.Font }}>
-			<Viewers streamer={streamerName} chatterCount={chatterCount} chatterInfo={chatterInfo} />
+			<Viewers isMod={isMod} streamer={streamerName} chatterCount={chatterCount} chatterInfo={chatterInfo} />
 		</span>
 	) : (
 		<div

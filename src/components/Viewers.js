@@ -11,7 +11,7 @@ import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import { Tooltip } from "@material-ui/core";
 
 //TODO: load data on click
-const ViewerCard = ({ login, ...props }) => {
+const ViewerCard = ({ isMod, login, ...props }) => {
 	const [clicked, setClicked] = useState();
 	const [viewerData, setViewerData] = useState({});
 	// const [loading, setLoading] = useState()
@@ -19,14 +19,14 @@ const ViewerCard = ({ login, ...props }) => {
 	useEffect(() => {
 		(async () => {
 			if (clicked) {
-                console.log("getting data")
+				console.log("getting data");
 				const response = await fetch(`${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${login}&platform=twitch`);
 				if (response.ok) {
 					try {
 						setViewerData(await response.json());
 					} catch (err) {
-                        alert(err.message)
-                    }
+						alert(err.message);
+					}
 				}
 			}
 		})();
@@ -50,17 +50,21 @@ const ViewerCard = ({ login, ...props }) => {
 					</div>
 					<div className="viewer-body">
 						<div className="mod-icons">
-							<div data-title={`Ban ${props.login}`}>
-								<BlockIcon />
-							</div>
-							<div data-title={`Timeout ${props.login}`}>
-								<AccessTimeIcon />
-							</div>
-							<div data-title={`Purge User`}>1s</div>
-							<div data-title={`Timeout 10min`}>10m</div>
-							<div data-title={`Timeout 1hr`}>1h</div>
-							<div data-title={`Timeout 8hr`}>8h</div>
-							<div data-title={`Timeout 24hr`}>24h</div>
+							{isMod && (
+								<>
+									<div data-title={`Ban ${props.login}`}>
+										<BlockIcon />
+									</div>
+									<div data-title={`Timeout ${props.login}`}>
+										<AccessTimeIcon />
+									</div>
+									<div data-title={`Purge User`}>1s</div>
+									<div data-title={`Timeout 10min`}>10m</div>
+									<div data-title={`Timeout 1hr`}>1h</div>
+									<div data-title={`Timeout 8hr`}>8h</div>
+									<div data-title={`Timeout 24hr`}>24h</div>
+								</>
+							)}
 						</div>
 					</div>
 				</div>
@@ -69,17 +73,17 @@ const ViewerCard = ({ login, ...props }) => {
 	);
 };
 
-const Viewers = ({ chatterInfo, chatterCount, streamer }) => {
+const Viewers = ({ isMod, chatterInfo, chatterCount, streamer }) => {
 	const [tab, setTab] = useState("twitch");
-    const [displayChatters, setDisplayChatters] = useState()
-    const { setShowViewers } = useContext(AppContext);
-    const currentUser = firebase.auth.currentUser;
+	const [displayChatters, setDisplayChatters] = useState();
+	const { setShowViewers } = useContext(AppContext);
+	const currentUser = firebase.auth.currentUser;
 
-    useEffect(() => {
-        setTimeout(() => {
-            setDisplayChatters(chatterInfo)
-        }, 10) 
-    }, [])
+	useEffect(() => {
+		setTimeout(() => {
+			setDisplayChatters(chatterInfo);
+		}, 10);
+	}, [chatterInfo]);
 
 	return (
 		<main className="viewer-body">
@@ -114,7 +118,7 @@ const Viewers = ({ chatterInfo, chatterCount, streamer }) => {
 								<div key={key} className="viewer-type">
 									<h2 className="viewer-type--header">{key}</h2>
 									{value.map(user => (
-										<ViewerCard key={user.id} streamer={streamer} {...user}></ViewerCard>
+										<ViewerCard isMod={isMod} key={user.id} streamer={streamer} {...user}></ViewerCard>
 									))}
 								</div>
 							);
