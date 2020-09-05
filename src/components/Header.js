@@ -120,7 +120,7 @@ const Header = props => {
 			clearTimeout(prev);
 			return setTimeout(() => {
 				setUnreadMessages(!!unreadMessageIds.length);
-			}, 200);
+			}, 0);
 		});
 	}, [setUnreadMessages, unreadMessageIds]);
 

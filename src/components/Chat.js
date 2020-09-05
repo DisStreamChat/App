@@ -352,7 +352,7 @@ function App(props) {
 
 		// msg.moddable = msg.moddable && isMod;
 
-		setUnreadMessageIds(prev => [...new Set([...prev, msg.id])]);
+		// setUnreadMessageIds(prev => [...new Set([...prev, msg.id])]);
 		setMessages(m => {
 			return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
 		});
@@ -471,12 +471,14 @@ function App(props) {
 			if (!observerRef.current) {
 				observerRef.current = new IntersectionObserver((entries, observer) => {
 					entries.forEach(entry => {
+                        const idx = entry.target.dataset.idx;
 						if (entry.isIntersecting) {
-							const idx = entry.target.dataset.idx;
 							setUnreadMessageIds(prev => prev.filter(id => id !== idx));
 							const elt = document.querySelector(`div[data-idx="${idx}"]`);
 							observer.unobserve(elt);
-						}
+						}else{
+                            setUnreadMessageIds(prev => [...new Set([...prev, idx])]);
+                        }
 					});
 				});
 			}
