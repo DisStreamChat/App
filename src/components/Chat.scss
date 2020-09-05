@@ -550,13 +550,17 @@ pre._1K1H8._1pKVQ * {
     z-index: 1000;
 }
 
-._1Zsx4 .react-contextmenu {
+._1Zsx4 .react-contextmenu, span:last-child .react-contextmenu {
 	background: darken(#515151, 7);
 	border-radius: 0.5rem;
 	padding: 0.1rem;
 	overflow: hidden;
 	border: 0.5px solid darken(#515151, 100);
 	z-index: 1000;
+}
+
+span:last-child .react-contextmenu {
+    min-width: 125px !important;
 }
 
 .react-contextmenu-item {
