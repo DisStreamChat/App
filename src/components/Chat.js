@@ -326,7 +326,7 @@ function App(props) {
 		// if ignored don't add the message
 		if (ignoredMessage) return;
 
-		msg.body = `${msg.body}\n<span onClick="alert('automod')" class="automod-button" style="color: #19ff19 !important">Accept</span>  <span onClick="alert('automod')" class="automod-button" style="color: red !important">Deny</span>`;
+		msg.body = `${msg.body}\n<span id=${msg.id}-accept class="automod-button" style="color: #19ff19 !important">Accept</span>  <span id=${msg.id}-deny class="automod-button" style="color: red !important">Deny</span>`;
 
 		if (msg.replyParentDisplayName) {
 			msg.body = `<span class="reply-header">Replying to ${msg.replyParentDisplayName}: ${msg.replyParentMessageBody}</span>${msg.body}`.replace(
