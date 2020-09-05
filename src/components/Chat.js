@@ -134,7 +134,7 @@ function App(props) {
 
 	useEffect(() => {
 		if (!settings.DisableLocalStorage) {
-			setStoredMessages(messages);
+			setStoredMessages(messages.slice(-Math.max(settings.MessageLimit, 100)));
 			setStoredPinnedMessages(pinnedMessages);
 		}
 	}, [messages, settings, setStoredMessages, pinnedMessages, setStoredPinnedMessages]);
