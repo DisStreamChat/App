@@ -4,8 +4,12 @@ export default (parameter, messages) => {
 	parameters.forEach(param => {
 		matchingMessages = [
 			...matchingMessages,
-			...messages?.filter(
-				msg => msg?.messageId?.toLowerCase?.()?.includes( param?.toLowerCase?.()) || msg?.messageType?.toLowerCase?.()?.includes(param.toLowerCase?.()) || (msg.pinned && param==="pinned")
+			...messages?.filter(msg =>
+				"subscription".includes(param?.toLowerCase?.())
+					? msg?.messageType?.toLowerCase?.()?.includes(param.toLowerCase?.()) && msg?.messageType?.toLowerCase?.() !== "channel-points"
+					: msg?.messageId?.toLowerCase?.()?.includes(param?.toLowerCase?.()) ||
+					  msg?.messageType?.toLowerCase?.()?.includes(param.toLowerCase?.()) ||
+					  (msg.pinned && param === "pinned")
 			),
 		];
 	});
