@@ -478,16 +478,16 @@ function App(props) {
 	const scrollTop = useCallback(() => {
 		setUnreadMessageIds([]);
 		bodyRef.current.scrollTo({
-			top: 0,
+			top: settings?.ReverseMessageOrder ? bodyRef.current.scrollHeight : 0,
 			behavior: "smooth",
 		});
-	}, [setUnreadMessageIds]);
+	}, [setUnreadMessageIds, settings]);
 
 	useEffect(() => {
-		bodyRef.current.addEventListener("scroll", e => {
-			setShowToTop(prev => bodyRef.current.scrollTop > 600);
-		});
-	}, []);
+		bodyRef.current.onscroll =  e => {
+			setShowToTop(prev => !settings?.ReverseMessageOrder ? bodyRef.current.scrollTop > 600 : Math.abs(bodyRef.current.scrollTop - bodyRef.current.scrollHeight) > 1500 );
+        };
+	}, [settings]);
 
 	const checkReadMessage = useCallback(
 		node => {
@@ -743,9 +743,9 @@ function App(props) {
 				</CSSTransition>
 			</div>
 
-			<CSSTransition unmountOnExit timeout={400} classNames={"to-top-node"} in={(showToTop && !settings?.ReverseMessageOrder)}>
+			<CSSTransition unmountOnExit timeout={400} classNames={"to-top-node"} in={showToTop}>
 				<button className="back-to-top-button fade-in" onClick={scrollTop}>
-					Scroll To Top
+					Scroll To {settings?.ReverseMessageOrder ? "Bottom" : "Top"}
 				</button>
 			</CSSTransition>
 			<EmotePicker
