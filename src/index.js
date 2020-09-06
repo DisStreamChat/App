@@ -14,6 +14,7 @@ import Channels from "./components/Channels";
 import Header from "./components/Header";
 import Viewers from "./components/Viewers";
 import openSocket from "socket.io-client";
+import { useDocument } from "react-firebase-hooks/firestore";
 import useSocketEvent from "./hooks/useSocketEvent";
 const { ipcRenderer } = window.require("electron");
 
@@ -27,9 +28,19 @@ const App = () => {
 	const [userData, setUserData] = useState({});
 	const [border, setBorder] = useState(true);
 	const [unreadMessageIds, setUnreadMessageIds] = useState([]);
+	const [NotifyChanels, setNotifyChannels] = useState([]);
 	const globalSocket = useRef();
 
 	const currentUser = firebase.auth.currentUser;
+
+	const [LiveNotifications, loading, error] = useDocument(firebase.db.collection("live-notify").doc(currentUser?.uid || " "));
+
+	useEffect(() => {
+		if (!loading && !error) {
+			const LiveNotificationsData = LiveNotifications.data();
+			setNotifyChannels(LiveNotificationsData.channels);
+		}
+	}, [LiveNotifications, loading, error]);
 
 	useEffect(() => {
 		if (!globalSocket.current) {
@@ -39,8 +50,10 @@ const App = () => {
 	}, []);
 
 	useSocketEvent(globalSocket.current, "stream-up", data => {
-		console.log(data);
-		ipcRenderer.send("notify-live", data);
+		const streamerId = data.stream ? data.stream.user_id : data.user_id;
+		if (NotifyChanels.includes(streamerId)) {
+			ipcRenderer.send("notify-live", data);
+		}
 	});
 
 	useSocketEvent(globalSocket.current, "imConnected", () => {
@@ -152,6 +165,8 @@ const App = () => {
 				setUserData,
 				unreadMessageIds,
 				setUnreadMessageIds,
+				NotifyChanels,
+				setNotifyChannels,
 			}}
 		>
 			<Router>

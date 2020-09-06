@@ -96,7 +96,8 @@ const Header = props => {
 		setPinnedMessages,
 		unreadMessageIds,
 		setUnreadMessageIds,
-		setMessages,
+        setMessages,
+        NotifyChanels
 	} = useContext(AppContext);
 	const [viewingUserId, setViewingUserId] = useState();
 	const [viewingUserInfo, setViewingUserInfo] = useState();
@@ -116,12 +117,13 @@ const Header = props => {
 
 	const isMod = useAsyncMemo(async () => {
 		try {
-            if(!chatHeader) return false
+			if (!chatHeader) return false;
+			if (!viewingName) return false;
 			const name = userData?.name?.toLowerCase?.();
-			if (name === viewingName) return true;
+			if (name === viewingName?.toLowerCase?.()) return true;
 			const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/checkmod?user=${name}&channel=${viewingName}`;
-			const response = await fetch(apiUrl);
 			console.log(apiUrl);
+			const response = await fetch(apiUrl);
 			const json = await response.json();
 			return !!json;
 		} catch (err) {
@@ -140,6 +142,20 @@ const Header = props => {
 			}
 		})();
 	}, [userData]);
+
+    useEffect(() => {
+        setNotifyLive(NotifyChanels.includes(viewingUserId))
+    }, [viewingUserId, NotifyChanels])
+
+    const toggleLiveNotify = useCallback(async() => {
+        setNotifyLive(prev => {
+            const action = prev ? firebase.firestore.FieldValue.arrayRemove : firebase.firestore.FieldValue.arrayUnion
+            firebase.db.collection("live-notify").doc(currentUser.uid).update({
+                channels: action(viewingUserId)
+            })
+            return !prev
+        })
+    }, [currentUser.uid, viewingUserId])
 
 	useEffect(() => {
 		setUnreadTimeout(prev => {
@@ -375,7 +391,9 @@ const Header = props => {
 										</Tooltip>
 										<CSSTransition in={moreMenuOpen} unmountOnExit>
 											<div className="menu">
-												<a href={`https://www.twitch.tv/${viewingName}`} className="menu-item">Open In Browser</a>
+												<a href={`https://www.twitch.tv/${viewingName}`} className="menu-item">
+													Open In Browser
+												</a>
 												<div onClick={popoutChannel} className="menu-item">
 													Open In Popout
 												</div>
@@ -387,7 +405,7 @@ const Header = props => {
 												<div className="menu-item">
 													<input
 														checked={notifyLive}
-														onChange={e => setNotifyLive(e.target.checked)}
+														onChange={toggleLiveNotify}
 														type="checkbox"
 														id={`notify-${viewingName}`}
 													/>
