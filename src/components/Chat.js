@@ -617,16 +617,12 @@ function App(props) {
 
 	const sendMessage = useCallback(() => {
 		if (socketRef.current) {
-			if (chatValue.startsWith("/clear")) {
-				setMessages([]);
-				return;
-			}
 			socketRef.current.emit("sendchat", {
 				sender: userInfo?.name?.toLowerCase?.(),
 				message: chatValue,
 			});
 		}
-	}, [socketRef, chatValue, userInfo, setMessages]);
+	}, [socketRef, chatValue, userInfo]);
 
 	return showViewers ? (
 		<span style={{ fontFamily: settings.Font }}>
