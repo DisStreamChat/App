@@ -2,11 +2,9 @@ import React, { useCallback, useState, useEffect, useContext, useMemo } from "re
 import { withRouter, Link } from "react-router-dom";
 import { AppContext } from "../contexts/AppContext";
 import SettingsTwoToneIcon from "@material-ui/icons/SettingsTwoTone";
-import SettingAccordion from "./SettingsAccordion";
 import Skeleton from "@material-ui/lab/Skeleton";
 import firebase from "../firebase";
 import Button from "@material-ui/core/Button";
-import Setting from "./Setting";
 import SearchBox from "./SearchBox";
 import PeopleAltTwoToneIcon from "@material-ui/icons/PeopleAltTwoTone";
 import GetAppIcon from "@material-ui/icons/GetApp";
@@ -21,8 +19,9 @@ import HomeIcon from "@material-ui/icons/Home";
 import FavoriteTwoToneIcon from "@material-ui/icons/FavoriteTwoTone";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
-import VisibilityIcon from "@material-ui/icons/Visibility";
 import { useAsyncMemo } from "use-async-memo";
+import SettingList from "./SettingList";
+import { maxDisplayNum } from "../utils/constants";
 // import BuildIcon from "@material-ui/icons/Build";
 const { remote, ipcRenderer } = window.require("electron");
 const customTitlebar = window.require("custom-electron-titlebar");
@@ -34,49 +33,6 @@ let MyTitleBar = new customTitlebar.Titlebar({
 });
 MyTitleBar.updateTitle("DisStreamChat");
 MyTitleBar.setHorizontalAlignment("left");
-
-const SettingList = React.memo(props => {
-	return (
-		<SettingAccordion>
-			{Object.entries(props.defaultSettings || {})
-				.filter(
-					([name, data]) =>
-						!data.discordSetting &&
-						(!props.search
-							? true
-							: name
-									?.match(/[A-Z][a-z]+|[0-9]+/g)
-									?.join(" ")
-									?.toLowerCase()
-									?.includes(props?.search?.toLowerCase()))
-				)
-				.sort((a, b) => {
-					const categoryOrder = a[1].type.localeCompare(b[1].type);
-					const nameOrder = a[0].localeCompare(b[0]);
-					return !!categoryOrder ? categoryOrder : nameOrder;
-				})
-				.map(([key, value]) => {
-					return (
-						<Setting
-							default={value.value}
-							key={key}
-							onChange={props.updateSettings}
-							value={props?.settings?.[key]}
-							name={key}
-							type={value.type}
-							min={value.min}
-							max={value.max}
-							step={value.step}
-							options={value.options}
-							description={value.description}
-						/>
-					);
-				})}
-		</SettingAccordion>
-	);
-});
-
-const maxDisplayNum = 999;
 
 const Header = props => {
 	const [settingsOpen, setSettingsOpen] = useState(false);
@@ -107,7 +63,6 @@ const Header = props => {
 	const [unreadMessages, setUnreadMessages] = useState(false);
 	const absoluteLocation = window.location;
 	const [platform, setPlatform] = useState("");
-	const [unreadTimeout, setUnreadTimeout] = useState(0);
 	const [follows, setFollows] = useState([]);
 	const [moreMenuOpen, setMoreMenuOpen] = useState();
 	const [notifyLive, setNotifyLive] = useState(false);
@@ -174,12 +129,7 @@ const Header = props => {
 	}, [currentUser.uid, viewingUserId]);
 
 	useEffect(() => {
-		setUnreadTimeout(prev => {
-			clearTimeout(prev);
-			return setTimeout(() => {
-				setUnreadMessages(!!unreadMessageIds.length);
-			}, 0);
-		});
+		setUnreadMessages(!!unreadMessageIds.length);
 	}, [setUnreadMessages, unreadMessageIds]);
 
 	useEffect(() => {

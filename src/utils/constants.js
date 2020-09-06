@@ -6,3 +6,5 @@ export const displayMotes = [
 	"https://static-cdn.jtvnw.net/emoticons/v1/68856/1.0",
 	"https://static-cdn.jtvnw.net/emoticons/v1/425618/1.0",
 ];
+
+export const maxDisplayNum = 999;
