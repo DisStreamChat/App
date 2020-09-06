@@ -556,7 +556,7 @@ function App() {
 		</span>
 	) : (
 		<div
-			style={{ fontFamily: settings.Font }}
+			style={{ fontFamily: settings.Font, fontSize: `${settings.FontScaling || 1}rem` }}
 			ref={bodyRef}
 			className={`overlay-container ${settings.ShowScrollbar && windowFocused ? "scroll-bar" : ""}`}
 		>

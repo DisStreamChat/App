@@ -2,10 +2,32 @@
 	width: 2rem !important;
 }
 
-._3603H .emote, ._28Kac .emote{
-    width: 1.5rem !important;
+._3603H .emote,
+._28Kac .emote {
+	width: 1.5rem !important;
 }
 
-a{
-    text-decoration: underline !important;
+a {
+	text-decoration: underline !important;
+}
+
+#root ._2WzYd {
+	font-size: 1.5em !important;
+}
+
+@media screen and (max-width: 420px) {
+	#root ._2WzYd:not(._28Kac) {
+		font-size: 1em !important;
+	}
+}
+
+@media screen and (max-width: 360px) {
+	#root ._2WzYd:not(._28Kac) {
+		font-size: .85em !important;
+	}
+}
+
+
+#root ._28Kac {
+	font-size: 0.75em !important;
 }
