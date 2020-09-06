@@ -96,8 +96,8 @@ const Header = props => {
 		setPinnedMessages,
 		unreadMessageIds,
 		setUnreadMessageIds,
-        setMessages,
-        NotifyChanels
+		setMessages,
+		NotifyChanels,
 	} = useContext(AppContext);
 	const [viewingUserId, setViewingUserId] = useState();
 	const [viewingUserInfo, setViewingUserInfo] = useState();
@@ -111,7 +111,7 @@ const Header = props => {
 	const [follows, setFollows] = useState([]);
 	const [moreMenuOpen, setMoreMenuOpen] = useState();
 	const [notifyLive, setNotifyLive] = useState(false);
-
+	const [modActions, setModActions] = useState();
 	const viewingName = viewingUserStats?.name;
 	const following = useMemo(() => follows.includes(viewingName?.toLowerCase?.()), [follows, viewingName]);
 
@@ -143,19 +143,35 @@ const Header = props => {
 		})();
 	}, [userData]);
 
-    useEffect(() => {
-        setNotifyLive(NotifyChanels.includes(viewingUserId))
-    }, [viewingUserId, NotifyChanels])
+	useEffect(() => {
+		setNotifyLive(NotifyChanels.includes(viewingUserId));
+	}, [viewingUserId, NotifyChanels]);
 
-    const toggleLiveNotify = useCallback(async() => {
-        setNotifyLive(prev => {
-            const action = prev ? firebase.firestore.FieldValue.arrayRemove : firebase.firestore.FieldValue.arrayUnion
-            firebase.db.collection("live-notify").doc(currentUser.uid).update({
-                channels: action(viewingUserId)
-            })
-            return !prev
-        })
-    }, [currentUser.uid, viewingUserId])
+	useEffect(() => {
+		setModActions(streamerInfo?.ShowModOptions);
+	}, [streamerInfo]);
+
+	const toggleModActions = useCallback(async () => {
+		setModActions(prev => {
+			firebase.db.collection("Streamers").doc(currentUser.uid).update({
+				"appSettings.ShowModOptions": !prev,
+			});
+			return !prev;
+		});
+	}, [currentUser]);
+
+	const toggleLiveNotify = useCallback(async () => {
+		setNotifyLive(prev => {
+			const action = prev ? firebase.firestore.FieldValue.arrayRemove : firebase.firestore.FieldValue.arrayUnion;
+			firebase.db
+				.collection("live-notify")
+				.doc(currentUser.uid)
+				.update({
+					channels: action(viewingUserId),
+				});
+			return !prev;
+		});
+	}, [currentUser.uid, viewingUserId]);
 
 	useEffect(() => {
 		setUnreadTimeout(prev => {
@@ -333,11 +349,11 @@ const Header = props => {
 								<Tooltip arrow title={`${following ? "Unfollow" : "Follow"}`}>
 									<div onClick={handleFollow}>{following ? <FavoriteIcon /> : <FavoriteTwoToneIcon />}</div>
 								</Tooltip>
-								<Tooltip arrow title="Channel details">
+								{/* <Tooltip arrow title="Channel details">
 									<div>
 										<VisibilityIcon />
 									</div>
-								</Tooltip>
+								</Tooltip> */}
 								<Tooltip arrow title={`${unreadMessages ? "Mark as Read" : "No unread Messages"}`}>
 									<div
 										onClick={() => setUnreadMessageIds([])}
@@ -411,6 +427,17 @@ const Header = props => {
 													/>
 													<label htmlFor={`notify-${viewingName}`}>Notify When Live</label>
 												</div>
+												{isMod && (
+													<div className="menu-item">
+														<input
+															checked={modActions}
+															onChange={toggleModActions}
+															type="checkbox"
+															id={`mod-${viewingName}`}
+														/>
+														<label htmlFor={`mod-${viewingName}`}>Show Mod Actions</label>
+													</div>
+												)}
 												<div
 													onClick={() => {
 														setMessages([]);
