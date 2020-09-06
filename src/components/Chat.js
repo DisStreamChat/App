@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback, useRef, useMemo } from "react"
 import firebase from "../firebase";
 import { useParams } from "react-router-dom";
 import openSocket from "socket.io-client";
-import { Message } from "chatbits";
 import { useContext } from "react";
 import { AppContext } from "../contexts/AppContext";
 import SearchBox from "./SearchBox";
@@ -10,7 +9,6 @@ import { CSSTransition } from "react-transition-group";
 import "./Chat.scss";
 import "./Message.scss";
 import "chatbits/dist/index.css";
-import { TransitionGroup } from "react-transition-group";
 import useHotkeys from "use-hotkeys";
 import Viewers from "./Viewers";
 import { useLocalStorage } from "react-use";
@@ -21,61 +19,11 @@ import { Tooltip } from "@material-ui/core";
 import EmotePicker from "./EmotePicker/EmotePicker";
 import { useAsyncMemo } from "use-async-memo";
 import handleFlags from "../utils/flagFunctions"
+import {UserItem, EmoteItem} from "./AutoFillItems"
+import Messages from "./MessageList"
+import {displayMotes} from "../utils/constants"
 
-// const Item = ({ selected, entity: { name, char } }) => <div className="auto-item">{`${name}: ${char}`}</div>;
-const UserItem = ({ selected, entity: { name, char } }) => (
-	<div id={name} className={`auto-item ${selected ? "selected-item" : ""}`}>{`${name}`}</div>
-);
-const EmoteItem = ({ selected, entity: { name, char, bttv, ffz } }) => {
-	return (
-		<div id={name} className={`emote-item auto-item ${selected ? "selected-item" : ""}`}>
-			<img
-				className="auto-fill-emote-image"
-				src={
-					bttv
-						? `https://cdn.betterttv.net/emote/${name}/1x#emote`
-						: ffz
-						? `${name}#emote`
-						: `https://static-cdn.jtvnw.net/emoticons/v1/${name}/1.0`
-				}
-				alt=""
-			/>
-			{char}
-		</div>
-	);
-};
-
-const displayMotes = [
-	"https://static-cdn.jtvnw.net/emoticons/v1/115847/1.0",
-	"https://static-cdn.jtvnw.net/emoticons/v1/64138/1.0",
-	"https://static-cdn.jtvnw.net/emoticons/v1/30259/1.0",
-	"https://static-cdn.jtvnw.net/emoticons/v1/28087/1.0",
-	"https://static-cdn.jtvnw.net/emoticons/v1/68856/1.0",
-	"https://static-cdn.jtvnw.net/emoticons/v1/425618/1.0",
-];
-
-
-const Messages = React.memo(props => {
-	return (
-		<TransitionGroup>
-			{props.messages.map((msg, i) => (
-				<Message
-					index={msg.id}
-					forwardRef={props.unreadMessageHandler}
-					streamerInfo={props.settings}
-					delete={props.removeMessage}
-					timeout={props.timeout}
-					ban={props.ban}
-					key={msg.id}
-					msg={msg}
-					pin={() => props.pin(msg.id)}
-				/>
-			))}
-		</TransitionGroup>
-	);
-});
-
-function App(props) {
+function App() {
 	const socketRef = useRef();
 	const {
 		streamerInfo: settings,
