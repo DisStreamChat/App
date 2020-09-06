@@ -87,7 +87,16 @@ const Header = props => {
 	const currentUser = firebase.auth.currentUser;
 	const id = currentUser?.uid || " ";
 	const { location } = props;
-	const { setShowViewers, windowFocused, streamerInfo, userData, unreadMessageIds, setUnreadMessageIds, setMessages } = useContext(AppContext);
+	const {
+		setShowViewers,
+		windowFocused,
+		streamerInfo,
+		userData,
+		setPinnedMessages,
+		unreadMessageIds,
+		setUnreadMessageIds,
+		setMessages,
+	} = useContext(AppContext);
 	const [viewingUserId, setViewingUserId] = useState();
 	const [viewingUserInfo, setViewingUserInfo] = useState();
 	const [viewingUserStats, setViewingUserStats] = useState();
@@ -244,14 +253,14 @@ const Header = props => {
 	}, [props.history]);
 
 	const handleFollow = useCallback(async () => {
-        const otc = (await firebase.db.collection("Secret").doc(currentUser.uid).get()).data().value
+		const otc = (await firebase.db.collection("Secret").doc(currentUser.uid).get()).data().value;
 		const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/twitch/follow?user=${userData.TwitchName}&channel=${viewingName}&otc=${otc}&id=${currentUser.uid}`;
 		const method = following ? "DELETE" : "PUT";
-		if(following){
-            setFollows(prev => prev.filter(name => name?.toLowerCase?.() !== viewingName?.toLowerCase?.()))
-        }else{
-            setFollows(prev => [...prev, viewingName?.toLowerCase?.()])
-        }
+		if (following) {
+			setFollows(prev => prev.filter(name => name?.toLowerCase?.() !== viewingName?.toLowerCase?.()));
+		} else {
+			setFollows(prev => [...prev, viewingName?.toLowerCase?.()]);
+		}
 		await fetch(apiUrl, { method });
 	}, [userData, following, viewingName, currentUser]);
 
@@ -338,10 +347,16 @@ const Header = props => {
 											</button>
 										</Tooltip>
 										<CSSTransition in={moreMenuOpen} unmountOnExit>
-											<div className="menu">
+											<div className="menu" onClick={() => setMoreMenuOpen(false)}>
 												<div className="menu-item">Open In Browser</div>
 												<div className="menu-item">Open In Popout</div>
-												<div onClick={() => setMessages([])} className="menu-item">
+												<div
+													onClick={() => {
+														setMessages([]);
+														setPinnedMessages([]);
+													}}
+													className="menu-item"
+												>
 													Clear Chat
 												</div>
 											</div>
