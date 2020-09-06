@@ -125,6 +125,18 @@ function App(props) {
 	const [emoteIndex, setEmoteIndex] = useState(0);
 	const [emotePickerVisible, setEmotePickerVisible] = useState(false);
 
+	const isMod = useAsyncMemo(async () => {
+		try {
+			if (userInfo?.name?.toLowerCase?.() === channel?.TwitchName) return true;
+			const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/checkmod?user=${userInfo?.name?.toLowerCase?.()}&channel=${channel?.TwitchName}`;
+			const response = await fetch(apiUrl);
+			const json = await response.json();
+			return !!json;
+		} catch (err) {
+			return false;
+		}
+	}, [channel, userInfo]);
+
 	useEffect(() => {
 		setTimeout(() => {
 			setMessages(storedMessages);
@@ -251,31 +263,21 @@ function App(props) {
 				return copy;
 			});
 
-			let modName = userInfo.name;
-			if (!modName) {
-				console.log("attempting to obtain username");
-				const UserData = (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data();
-				modName = UserData.name;
-			}
+			if (isMod) {
+				let modName = userInfo.name;
+				if (!modName) {
+					console.log("attempting to obtain username");
+					const UserData = (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data();
+					modName = UserData.name;
+				}
 
-			if (platform && socketRef.current) {
-				socketRef.current.emit(`deletemsg - ${platform}`, { id, modName });
+				if (platform && socketRef.current) {
+					socketRef.current.emit(`deletemsg - ${platform}`, { id, modName });
+				}
 			}
 		},
-		[socketRef, setMessages, userInfo, currentUser]
+		[socketRef, isMod, setMessages, userInfo, currentUser]
 	);
-
-	const isMod = useAsyncMemo(async () => {
-		try {
-			if (userInfo?.name?.toLowerCase?.() === channel?.TwitchName) return true;
-			const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/checkmod?user=${userInfo?.name?.toLowerCase?.()}&channel=${channel?.TwitchName}`;
-			const response = await fetch(apiUrl);
-			const json = await response.json();
-			return !!json;
-		} catch (err) {
-			return false;
-		}
-	}, [channel, userInfo]);
 
 	useSocketEvent(socketRef.current, "auto-mod", msg => {
 		msg.streamer = channel.TwitchName;
@@ -293,7 +295,7 @@ function App(props) {
 		}
 
 		// add the "accept" and "deny" buttons to the message
-		msg.body = `<p>${msg.body}\n<span id=${msg.id}-accept class="automod-button" style="color: #19ff19 !important">Accept</span>  <span id=${msg.id}-deny class="automod-button" style="color: red !important">Deny</span></p>`;
+		msg.body = `<p style="background: #ff5c826e; display: inline-block; width: 100% !important;">${msg.body}\n<span id=${msg.id}-accept class="automod-button" style="color: #19ff19 !important">Accept</span>  <span id=${msg.id}-deny class="automod-button" style="color: red !important">Deny</span></p>`;
 
 		setMessages(m => {
 			return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
@@ -493,25 +495,27 @@ function App(props) {
 			if (!observerRef.current) {
 				observerRef.current = new IntersectionObserver((entries, observer) => {
 					entries.forEach(entry => {
-						const idx = entry.target.dataset.idx;
 						try {
-							setTimeout(() => {
-								try {
-									entry.target.classList.remove("_1qxYA");
-								} catch (err) {}
-							}, 700);
+							const idx = entry.target.dataset.idx;
+							try {
+								setTimeout(() => {
+									try {
+										entry.target.classList.remove("_1qxYA");
+									} catch (err) {}
+								}, 700);
+							} catch (err) {}
+							if (entry.isIntersecting) {
+								setUnreadMessageIds(prev => prev.filter(id => id !== idx));
+								const elt = document.querySelector(`div[data-idx="${idx}"]`);
+								observer.unobserve(elt);
+							} else {
+								if (!storedMessages.find(msg => msg.id === idx)) setUnreadMessageIds(prev => [...new Set([...prev, idx])]);
+							}
 						} catch (err) {}
-						if (entry.isIntersecting) {
-							setUnreadMessageIds(prev => prev.filter(id => id !== idx));
-							const elt = document.querySelector(`div[data-idx="${idx}"]`);
-							observer.unobserve(elt);
-						} else {
-							if (!storedMessages.find(msg => msg.id === idx)) setUnreadMessageIds(prev => [...new Set([...prev, idx])]);
-						}
 					});
 				});
 			}
-			if (observerRef.current && node) {
+			if (observerRef.current && node && !storedMessages.find(msg => msg.id === node.dataset.idx)) {
 				try {
 					observerRef.current.observe(node);
 				} catch (err) {
