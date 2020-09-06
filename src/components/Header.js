@@ -82,7 +82,6 @@ const Header = props => {
 			const name = userData?.name?.toLowerCase?.();
 			if (name === viewingName?.toLowerCase?.()) return true;
 			const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/checkmod?user=${name}&channel=${viewingName}`;
-			console.log(apiUrl);
 			const response = await fetch(apiUrl);
 			const json = await response.json();
 			return !!json;
@@ -343,7 +342,7 @@ const Header = props => {
 												</Tooltip>
 											</ContextMenuTrigger>
 											<ContextMenu id="channels">
-												{[...modChannels, ...pinnedChannels].map(channel => (
+												{[{login: userData.TwitchName, id: userData.twitchId},...modChannels, ...pinnedChannels].map(channel => (
 													<div>
 														<Link to={`/chat/${channel.id}`}>{channel.login}</Link>
 													</div>

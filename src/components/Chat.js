@@ -18,10 +18,10 @@ import useSocketEvent from "../hooks/useSocketEvent";
 import { Tooltip } from "@material-ui/core";
 import EmotePicker from "./EmotePicker/EmotePicker";
 import { useAsyncMemo } from "use-async-memo";
-import handleFlags from "../utils/flagFunctions"
-import {UserItem, EmoteItem} from "./AutoFillItems"
-import Messages from "./MessageList"
-import {displayMotes} from "../utils/constants"
+import handleFlags from "../utils/flagFunctions";
+import { UserItem, EmoteItem } from "./AutoFillItems";
+import Messages from "./MessageList";
+import { displayMotes } from "../utils/constants";
 
 function App() {
 	const socketRef = useRef();
@@ -39,8 +39,8 @@ function App() {
 	const [channel, setChannel] = useState();
 	const [search, setSearch] = useState("");
 	const { id } = useParams();
-	const [storedMessages, setStoredMessages] = useLocalStorage(`messages - ${id}`, []);
-	const [storedPinnedMessages, setStoredPinnedMessages] = useLocalStorage(`pinned messages - ${id}`, []);
+	const [storedMessages, setStoredMessages] = useLocalStorage(`messages`, {});
+	const [storedPinnedMessages, setStoredPinnedMessages] = useLocalStorage(`pinned messages`, {});
 	const [showToTop, setShowToTop] = useState(false);
 	const [showSearch, setShowSearch] = useState(true);
 	const [chatValue, setChatValue] = useState("");
@@ -64,17 +64,17 @@ function App() {
 
 	useEffect(() => {
 		setTimeout(() => {
-			setMessages(storedMessages);
-			setPinnedMessages(storedPinnedMessages);
+			setMessages(storedMessages[id] || []);
+			setPinnedMessages(storedPinnedMessages[id] || []);
 		}, 200);
-	}, []);
+    }, [id]);
 
 	useEffect(() => {
 		if (!settings.DisableLocalStorage) {
-			setStoredMessages(messages.slice(-Math.max(settings.MessageLimit, 100)));
-			setStoredPinnedMessages(pinnedMessages);
+			setStoredMessages(prev => ({ ...prev, [id]: messages.slice(-Math.max(settings.MessageLimit, 100)) }));
+			setStoredPinnedMessages(prev => ({ ...prev, [id]: pinnedMessages }));
 		}
-	}, [messages, settings, setStoredMessages, pinnedMessages, setStoredPinnedMessages]);
+	}, [messages, settings, setStoredMessages, pinnedMessages, setStoredPinnedMessages, id]);
 
 	// this runs once on load, and starts the socket
 	useEffect(() => {
@@ -351,16 +351,14 @@ function App() {
 				if (!data) {
 					const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${id}&platform=twitch`;
 					const response = await fetch(apiUrl);
-					const userData = await response.json();
+                    const userData = await response.json();
+                    console.log(userData)
 					setChannel({
 						TwitchName: userData?.display_name?.toLowerCase?.(),
 					});
 				} else {
 					const { guildId, liveChatId, twitchId } = data;
-					const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${twitchId}&platform=twitch`;
-					const response = await fetch(apiUrl);
-					const userData = await response.json();
-					const TwitchName = userData?.display_name?.toLowerCase?.() || data.TwitchName;
+					const TwitchName = data.TwitchName;
 					setChannel({
 						TwitchName,
 						guildId,
@@ -369,7 +367,8 @@ function App() {
 				}
 			});
 		return unsub;
-	}, [id]);
+    }, [id]);
+    
 
 	useEffect(() => {
 		if (channel) {
@@ -409,9 +408,13 @@ function App() {
 	}, [setUnreadMessageIds, settings]);
 
 	useEffect(() => {
-		bodyRef.current.onscroll =  e => {
-			setShowToTop(prev => !settings?.ReverseMessageOrder ? bodyRef.current.scrollTop > 600 : Math.abs(bodyRef.current.scrollTop - bodyRef.current.scrollHeight) > 1500 );
-        };
+		bodyRef.current.onscroll = e => {
+			setShowToTop(prev =>
+				!settings?.ReverseMessageOrder
+					? bodyRef.current.scrollTop > 600
+					: Math.abs(bodyRef.current.scrollTop - bodyRef.current.scrollHeight) > 1500
+			);
+		};
 	}, [settings]);
 
 	const checkReadMessage = useCallback(
