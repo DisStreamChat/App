@@ -73,6 +73,39 @@ const ChannelItem = React.memo(props => {
 
 	useInterval(getLive, 60000 * 4);
 
+    const addChannel = useCallback(async e => {
+        e.preventDefault();
+        setError("");
+        try {
+            setLoading(true);
+            if (!channelName) {
+                setError("Missing Channel Name");
+            } else {
+                const userName = userData.name;
+                const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${channelName}&platform=twitch`;
+                const res = await fetch(apiUrl);
+                if (!res.ok) {
+                    setError(`An error occured while fetching ${channelName}, make sure you entered the name correctly`);
+                } else {
+                    const json = await res.json();
+                    if (json) {
+                        const ModChannels = [...userData.ModChannels, json].filter(
+                            (thing, index, self) => index === self.findIndex(t => t.id === thing.id)
+                        );
+                        await firebase.db.collection("Streamers").doc(currentUser.uid).update({
+                            ModChannels,
+                        });
+                    } else {
+                        setError("You are not a moderator for " + channelName);
+                    }
+                }
+            }
+        } catch (err) {
+            setError(`An error occured while fetching ${channelName}, make sure you entered the name correctly`);
+        }
+        setChannelName("");
+        setLoading(false);
+    }, [channelName, currentUser.uid, userData])
 
 	return (
 		<div className={`channel-item ${props.addChannel ? "add-channel" : ""}`}>
@@ -80,39 +113,7 @@ const ChannelItem = React.memo(props => {
 				<>
 					<h5>Add Channel</h5>
 					<form
-						onSubmit={async e => {
-							e.preventDefault();
-							setError("");
-							try {
-								setLoading(true);
-								if (!channelName) {
-									setError("Missing Channel Name");
-								} else {
-									const userName = userData.name;
-                                    const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${channelName}&platform=twitch`;
-									const res = await fetch(apiUrl);
-									if (!res.ok) {
-										setError(`An error occured while fetching ${channelName}, make sure you entered the name correctly`);
-									} else {
-										const json = await res.json();
-										if (json) {
-											const ModChannels = [...userData.ModChannels, json].filter(
-												(thing, index, self) => index === self.findIndex(t => t.id === thing.id)
-											);
-											await firebase.db.collection("Streamers").doc(currentUser.uid).update({
-												ModChannels,
-											});
-										} else {
-											setError("You are not a moderator for " + channelName);
-										}
-									}
-								}
-							} catch (err) {
-								setError(`An error occured while fetching ${channelName}, make sure you entered the name correctly`);
-							}
-							setChannelName("");
-							setLoading(false);
-						}}
+						onSubmit={addChannel}
 					>
 						<SearchBox onClick={() => setError("")} onChange={setChannelName} value={channelName} placeholder="Enter Channel Name" />
 						<button className="dashboard-button to-dashboard">{!loading ? "Submit" : "Loading..."}</button>

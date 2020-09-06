@@ -7,6 +7,9 @@ const Messages = React.memo(props => {
 		<TransitionGroup>
 			{props.messages.map((msg, i) => (
 				<Message
+                    // TODO: add functions for accept and deny, also improve click handler
+                    accept={console.log}
+                    deny={console.log}
 					index={msg.id}
 					forwardRef={props.unreadMessageHandler}
 					streamerInfo={props.settings}
