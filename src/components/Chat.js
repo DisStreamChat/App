@@ -470,7 +470,7 @@ function App(props) {
 					// behavior: "smooth",
 				});
 			}
-		}, 100);
+		}, 300);
 	}, [ReverseMessageOrder]);
 
 	const handleSearch = useCallback(setSearch, []);
@@ -743,7 +743,7 @@ function App(props) {
 				</CSSTransition>
 			</div>
 
-			<CSSTransition unmountOnExit timeout={400} classNames={"to-top-node"} in={showToTop}>
+			<CSSTransition unmountOnExit timeout={400} classNames={"to-top-node"} in={showToTop && windowFocused}>
 				<button className="back-to-top-button fade-in" onClick={scrollTop}>
 					Scroll To {settings?.ReverseMessageOrder ? "Bottom" : "Top"}
 				</button>
