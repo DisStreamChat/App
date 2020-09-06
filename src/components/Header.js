@@ -22,7 +22,7 @@ import FavoriteTwoToneIcon from "@material-ui/icons/FavoriteTwoTone";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import VisibilityIcon from "@material-ui/icons/Visibility";
-import BuildIcon from "@material-ui/icons/Build";
+// import BuildIcon from "@material-ui/icons/Build";
 const { remote, ipcRenderer } = window.require("electron");
 const customTitlebar = window.require("custom-electron-titlebar");
 

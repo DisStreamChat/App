@@ -1,5 +1,4 @@
-import { useEffect, useRef} from "react";
-import { eventNames } from "node-notifier";
+import { useEffect} from "react";
 
 export default function useSocketEvent(socket, event, func) {
     useEffect(() => {

@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
-import firebase from "../firebase";
+// import firebase from "../firebase";
 import "./Viewer.scss";
 import { AppContext } from "../contexts/AppContext";
 import ClearTwoToneIcon from "@material-ui/icons/ClearTwoTone";
 import Loader from "react-loader";
-import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
+import { ContextMenu,  ContextMenuTrigger } from "react-contextmenu";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import BlockIcon from "@material-ui/icons/Block";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
-import { Tooltip } from "@material-ui/core";
 
 //TODO: load data on click
 const ViewerCard = ({ isMod, login, ...props }) => {
@@ -77,7 +76,7 @@ const Viewers = ({ isMod, chatterInfo, chatterCount, streamer }) => {
 	const [tab, setTab] = useState("twitch");
 	const [displayChatters, setDisplayChatters] = useState();
 	const { setShowViewers } = useContext(AppContext);
-	const currentUser = firebase.auth.currentUser;
+	// const currentUser = firebase.auth.currentUser;
 
 	useEffect(() => {
 		setTimeout(() => {

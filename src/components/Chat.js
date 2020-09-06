@@ -6,7 +6,6 @@ import { Message } from "chatbits";
 import { useContext } from "react";
 import { AppContext } from "../contexts/AppContext";
 import SearchBox from "./SearchBox";
-import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import { CSSTransition } from "react-transition-group";
 import "./Chat.scss";
 import "./Message.scss";
@@ -26,7 +25,7 @@ import { Tooltip } from "@material-ui/core";
 import EmotePicker from "./EmotePicker/EmotePicker";
 import { useAsyncMemo } from "use-async-memo";
 
-const Item = ({ selected, entity: { name, char } }) => <div className="auto-item">{`${name}: ${char}`}</div>;
+// const Item = ({ selected, entity: { name, char } }) => <div className="auto-item">{`${name}: ${char}`}</div>;
 const UserItem = ({ selected, entity: { name, char } }) => (
 	<div id={name} className={`auto-item ${selected ? "selected-item" : ""}`}>{`${name}`}</div>
 );

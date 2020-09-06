@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect, useMemo } from "react";
+import React, { memo, useState, useMemo } from "react";
 import { CSSTransition } from "react-transition-group";
 import "./EmotePicker.scss";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
