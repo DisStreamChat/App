@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import { HashRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 import firebase from "./firebase";
+import { useLocalStorage } from "react-use";
 
 import Chat from "./components/Chat";
 import Auth from "./components/Auth";
@@ -29,6 +30,8 @@ const App = () => {
 	const [border, setBorder] = useState(true);
 	const [unreadMessageIds, setUnreadMessageIds] = useState([]);
 	const [NotifyChanels, setNotifyChannels] = useState([]);
+	const [modChannels, setModChannels] = useLocalStorage("channels", []);
+	const [pinnedChannels, setPinnedChannels] = useLocalStorage("pinned channels", []);
 	const globalSocket = useRef();
 
 	const currentUser = firebase.auth.currentUser;
@@ -128,7 +131,7 @@ const App = () => {
 				});
 			}
 		})();
-	}, [firebaseInit, currentUser, userData.twitchId]);
+	}, [firebaseInit, currentUser, userData]);
 
 	useEffect(() => {
 		ipcRenderer.on("focus", (event, data) => setWindowFocused(data));
@@ -167,6 +170,10 @@ const App = () => {
 				setUnreadMessageIds,
 				NotifyChanels,
 				setNotifyChannels,
+				modChannels,
+				setModChannels,
+				pinnedChannels,
+				setPinnedChannels,
 			}}
 		>
 			<Router>

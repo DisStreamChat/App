@@ -22,6 +22,7 @@ import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { useAsyncMemo } from "use-async-memo";
 import SettingList from "./SettingList";
 import { maxDisplayNum } from "../utils/constants";
+import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
 // import BuildIcon from "@material-ui/icons/Build";
 const { remote, ipcRenderer } = window.require("electron");
 const customTitlebar = window.require("custom-electron-titlebar");
@@ -54,6 +55,10 @@ const Header = props => {
 		setUnreadMessageIds,
 		setMessages,
 		NotifyChanels,
+		modChannels,
+		setModChannels,
+		pinnedChannels,
+		setPinnedChannels,
 	} = useContext(AppContext);
 	const [viewingUserId, setViewingUserId] = useState();
 	const [viewingUserInfo, setViewingUserInfo] = useState();
@@ -331,9 +336,20 @@ const Header = props => {
 							{chatHeader ? (
 								<>
 									{!isPopoutOut && (
-										<Tooltip arrow title="Channels">
-											<Link to="/channels">{isPopoutOut ? <ClearIcon /> : <HomeIcon />}</Link>
-										</Tooltip>
+										<>
+											<ContextMenuTrigger id="channels">
+												<Tooltip arrow title="Channels">
+													<Link to="/channels">{isPopoutOut ? <ClearIcon /> : <HomeIcon />}</Link>
+												</Tooltip>
+											</ContextMenuTrigger>
+											<ContextMenu id="channels">
+												{[...modChannels, ...pinnedChannels].map(channel => (
+													<div>
+														<Link to={`/chat/${channel.id}`}>{channel.login}</Link>
+													</div>
+												))}
+											</ContextMenu>
+										</>
 									)}
 								</>
 							) : (
