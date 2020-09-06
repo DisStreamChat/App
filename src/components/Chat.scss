@@ -336,17 +336,17 @@ $item-lightness: 10;
 .back-to-top-button {
 	position: fixed;
 	bottom: 105px;
-    left: 50%;
-    transform: translateX(-50%);
-    outline: none !important;
-    border: none;
-	padding: .1rem 1rem;
-	border-radius: .5rem;
+	left: 50%;
+	transform: translateX(-50%);
+	outline: none !important;
+	border: none;
+	padding: 0.1rem 1rem;
+	border-radius: 0.5rem;
 	z-index: 10;
-    background: #121212cc;
-    &:hover{
-        border: 1px solid #ffffffaa
-    }
+	background: #121212cc;
+	&:hover {
+		border: 1px solid #ffffffaa;
+	}
 	// border: solid var(--disstreamchat-blue);
 }
 
@@ -550,21 +550,34 @@ pre._1K1H8._1pKVQ * {
 	}
 }
 
-.react-contextmenu{
-    z-index: 1000;
-}
-
-._1Zsx4 .react-contextmenu, span:last-child .react-contextmenu {
-	background: darken(#515151, 7);
-	border-radius: 0.5rem;
-	padding: 0.1rem;
-	overflow: hidden;
-	border: 0.5px solid darken(#515151, 100);
+.react-contextmenu {
 	z-index: 1000;
 }
 
+#root header .react-contextmenu {
+    transform: translateY(-5px);
+    max-height: 300px;
+    overflow: auto;
+    &::-webkit-scrollbar {
+        width: 5px;
+    }
+}
+
+._1Zsx4,
+span:last-child,
+header {
+	.react-contextmenu {
+		background: darken(#515151, 7);
+		border-radius: 0.5rem;
+		padding: 0.1rem;
+		overflow: hidden;
+		border: 0.5px solid darken(#515151, 100);
+		z-index: 1000;
+	}
+}
+
 span:last-child .react-contextmenu {
-    min-width: 125px !important;
+	min-width: 125px !important;
 }
 
 .react-contextmenu-item {
@@ -572,7 +585,7 @@ span:last-child .react-contextmenu {
 	padding: 0.25rem 0.5rem;
 	font-size: 0.8rem;
 	cursor: pointer;
-	color: black;
+    color: black;
 	&:hover {
 		background: darken(#515151, 3);
 	}
@@ -588,15 +601,15 @@ span:last-child .react-contextmenu {
 	overflow: hidden !important;
 }
 
-._IyFo5 ._3UN7Z:after{
-    content: ": "
+._IyFo5 ._3UN7Z:after {
+	content: ": ";
 }
 
-.automod-button{
-    font-weight: bold;
-    cursor: pointer;
+.automod-button {
+	font-weight: bold;
+	cursor: pointer;
 }
 
-#root ._1B7sT{
-    background: rgb(51, 51, 51) !important
+#root ._1B7sT {
+	background: rgb(51, 51, 51) !important;
 }

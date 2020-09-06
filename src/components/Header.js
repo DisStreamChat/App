@@ -342,10 +342,10 @@ const Header = props => {
 												</Tooltip>
 											</ContextMenuTrigger>
 											<ContextMenu id="channels">
-												{[{login: userData.TwitchName, id: userData.twitchId},...modChannels, ...pinnedChannels].map(channel => (
-													<div>
+												{[{login: userData.TwitchName, id: userData.twitchId},...modChannels].map(channel => (
+													<MenuItem>
 														<Link to={`/chat/${channel.id}`}>{channel.login}</Link>
-													</div>
+													</MenuItem>
 												))}
 											</ContextMenu>
 										</>
