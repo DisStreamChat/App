@@ -10,10 +10,6 @@ import { CSSTransition } from "react-transition-group";
 import "./Chat.scss";
 import "./Message.scss";
 import "chatbits/dist/index.css";
-import hasFlag from "../utils/flagFunctions/has";
-import fromFlag from "../utils/flagFunctions/from";
-import platformFlag from "../utils/flagFunctions/platform";
-import isFlag from "../utils/flagFunctions/is";
 import { TransitionGroup } from "react-transition-group";
 import useHotkeys from "use-hotkeys";
 import Viewers from "./Viewers";
@@ -24,6 +20,7 @@ import useSocketEvent from "../hooks/useSocketEvent";
 import { Tooltip } from "@material-ui/core";
 import EmotePicker from "./EmotePicker/EmotePicker";
 import { useAsyncMemo } from "use-async-memo";
+import handleFlags from "../utils/flagFunctions"
 
 // const Item = ({ selected, entity: { name, char } }) => <div className="auto-item">{`${name}: ${char}`}</div>;
 const UserItem = ({ selected, entity: { name, char } }) => (
@@ -57,25 +54,6 @@ const displayMotes = [
 	"https://static-cdn.jtvnw.net/emoticons/v1/425618/1.0",
 ];
 
-const flagRegex = /(\s|^)(has|from|platform|is):([^\s]*)/gim;
-
-const handleFlags = (searchString, messages) => {
-	const flags = [...searchString.matchAll(flagRegex)].map(([, , flag, parameter]) => ({ flag, parameter }));
-	const flaglessSearch = searchString.replace(flagRegex, "").trim();
-	let matchingMessages = [...messages].filter(msg => !flaglessSearch || msg.body.toLowerCase().includes(flaglessSearch.toLowerCase()));
-	flags.forEach(({ flag, parameter }) => {
-		if (flag === "has") {
-			matchingMessages = hasFlag(parameter, matchingMessages);
-		} else if (flag === "from") {
-			matchingMessages = fromFlag(parameter, matchingMessages);
-		} else if (flag === "platform") {
-			matchingMessages = platformFlag(parameter, matchingMessages);
-		} else if (flag === "is") {
-			matchingMessages = isFlag(parameter, matchingMessages);
-		}
-	});
-	return matchingMessages;
-};
 
 const Messages = React.memo(props => {
 	return (
