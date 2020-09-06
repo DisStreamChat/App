@@ -554,11 +554,20 @@ function App(props) {
 				observerRef.current = new IntersectionObserver((entries, observer) => {
 					entries.forEach(entry => {
 						const idx = entry.target.dataset.idx;
+						try {
+							setTimeout(() => {
+								console.log(entry.target);
+								entry.target.classList.remove("_1qxYA");
+							}, 700);
+						} catch (err) {
+							alert(err.message);
+						}
 						if (entry.isIntersecting) {
 							setUnreadMessageIds(prev => prev.filter(id => id !== idx));
 							const elt = document.querySelector(`div[data-idx="${idx}"]`);
 							observer.unobserve(elt);
 						} else {
+                            if(!storedMessages.find(msg => msg.id === idx))
 							setUnreadMessageIds(prev => [...new Set([...prev, idx])]);
 						}
 					});
