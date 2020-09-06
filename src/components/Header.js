@@ -22,6 +22,7 @@ import FavoriteTwoToneIcon from "@material-ui/icons/FavoriteTwoTone";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import VisibilityIcon from "@material-ui/icons/Visibility";
+import { useAsyncMemo } from "use-async-memo";
 // import BuildIcon from "@material-ui/icons/Build";
 const { remote, ipcRenderer } = window.require("electron");
 const customTitlebar = window.require("custom-electron-titlebar");
@@ -108,9 +109,25 @@ const Header = props => {
 	const [unreadTimeout, setUnreadTimeout] = useState(0);
 	const [follows, setFollows] = useState([]);
 	const [moreMenuOpen, setMoreMenuOpen] = useState();
+	const [notifyLive, setNotifyLive] = useState(false);
 
 	const viewingName = viewingUserStats?.name;
 	const following = useMemo(() => follows.includes(viewingName?.toLowerCase?.()), [follows, viewingName]);
+
+	const isMod = useAsyncMemo(async () => {
+		try {
+            if(!chatHeader) return false
+			const name = userData?.name?.toLowerCase?.();
+			if (name === viewingName) return true;
+			const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/checkmod?user=${name}&channel=${viewingName}`;
+			const response = await fetch(apiUrl);
+			console.log(apiUrl);
+			const json = await response.json();
+			return !!json;
+		} catch (err) {
+			return false;
+		}
+	}, [viewingName, userData, chatHeader]);
 
 	useEffect(() => {
 		(async () => {
@@ -264,6 +281,16 @@ const Header = props => {
 		await fetch(apiUrl, { method });
 	}, [userData, following, viewingName, currentUser]);
 
+	const popoutChannel = useCallback(async () => {
+		ipcRenderer.send("popout-stream", viewingName);
+	}, [viewingName]);
+
+	useEffect(() => {
+		if (!chatHeader || !windowFocused) {
+			setMoreMenuOpen(false);
+		}
+	}, [chatHeader, windowFocused]);
+
 	return !show ? (
 		<></>
 	) : (
@@ -278,7 +305,7 @@ const Header = props => {
 									<Skeleton variant="text" animation="wave" />
 								) : (
 									<a href={`https://twitch.tv/${viewingUserStats?.name?.toLowerCase?.()}`} className="name">
-										{viewingUserStats?.name}
+										{viewingName}
 									</a>
 								)}
 							</div>
@@ -347,15 +374,31 @@ const Header = props => {
 											</button>
 										</Tooltip>
 										<CSSTransition in={moreMenuOpen} unmountOnExit>
-											<div className="menu" onClick={() => setMoreMenuOpen(false)}>
-												<div className="menu-item">Open In Browser</div>
-												<div className="menu-item">Open In Popout</div>
+											<div className="menu">
+												<a href={`https://www.twitch.tv/${viewingName}`} className="menu-item">Open In Browser</a>
+												<div onClick={popoutChannel} className="menu-item">
+													Open In Popout
+												</div>
+												{isMod && (
+													<a className="menu-item" href={`https://www.twitch.tv/moderator/${viewingName}`}>
+														Open ModView
+													</a>
+												)}
+												<div className="menu-item">
+													<input
+														checked={notifyLive}
+														onChange={e => setNotifyLive(e.target.checked)}
+														type="checkbox"
+														id={`notify-${viewingName}`}
+													/>
+													<label htmlFor={`notify-${viewingName}`}>Notify When Live</label>
+												</div>
 												<div
 													onClick={() => {
 														setMessages([]);
 														setPinnedMessages([]);
 													}}
-													className="menu-item"
+													className="menu-item border-top-1"
 												>
 													Clear Chat
 												</div>
@@ -366,7 +409,7 @@ const Header = props => {
 							)}
 
 							{updateLink && (
-								<Tooltip arrow title="update available" arrow>
+								<Tooltip arrow title="update available">
 									<button
 										id="update-link"
 										onClick={() => {

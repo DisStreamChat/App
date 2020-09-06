@@ -607,25 +607,40 @@ button.clear{
     max-width: 300px;
 }
 
-.more {
+#root .more {
     position: relative;
     .menu{
+        // border: 2px solid #111;
+        box-shadow: 3px 3px 5px -1px #1b1b1b;
+        border-radius: .5rem;
         width: max-content;
         position: absolute;
         right: 0;
         background: white;
         display: flex;
         flex-direction: column;
+        background: #373737;
         *{
-            color: black;
+            text-decoration: none !important;
+        }
+        label{
+            margin: 0;
         }
         .menu-item{
-            // min-width: 100%;
-            padding: .125rem .5rem;
+            background: #373737;
+            color: white !important;
+            padding: .25rem .75rem;
             cursor: pointer;
             &:hover{
                 background: #121212aa
             }
+            input[type="checkbox"]{
+                margin-right: .2rem;
+            }
         }
     }
+}
+
+.border-top-1{
+    border-top: 1px solid #000;
 }

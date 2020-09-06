@@ -332,6 +332,14 @@ ipcMain.on("setFocus", (event, data) => {
 	}
 });
 
+ipcMain.on("popout-stream", (event, name) => {
+    const window = windowGenerator({}, true)
+    window.loadURL(`https://twitch.tv/${name}`)
+    windows[name] = window 
+    window.on("closed", () => (windows[name] = null));
+
+})
+
 ipcMain.on("login", event => {
 	loginWindow = new BrowserWindow({
 		width: Width * 1.1, // width of the window
