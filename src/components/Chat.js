@@ -515,7 +515,7 @@ function App(props) {
 					});
 				});
 			}
-			if (observerRef.current && node && !storedMessages.find(msg => msg.id === node.dataset.idx)) {
+			if (observerRef.current && node) {
 				try {
 					observerRef.current.observe(node);
 				} catch (err) {
