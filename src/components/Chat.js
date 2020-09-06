@@ -361,83 +361,83 @@ function App(props) {
 	});
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
 	useSocketEvent(socketRef.current, "chatmessage", msg => {
-		msg.streamer = channel.TwitchName;
-		if (settings?.ReverseMessageOrder) {
-			const shouldScroll = Math.abs(bodyRef.current.scrollTop - bodyRef.current.scrollHeight) < 1200;
-			setTimeout(() => {
-				if (shouldScroll) {
-					bodyRef.current.scrollTo({
-						top: bodyRef.current.scrollHeight,
-						behavior: "smooth",
-					});
-				}
-			}, 200);
-		}
-		// by default we don't ignore messages
-		if (messages.findIndex(message => message.id === msg.id) !== -1) return;
-		let ignoredMessage = false;
+		try {
+			msg.streamer = channel.TwitchName;
+			if (settings?.ReverseMessageOrder) {
+				const shouldScroll = Math.abs(bodyRef.current.scrollTop - bodyRef.current.scrollHeight) < 1200;
+				setTimeout(() => {
+					if (shouldScroll) {
+						bodyRef.current.scrollTo({
+							top: bodyRef.current.scrollHeight,
+							behavior: "smooth",
+						});
+					}
+				}, 200);
+			}
+			// by default we don't ignore messages
+			if (messages.findIndex(message => message.id === msg.id) !== -1) return;
+			let ignoredMessage = false;
 
-		// check if we should ignore this user
-		if (settings?.IgnoredUsers?.map?.(item => item.value.toLowerCase()).includes(msg.displayName.toLowerCase())) {
-			ignoredMessage = true;
-		}
-
-		// check if the message is a command
-		const _ = settings?.IgnoredCommandPrefixes?.forEach(prefix => {
-			if (msg.body.startsWith(prefix.value)) {
+			// check if we should ignore this user
+			if (settings?.IgnoredUsers?.map?.(item => item.value.toLowerCase()).includes(msg.displayName.toLowerCase())) {
 				ignoredMessage = true;
 			}
-		});
 
-		// don't allow ignoring of notifications from 'disstreamchat'
-		if (msg.displayName.toLowerCase() === "disstreamchat") ignoredMessage = false;
+			// check if the message is a command
+			const _ = settings?.IgnoredCommandPrefixes?.forEach(prefix => {
+				if (msg.body.startsWith(prefix.value)) {
+					ignoredMessage = true;
+				}
+			});
 
-		if (settings?.IgnoreCheers && msg.messageId === "cheer") {
-			ignoredMessage = true;
-		}
-		if (settings?.IgnoreFollows && msg.messageId === "follow") {
-			ignoredMessage = true;
-		}
-		if (settings?.IgnoreSubscriptions && msg.messageId === "subscription" && msg.messageType !== "channel-points") {
-			ignoredMessage = true;
-		}
-		if (settings?.IgnoreChannelPoints && msg.messageType === "channel-points") {
-			ignoredMessage = true;
-		}
+			// don't allow ignoring of notifications from 'disstreamchat'
+			if (msg.displayName.toLowerCase() === "disstreamchat") ignoredMessage = false;
 
-		// if ignored don't add the message
-		if (ignoredMessage) return;
+			if (settings?.IgnoreCheers && msg.messageId === "cheer") {
+				ignoredMessage = true;
+			}
+			if (settings?.IgnoreFollows && msg.messageId === "follow") {
+				ignoredMessage = true;
+			}
+			if (settings?.IgnoreSubscriptions && msg.messageId === "subscription" && msg.messageType !== "channel-points") {
+				ignoredMessage = true;
+			}
+			if (settings?.IgnoreChannelPoints && msg.messageType === "channel-points") {
+				ignoredMessage = true;
+			}
 
-		if (msg.replyParentDisplayName) {
-			msg.body = `<span class="reply-header">Replying to ${msg.replyParentDisplayName}: ${msg.replyParentMessageBody}</span>${msg.body}`.replace(
-				`@${msg.replyParentDisplayName}`,
-				""
-			);
-		}
+			// if ignored don't add the message
+			if (ignoredMessage) return;
 
-		// add a <p></p> around the message to make formatting work properly also hightlight pings
-		const nameRegex = new RegExp(`(?<=\\s|^)(@?${userInfo?.name})`, "igm");
-		msg.body = `<p>${msg.body.replace(nameRegex, "<span class='ping'>$&</span>")}</p>`;
+            // if this message was a reply to a previous message
+			if (msg.replyParentDisplayName) {
+				msg.body = `<span class="reply-header">Replying to ${msg.replyParentDisplayName}: ${msg.replyParentMessageBody}</span>${msg.body}`.replace(
+					`@${msg.replyParentDisplayName}`,
+					""
+				);
+			}
 
-		// check if the message can have mod actions done on it
-		msg.moddable =
-			msg?.displayName?.toLowerCase?.() === userInfo?.name?.toLowerCase?.() ||
-			(!Object.keys(msg.badges).includes("moderator") && !Object.keys(msg.badges).includes("broadcaster"));
+			// add a <p></p> around the message to make formatting work properly also hightlight pings
+			const nameRegex = new RegExp(`(?<=\\s|^)(@?${userInfo?.name})`, "igm");
+			msg.body = `<p>${msg.body.replace(nameRegex, "<span class='ping'>$&</span>")}</p>`;
 
-		if (
-			msg.platform !== "discord" &&
-			msg?.displayName?.toLowerCase?.() !== userInfo?.name?.toLowerCase?.() &&
-			channel?.TwitchName?.toLowerCase?.() === userInfo?.name?.toLowerCase?.()
-		)
-			msg.moddable = true;
-		if (msg.displayName.toLowerCase() === "disstreamchat") msg.moddable = false;
+			// check if the message can have mod actions done on it. if the user isn't a mod this will always be false
+			msg.moddable =
+				msg?.displayName?.toLowerCase?.() === userInfo?.name?.toLowerCase?.() ||
+				(!Object.keys(msg.badges).includes("moderator") && !Object.keys(msg.badges).includes("broadcaster"));
 
-		// msg.moddable = msg.moddable && isMod;
+			if (
+				msg.platform !== "discord" &&
+				msg?.displayName?.toLowerCase?.() !== userInfo?.name?.toLowerCase?.() &&
+				channel?.TwitchName?.toLowerCase?.() === userInfo?.name?.toLowerCase?.()
+			)
+				msg.moddable = true;
+			if (msg.displayName.toLowerCase() === "disstreamchat") msg.moddable = false;
 
-		// setUnreadMessageIds(prev => [...new Set([...prev, msg.id])]);
-		setMessages(m => {
-			return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
-		});
+			setMessages(m => {
+				return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
+			});
+		} catch (err) {}
 	});
 
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
@@ -556,19 +556,17 @@ function App(props) {
 						const idx = entry.target.dataset.idx;
 						try {
 							setTimeout(() => {
-								console.log(entry.target);
-								entry.target.classList.remove("_1qxYA");
+								try {
+									entry.target.classList.remove("_1qxYA");
+								} catch (err) {}
 							}, 700);
-						} catch (err) {
-							alert(err.message);
-						}
+						} catch (err) {}
 						if (entry.isIntersecting) {
 							setUnreadMessageIds(prev => prev.filter(id => id !== idx));
 							const elt = document.querySelector(`div[data-idx="${idx}"]`);
 							observer.unobserve(elt);
 						} else {
-                            if(!storedMessages.find(msg => msg.id === idx))
-							setUnreadMessageIds(prev => [...new Set([...prev, idx])]);
+							if (!storedMessages.find(msg => msg.id === idx)) setUnreadMessageIds(prev => [...new Set([...prev, idx])]);
 						}
 					});
 				});
