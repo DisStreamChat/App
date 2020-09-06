@@ -743,9 +743,9 @@ function App(props) {
 				</CSSTransition>
 			</div>
 
-			<CSSTransition unmountOnExit timeout={400} classNames={"to-top-node"} in={showToTop && !settings?.ReverseMessageOrder}>
+			<CSSTransition unmountOnExit timeout={400} classNames={"to-top-node"} in={(showToTop && !settings?.ReverseMessageOrder)}>
 				<button className="back-to-top-button fade-in" onClick={scrollTop}>
-					<KeyboardArrowUpIcon></KeyboardArrowUpIcon>
+					Scroll To Top
 				</button>
 			</CSSTransition>
 			<EmotePicker

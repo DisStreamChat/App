@@ -213,11 +213,11 @@ hr {
 
 @keyframes fade-in {
 	0% {
-		transform: translateY(-1rem);
+		transform: translateX(-50%) translateY(-1rem);
 		opacity: 0;
 	}
 	100% {
-		transform: translateY(0);
+		transform: translateX(-50%) translateY(0);
 		opacity: 1;
 	}
 }

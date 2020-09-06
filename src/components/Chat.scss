@@ -335,15 +335,19 @@ $item-lightness: 10;
 
 .back-to-top-button {
 	position: fixed;
-	bottom: 1rem;
-	right: 1rem;
-	outline: none !important;
-	border: none;
-	padding: 0.5rem;
-	border-radius: 50%;
+	bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    outline: none !important;
+    border: none;
+	padding: .1rem 1rem;
+	border-radius: .5rem;
 	z-index: 10;
-	background: var(--disstreamchat-purple);
-	border: solid var(--disstreamchat-blue);
+    background: #121212cc;
+    &:hover{
+        border: 1px solid #ffffffaa
+    }
+	// border: solid var(--disstreamchat-blue);
 }
 
 .back-to-top-button svg {
@@ -352,20 +356,20 @@ $item-lightness: 10;
 
 .to-top-node-enter {
 	opacity: 0;
-	transform: translateY(100%);
+	transform: translateX(-50%) translateY(100%);
 }
 .to-top-node-enter-active {
 	opacity: 1;
-	transform: translateY(0);
+	transform: translateX(-50%) translateY(0);
 	transition: 400ms;
 }
 .to-top-node-exit {
-	transform: translateY(0);
+	transform: translateX(-50%) translateY(0);
 	opacity: 1;
 }
 .to-top-node-exit-active {
 	opacity: 0;
-	transform: translateY(100%);
+	transform: translateX(-50%) translateY(100%);
 	transition: 400ms;
 }
 
