@@ -76,10 +76,9 @@ function App() {
             console.log("\n")
             console.log(storedMessages)
 			setStoredMessages(prev => {
-                console.log(prev, id)
-				return { ...prev, [id]: messages.slice(-Math.max(settings.MessageLimit || 100, 100)) };
+				return { ...storedMessages, [id]: messages.slice(-Math.max(settings.MessageLimit || 100, 100)) };
 			});
-			setStoredPinnedMessages(prev => ({ ...prev, [id]: pinnedMessages }));
+			setStoredPinnedMessages(prev => ({ ...storedPinnedMessages, [id]: pinnedMessages }));
 		}
 	}, [messages, settings, pinnedMessages]);
 
