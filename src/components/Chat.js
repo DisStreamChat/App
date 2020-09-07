@@ -35,6 +35,7 @@ function App() {
 		windowFocused,
 		userData: userInfo,
 		setUnreadMessageIds,
+		modChannels,
 	} = useContext(AppContext);
 	const [channel, setChannel] = useState();
 	const [search, setSearch] = useState("");
@@ -73,8 +74,6 @@ function App() {
 
 	useEffect(() => {
 		if (!settings.DisableLocalStorage && messages && id) {
-            console.log("\n")
-            console.log(storedMessages)
 			setStoredMessages(prev => {
 				return { ...storedMessages, [id]: messages.slice(-Math.max(settings.MessageLimit || 100, 100)) };
 			});
@@ -355,15 +354,21 @@ function App() {
 			.onSnapshot(async snapshot => {
 				const data = snapshot.data();
 				if (!data) {
-					const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${id}&platform=twitch`;
-					const response = await fetch(apiUrl);
-					const userData = await response.json();
+					const userData = [...modChannels, { display_name: userInfo.TwitchName, id: userInfo.twitchId }].find(
+						channel => channel.id === id
+					);
+					console.log(userData);
 					setChannel({
 						TwitchName: userData?.display_name?.toLowerCase?.(),
 					});
 				} else {
 					const { guildId, liveChatId, twitchId } = data;
 					const TwitchName = data.TwitchName;
+					console.log({
+						TwitchName,
+						guildId,
+						liveChatId,
+					});
 					setChannel({
 						TwitchName,
 						guildId,
@@ -376,7 +381,8 @@ function App() {
 
 	useEffect(() => {
 		if (channel) {
-			// send info to backend with sockets, to get proper socket connection
+            // send info to backend with sockets, to get proper socket connection
+            console.log(channel)
 			if (socketRef.current) {
 				socketRef.current.emit("addme", channel);
 			}
