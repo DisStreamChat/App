@@ -63,18 +63,25 @@ function App() {
 	}, [channel, userInfo]);
 
 	useEffect(() => {
-		setTimeout(() => {
-			setMessages(storedMessages[id] || []);
-			setPinnedMessages(storedPinnedMessages[id] || []);
-		}, 200);
+		if (id) {
+			setTimeout(() => {
+				setMessages(storedMessages[id] || []);
+				setPinnedMessages(storedPinnedMessages[id] || []);
+			}, 200);
+		}
 	}, [id]);
 
 	useEffect(() => {
-		if (!settings.DisableLocalStorage) {
-			setStoredMessages(prev => ({ ...prev, [id]: messages.slice(-Math.max(settings.MessageLimit, 100)) }));
+		if (!settings.DisableLocalStorage && messages && id) {
+            console.log("\n")
+            console.log(storedMessages)
+			setStoredMessages(prev => {
+                console.log(prev, id)
+				return { ...prev, [id]: messages.slice(-Math.max(settings.MessageLimit || 100, 100)) };
+			});
 			setStoredPinnedMessages(prev => ({ ...prev, [id]: pinnedMessages }));
 		}
-	}, [messages, settings, setStoredMessages, pinnedMessages, setStoredPinnedMessages, id]);
+	}, [messages, settings, pinnedMessages]);
 
 	// this runs once on load, and starts the socket
 	useEffect(() => {
@@ -352,7 +359,6 @@ function App() {
 					const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${id}&platform=twitch`;
 					const response = await fetch(apiUrl);
 					const userData = await response.json();
-					console.log(userData);
 					setChannel({
 						TwitchName: userData?.display_name?.toLowerCase?.(),
 					});
@@ -454,17 +460,37 @@ function App() {
 		[observerRef, setUnreadMessageIds]
 	);
 
-	const acceptMessage = useCallback(async msg => {
-        const otc = (await firebase.db.collection("Secret").doc(currentUser.uid || " ").get()).data()?.value
-		await fetch(`${process.env.REACT_APP_SOCKET_URL}/automod/approve?msg_id=${msg.message_id}&otc=${otc}&id=${currentUser.uid}`, {method: "POST"});
-        removeMessage(msg.id)
-	}, [currentUser, removeMessage]);
-    
-	const denyMessage = useCallback(async msg => {
-        const otc = (await firebase.db.collection("Secret").doc(currentUser.uid || " ").get()).data()?.value
-		await fetch(`${process.env.REACT_APP_SOCKET_URL}/automod/deny?msg_id=${msg.message_id}&otc=${otc}&id=${currentUser.uid}`, {method: "POST"});
-        removeMessage(msg.id)
-	}, [currentUser, removeMessage]);
+	const acceptMessage = useCallback(
+		async msg => {
+			const otc = (
+				await firebase.db
+					.collection("Secret")
+					.doc(currentUser.uid || " ")
+					.get()
+			).data()?.value;
+			await fetch(`${process.env.REACT_APP_SOCKET_URL}/automod/approve?msg_id=${msg.message_id}&otc=${otc}&id=${currentUser.uid}`, {
+				method: "POST",
+			});
+			removeMessage(msg.id);
+		},
+		[currentUser, removeMessage]
+	);
+
+	const denyMessage = useCallback(
+		async msg => {
+			const otc = (
+				await firebase.db
+					.collection("Secret")
+					.doc(currentUser.uid || " ")
+					.get()
+			).data()?.value;
+			await fetch(`${process.env.REACT_APP_SOCKET_URL}/automod/deny?msg_id=${msg.message_id}&otc=${otc}&id=${currentUser.uid}`, {
+				method: "POST",
+			});
+			removeMessage(msg.id);
+		},
+		[currentUser, removeMessage]
+	);
 
 	const [chatterInfo, setChatterInfo] = useState();
 	const [chatterCount, setChatterCount] = useState();
@@ -549,7 +575,7 @@ function App() {
 		() =>
 			handleFlags(showSearch ? search : "", [...messages, ...pinnedMessages])
 				.filter(msg => !msg.deleted)
-				.filter(msg => (msg.autoMod ? settings.ShowAutomodMessages && (isMod || true) : true))
+				.filter(msg => (msg.autoMod ? settings.ShowAutomodMessages && isMod : true))
 				.sort((a, b) => a.sentAt - b.sentAt)
 				.map(message => ({ ...message, moddable: message.moddable && isMod })),
 		[messages, search, showSearch, pinnedMessages, isMod, settings]
