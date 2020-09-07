@@ -8,8 +8,8 @@ const Messages = React.memo(props => {
 			{props.messages.map((msg, i) => (
 				<Message
                     // TODO: add functions for accept and deny, also improve click handler
-                    accept={console.log}
-                    deny={console.log}
+                    accept={props.accept}
+                    deny={props.deny}
 					index={msg.id}
 					forwardRef={props.unreadMessageHandler}
 					streamerInfo={props.settings}

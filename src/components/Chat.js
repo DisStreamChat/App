@@ -67,7 +67,7 @@ function App() {
 			setMessages(storedMessages[id] || []);
 			setPinnedMessages(storedPinnedMessages[id] || []);
 		}, 200);
-    }, [id]);
+	}, [id]);
 
 	useEffect(() => {
 		if (!settings.DisableLocalStorage) {
@@ -351,8 +351,8 @@ function App() {
 				if (!data) {
 					const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${id}&platform=twitch`;
 					const response = await fetch(apiUrl);
-                    const userData = await response.json();
-                    console.log(userData)
+					const userData = await response.json();
+					console.log(userData);
 					setChannel({
 						TwitchName: userData?.display_name?.toLowerCase?.(),
 					});
@@ -367,8 +367,7 @@ function App() {
 				}
 			});
 		return unsub;
-    }, [id]);
-    
+	}, [id]);
 
 	useEffect(() => {
 		if (channel) {
@@ -454,6 +453,18 @@ function App() {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[observerRef, setUnreadMessageIds]
 	);
+
+	const acceptMessage = useCallback(async msg => {
+        const otc = (await firebase.db.collection("Secret").doc(currentUser.uid || " ").get()).data()?.value
+		await fetch(`${process.env.REACT_APP_SOCKET_URL}/automod/approve?msg_id=${msg.message_id}&otc=${otc}&id=${currentUser.uid}`, {method: "POST"});
+        removeMessage(msg.id)
+	}, [currentUser, removeMessage]);
+    
+	const denyMessage = useCallback(async msg => {
+        const otc = (await firebase.db.collection("Secret").doc(currentUser.uid || " ").get()).data()?.value
+		await fetch(`${process.env.REACT_APP_SOCKET_URL}/automod/deny?msg_id=${msg.message_id}&otc=${otc}&id=${currentUser.uid}`, {method: "POST"});
+        removeMessage(msg.id)
+	}, [currentUser, removeMessage]);
 
 	const [chatterInfo, setChatterInfo] = useState();
 	const [chatterCount, setChatterCount] = useState();
@@ -645,6 +656,8 @@ function App() {
 					</div>
 				</CSSTransition>
 				<Messages
+					deny={denyMessage}
+					accept={acceptMessage}
 					messages={flagMatches}
 					settings={settings}
 					timeout={timeout}
