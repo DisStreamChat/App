@@ -9,7 +9,7 @@ import ClearIcon from "@material-ui/icons/Clear";
 import { Tooltip } from "@material-ui/core";
 import Loader from "react-loader";
 import sha1 from "sha1";
-import { useLocalStorage } from "react-use";
+import { useLocalStorage  } from "react-use";
 import { useMemo } from "react";
 
 const { ipcRenderer } = window.require("electron");

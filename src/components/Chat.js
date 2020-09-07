@@ -220,7 +220,7 @@ function App() {
 		}
 
 		// add the "accept" and "deny" buttons to the message
-		msg.body = `<p style="display: inline-block; width: 100% !important;"><span>Message held from ${msg.user} for: ${msg.reason}</span>\n<span style="background: #ff5c826e; display: inline-block; width: 100% !important;">${msg.body}</span>\n<span id=${msg.id}-accept class="automod-button" style="color: #19ff19 !important">Accept</span>  <span id=${msg.id}-deny class="automod-button" style="color: red !important">Deny</span></p>`;
+		msg.body = `<p style="display: inline-block; width: 100% !important;"><span>Message held from <span style="background: #ff5c826e;">${msg.user}</span> for: <span style="font-weight: bold">${msg.reason}</span></span>\n<span style="background: #ff5c826e; display: inline-block; width: 100% !important;">${msg.body}</span>\n<span id=${msg.id}-accept class="automod-button" style="color: #19ff19 !important">Accept</span>  <span id=${msg.id}-deny class="automod-button" style="color: red !important">Deny</span></p>`;
 
 		setMessages(m => {
 			return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
