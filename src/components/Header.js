@@ -334,22 +334,26 @@ const Header = props => {
 						<div className={`icons ${chatHeader ? "bl-light" : ""}`}>
 							{chatHeader ? (
 								<>
-									{!isPopoutOut && (
-										<>
-											<ContextMenuTrigger id="channels">
-												<Tooltip arrow title="Channels">
-													<Link to="/channels">{isPopoutOut ? <ClearIcon /> : <HomeIcon />}</Link>
-												</Tooltip>
-											</ContextMenuTrigger>
-											<ContextMenu id="channels">
-												{[{login: userData.TwitchName, id: userData.twitchId},...modChannels].map(channel => (
-													<MenuItem>
-														<Link to={`/chat/${channel.id}`}>{channel.login}</Link>
-													</MenuItem>
-												))}
-											</ContextMenu>
-										</>
-									)}
+									<ContextMenuTrigger id="channels">
+										<Tooltip arrow title="Channels">
+											{isPopoutOut ? (
+												<div  className="cp">
+													<HomeIcon />
+												</div>
+											) : (
+												<Link className="cp" to="/channels">
+													<HomeIcon />
+												</Link>
+											)}
+										</Tooltip>
+									</ContextMenuTrigger>
+									<ContextMenu id="channels">
+										{[{ login: userData.TwitchName, id: userData.twitchId }, ...modChannels].map(channel => (
+											<MenuItem>
+												<Link to={`/chat/${channel.id}`}>{channel.login}</Link>
+											</MenuItem>
+										))}
+									</ContextMenu>
 								</>
 							) : (
 								<Button variant="contained" color="primary" onClick={signout}>
