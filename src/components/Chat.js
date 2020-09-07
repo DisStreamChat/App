@@ -83,8 +83,10 @@ function App() {
 
 	// this runs once on load, and starts the socket
 	useEffect(() => {
-		socketRef.current = openSocket(process.env.REACT_APP_SOCKET_URL);
-	}, []);
+        console.log("reseting")
+        const _ = socketRef?.current?.disconnect?.()
+        socketRef.current = openSocket(process.env.REACT_APP_SOCKET_URL);
+	}, [id]);
 
 	useEffect(() => {
 		return () => {
