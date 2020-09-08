@@ -60,7 +60,7 @@ const App = () => {
 	});
 
 	useSocketEvent(globalSocket.current, "imConnected", () => {
-		globalSocket.current.emit("addme", "dscnotifications");
+		globalSocket.current.emit("addme", { TwitchName: "dscnotifications" });
 	});
 
 	useEffect(() => {
