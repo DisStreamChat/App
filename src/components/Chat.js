@@ -75,21 +75,17 @@ function App() {
 	useEffect(() => {
 		if (!settings.DisableLocalStorage && messages && id) {
 			setStoredMessages(prev => {
-				const previous = localStorage.getItem("messages");
-				return { ...previous, [id]: messages.slice(-Math.max(settings.MessageLimit || 100, 100)) };
+				return { ...storedMessages, [id]: messages.slice(-Math.max(settings.MessageLimit || 100, 100)) };
 			});
-			setStoredPinnedMessages(prev => {
-                const previous = localStorage.getItem("pinned messages");
-				return { ...previous, [id]: pinnedMessages };
-			});
+			setStoredPinnedMessages(prev => ({ ...storedPinnedMessages, [id]: pinnedMessages }));
 		}
 	}, [messages, settings, pinnedMessages]);
 
 	// this runs once on load, and starts the socket
 	useEffect(() => {
-		console.log("reseting");
-		const _ = socketRef?.current?.disconnect?.();
-		socketRef.current = openSocket(process.env.REACT_APP_SOCKET_URL);
+        console.log("reseting")
+        const _ = socketRef?.current?.disconnect?.()
+        socketRef.current = openSocket(process.env.REACT_APP_SOCKET_URL);
 	}, [id]);
 
 	useEffect(() => {
@@ -387,8 +383,8 @@ function App() {
 
 	useEffect(() => {
 		if (channel) {
-			// send info to backend with sockets, to get proper socket connection
-			console.log(channel);
+            // send info to backend with sockets, to get proper socket connection
+            console.log(channel)
 			if (socketRef.current) {
 				socketRef.current.emit("addme", channel);
 			}
