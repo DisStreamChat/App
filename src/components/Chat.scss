@@ -542,10 +542,10 @@ pre._1K1H8._1pKVQ * {
 }
 
 .react-contextmenu-wrapper {
-    display: inline;
-    & > :not(._3UN7Z){
-        margin-left: 0.75rem;
-    }
+	display: inline;
+	& > :not(._3UN7Z) {
+		margin-left: 0.75rem;
+	}
 	// z-index: 10000;
 	@media screen and (max-width: 475px) {
 		margin-left: 0.25rem;
@@ -557,12 +557,12 @@ pre._1K1H8._1pKVQ * {
 }
 
 #root header .react-contextmenu {
-    transform: translateY(-5px);
-    max-height: 300px;
-    overflow-y: auto;
-    &::-webkit-scrollbar {
-        width: 5px;
-    }
+	transform: translateY(-5px);
+	max-height: 300px;
+	overflow-y: auto;
+	&::-webkit-scrollbar {
+		width: 5px;
+	}
 }
 
 ._1Zsx4,
@@ -574,29 +574,32 @@ header {
 		padding: 0.1rem;
 		overflow: hidden;
 		border: 0.5px solid darken(#515151, 100);
-        z-index: 1000;
-        overflow-x: hidden;
+		z-index: 1000;
+		overflow-x: hidden;
 	}
 }
 
 span:last-child .react-contextmenu {
 	min-width: 125px !important;
+	.react-contextmenu-item {
+		padding: 0.125rem 0.25rem;
+	}
 }
 
 .react-contextmenu-item {
 	font-weight: 600 !important;
 	font-size: 0.8rem;
 	cursor: pointer;
-    color: black;
-    & > :not(a){
-        padding: 0.25rem 0.5rem;
-    }
-    a{
-        padding: 0.25rem 0.5rem;
-        display: inline-block;
-        width: 100%;
-        // outline: solid;
-    }
+	color: black;
+	& > :not(a) {
+		padding: 0.25rem 0.5rem;
+	}
+	a {
+		padding: 0.25rem 0.5rem;
+		display: inline-block;
+		width: 100%;
+		// outline: solid;
+	}
 	&:hover {
 		background: darken(#515151, 3);
 	}
