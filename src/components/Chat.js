@@ -171,13 +171,13 @@ function App() {
 				// on discord we delete by userId and on twitch we delete by username
 				let modName = userInfo.name;
 				if (!modName) {
-					console.log("attempting to obtain username");
 					const UserData = (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data();
 					modName = UserData.name;
-				}
+                }
+                const user = !banMsg ? id : banMsg?.[platform === "discord" ? "userId" : "displayName"]
 				socketRef.current.emit(`timeoutuser - ${platform}`, {
 					modName,
-                    user: banMsg?.[platform === "discord" ? "userId" : "displayName"],
+                    user,
                     time
 				});
 			}

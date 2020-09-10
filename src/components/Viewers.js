@@ -51,10 +51,10 @@ const ViewerCard = ({ ban, timeout, isMod, login, ...props }) => {
 						<div className="mod-icons">
 							{isMod && (
 								<>
-									<div onClick={() => ban(props.id, "twitch")} data-title={`Ban ${props.login}`}>
+									<div onClick={() => ban(props.id, "twitch")} data-title={`Ban ${props.id}`}>
 										<BlockIcon />
 									</div>
-									<div onClick={() => timeout(props.id, "twitch")} data-title={`Timeout ${props.login}`}>
+									<div onClick={() => timeout(props.id, "twitch")} data-title={`Timeout ${props.id}`}>
 										<AccessTimeIcon />
 									</div>
 									<div  onClick={() => timeout(props.id, "twitch", 1)} data-title={`Purge User`}>1s</div>
