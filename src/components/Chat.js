@@ -157,7 +157,7 @@ function App() {
 				const banMsg = messages.find(msg => msg.id === id);
 				socketRef.current.emit(`banuser - ${platform}`, {
 					modName,
-					user: banMsg?.[platform === "discord" ? "userId" : "displayName"],
+                    user: banMsg?.[platform === "discord" ? "userId" : "displayName"],
 				});
 			}
 		},
@@ -165,7 +165,7 @@ function App() {
 	);
 
 	const timeout = useCallback(
-		async (id, platform) => {
+		async (id, platform, time=300) => {
 			if (platform && socketRef.current) {
 				const banMsg = messages.find(msg => msg.id === id);
 				// on discord we delete by userId and on twitch we delete by username
@@ -177,7 +177,8 @@ function App() {
 				}
 				socketRef.current.emit(`timeoutuser - ${platform}`, {
 					modName,
-					user: banMsg?.[platform === "discord" ? "userId" : "displayName"],
+                    user: banMsg?.[platform === "discord" ? "userId" : "displayName"],
+                    time
 				});
 			}
 		},
@@ -326,7 +327,6 @@ function App() {
 	}, [settings, setMessages]);
 
 	// this is similar to the above useEffect but for adds a listener for when messages are deleted
-
 	useSocketEvent(socketRef.current, "deletemessage", removeMessage);
 
 	useSocketEvent(socketRef.current, "updateMessage", newMessage => {
@@ -609,7 +609,7 @@ function App() {
 
 	return showViewers ? (
 		<span style={{ fontFamily: settings.Font }}>
-			<Viewers isMod={isMod} streamer={streamerName} chatterCount={chatterCount} chatterInfo={chatterInfo} />
+			<Viewers ban={ban} timeout={timeout} isMod={isMod} streamer={streamerName} chatterCount={chatterCount} chatterInfo={chatterInfo} />
 		</span>
 	) : (
 		<div

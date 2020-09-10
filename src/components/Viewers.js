@@ -10,7 +10,7 @@ import BlockIcon from "@material-ui/icons/Block";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
 
 //TODO: load data on click
-const ViewerCard = ({ isMod, login, ...props }) => {
+const ViewerCard = ({ ban, timeout, isMod, login, ...props }) => {
 	const [clicked, setClicked] = useState();
 	const [viewerData, setViewerData] = useState({});
 	// const [loading, setLoading] = useState()
@@ -51,17 +51,17 @@ const ViewerCard = ({ isMod, login, ...props }) => {
 						<div className="mod-icons">
 							{isMod && (
 								<>
-									<div data-title={`Ban ${props.login}`}>
+									<div onClick={() => ban(props.id, "twitch")} data-title={`Ban ${props.login}`}>
 										<BlockIcon />
 									</div>
-									<div data-title={`Timeout ${props.login}`}>
+									<div onClick={() => timeout(props.id, "twitch")} data-title={`Timeout ${props.login}`}>
 										<AccessTimeIcon />
 									</div>
-									<div data-title={`Purge User`}>1s</div>
-									<div data-title={`Timeout 10min`}>10m</div>
-									<div data-title={`Timeout 1hr`}>1h</div>
-									<div data-title={`Timeout 8hr`}>8h</div>
-									<div data-title={`Timeout 24hr`}>24h</div>
+									<div  onClick={() => timeout(props.id, "twitch", 1)} data-title={`Purge User`}>1s</div>
+									<div  onClick={() => timeout(props.id, "twitch", 600)} data-title={`Timeout 10min`}>10m</div>
+									<div  onClick={() => timeout(props.id, "twitch", 3600)} data-title={`Timeout 1hr`}>1h</div>
+									<div  onClick={() => timeout(props.id, "twitch", 28800)} data-title={`Timeout 8hr`}>8h</div>
+									<div  onClick={() => timeout(props.id, "twitch", 86400)} data-title={`Timeout 24hr`}>24h</div>
 								</>
 							)}
 						</div>
@@ -72,7 +72,7 @@ const ViewerCard = ({ isMod, login, ...props }) => {
 	);
 };
 
-const Viewers = ({ isMod, chatterInfo, chatterCount, streamer }) => {
+const Viewers = ({ ban, timeout, isMod, chatterInfo, chatterCount, streamer }) => {
 	const [tab, setTab] = useState("twitch");
 	const [displayChatters, setDisplayChatters] = useState();
 	const { setShowViewers } = useContext(AppContext);
@@ -117,7 +117,7 @@ const Viewers = ({ isMod, chatterInfo, chatterCount, streamer }) => {
 								<div key={key} className="viewer-type">
 									<h2 className="viewer-type--header">{key}</h2>
 									{value.map(user => (
-										<ViewerCard isMod={isMod} key={user.id} streamer={streamer} {...user}></ViewerCard>
+										<ViewerCard ban={ban} timeout={timeout} isMod={isMod} key={user.id} streamer={streamer} {...user}></ViewerCard>
 									))}
 								</div>
 							);
