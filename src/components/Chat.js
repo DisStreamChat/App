@@ -36,6 +36,8 @@ function App() {
 		userData: userInfo,
 		setUnreadMessageIds,
 		modChannels,
+		isMod,
+		setIsMod,
 	} = useContext(AppContext);
 	const [channel, setChannel] = useState();
 	const [search, setSearch] = useState("");
@@ -51,17 +53,28 @@ function App() {
 	const [emoteIndex, setEmoteIndex] = useState(0);
 	const [emotePickerVisible, setEmotePickerVisible] = useState(false);
 
-	const isMod = useAsyncMemo(async () => {
-		try {
-			if (userInfo?.name?.toLowerCase?.() === channel?.TwitchName) return true;
-			const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/checkmod?user=${userInfo?.name?.toLowerCase?.()}&channel=${channel?.TwitchName}`;
-			const response = await fetch(apiUrl);
-			const json = await response.json();
-			return !!json;
-		} catch (err) {
-			return false;
-		}
-	}, [channel, userInfo]);
+	useEffect(() => {
+		const aborter = new AbortController();
+		const signal = aborter.signal;
+		(async () => {
+			try {
+				if (userInfo?.name?.toLowerCase?.() === channel?.TwitchName?.toLowerCase?.()) {
+					return setIsMod(true);
+				} else {
+					const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/checkmod?user=${userInfo?.name?.toLowerCase?.()}&channel=${
+						channel?.TwitchName
+					}`;
+					const response = await fetch(apiUrl, { signal });
+					const json = await response.json();
+					setIsMod(!!json);
+				}
+			} catch (err) {
+				if(err.message === "The user aborted a request.") return 
+				setIsMod(false);
+			}
+		})();
+		return () => aborter.abort();
+	}, [channel, userInfo, setIsMod]);
 
 	useEffect(() => {
 		if (id) {
@@ -157,7 +170,7 @@ function App() {
 				const banMsg = messages.find(msg => msg.id === id);
 				socketRef.current.emit(`banuser - ${platform}`, {
 					modName,
-                    user: banMsg?.[platform === "discord" ? "userId" : "displayName"],
+					user: banMsg?.[platform === "discord" ? "userId" : "displayName"],
 				});
 			}
 		},
@@ -165,7 +178,7 @@ function App() {
 	);
 
 	const timeout = useCallback(
-		async (id, platform, time=300) => {
+		async (id, platform, time = 300) => {
 			if (platform && socketRef.current) {
 				const banMsg = messages.find(msg => msg.id === id);
 				// on discord we delete by userId and on twitch we delete by username
@@ -173,12 +186,12 @@ function App() {
 				if (!modName) {
 					const UserData = (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data();
 					modName = UserData.name;
-                }
-                const user = !banMsg ? id : banMsg?.[platform === "discord" ? "userId" : "displayName"]
+				}
+				const user = !banMsg ? id : banMsg?.[platform === "discord" ? "userId" : "displayName"];
 				socketRef.current.emit(`timeoutuser - ${platform}`, {
 					modName,
-                    user,
-                    time
+					user,
+					time,
 				});
 			}
 		},
@@ -384,7 +397,6 @@ function App() {
 	useEffect(() => {
 		if (channel) {
 			// send info to backend with sockets, to get proper socket connection
-			console.log(channel);
 			if (socketRef.current) {
 				socketRef.current.emit("addme", channel);
 			}

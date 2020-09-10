@@ -58,7 +58,8 @@ const Header = props => {
 		modChannels,
 		setModChannels,
 		pinnedChannels,
-		setPinnedChannels,
+        setPinnedChannels,
+        isMod
 	} = useContext(AppContext);
 	const [viewingUserId, setViewingUserId] = useState();
 	const [viewingUserInfo, setViewingUserInfo] = useState();
@@ -74,21 +75,6 @@ const Header = props => {
 	const [modActions, setModActions] = useState();
 	const viewingName = viewingUserStats?.name;
 	const following = useMemo(() => follows.includes(viewingName?.toLowerCase?.()), [follows, viewingName]);
-
-	const isMod = useAsyncMemo(async () => {
-		try {
-			if (!chatHeader) return false;
-			if (!viewingName) return false;
-			const name = userData?.name?.toLowerCase?.();
-			if (name === viewingName?.toLowerCase?.()) return true;
-			const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/checkmod?user=${name}&channel=${viewingName}`;
-			const response = await fetch(apiUrl);
-			const json = await response.json();
-			return !!json;
-		} catch (err) {
-			return false;
-		}
-	}, [viewingName, userData, chatHeader]);
 
 	useEffect(() => {
 		(async () => {

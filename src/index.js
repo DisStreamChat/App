@@ -32,6 +32,7 @@ const App = () => {
 	const [NotifyChanels, setNotifyChannels] = useState([]);
 	const [modChannels, setModChannels] = useLocalStorage("channels", []);
 	const [pinnedChannels, setPinnedChannels] = useLocalStorage("pinned channels", []);
+	const [isMod, setIsMod] = useState(false);
 	const globalSocket = useRef();
 
 	const currentUser = firebase.auth.currentUser;
@@ -174,6 +175,8 @@ const App = () => {
 				setModChannels,
 				pinnedChannels,
 				setPinnedChannels,
+				isMod,
+				setIsMod,
 			}}
 		>
 			<Router>
