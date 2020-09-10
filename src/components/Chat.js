@@ -83,9 +83,9 @@ function App() {
 
 	// this runs once on load, and starts the socket
 	useEffect(() => {
-        console.log("reseting")
-        const _ = socketRef?.current?.disconnect?.()
-        socketRef.current = openSocket(process.env.REACT_APP_SOCKET_URL);
+		console.log("reseting");
+		const _ = socketRef?.current?.disconnect?.();
+		socketRef.current = openSocket(process.env.REACT_APP_SOCKET_URL);
 	}, [id]);
 
 	useEffect(() => {
@@ -383,8 +383,8 @@ function App() {
 
 	useEffect(() => {
 		if (channel) {
-            // send info to backend with sockets, to get proper socket connection
-            console.log(channel)
+			// send info to backend with sockets, to get proper socket connection
+			console.log(channel);
 			if (socketRef.current) {
 				socketRef.current.emit("addme", channel);
 			}
@@ -505,6 +505,16 @@ function App() {
 	const [allChatters, setAllChatters] = useState();
 	const userId = id;
 
+	useEffect(() => {
+		(async () => {
+			const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${userId}&platform=twitch`;
+			const response = await fetch(apiUrl);
+			const userData = await response.json();
+			let userName = userData?.display_name?.toLowerCase?.();
+			setStreamerName(userName);
+		})();
+	}, [userId]);
+
 	//TODO: use the useInterval hook
 	useEffect(() => {
 		let id;
@@ -543,7 +553,7 @@ function App() {
 			id = setInterval(getChatters, 120000 * 2);
 		})();
 		return () => clearInterval(id);
-	}, [userId, streamerName]);
+	}, [userId, streamerName, id]);
 
 	const [userEmotes, setUserEmotes] = useState([]);
 	useEffect(() => {
