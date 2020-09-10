@@ -414,7 +414,7 @@ const Header = props => {
 													}}
 													className="menu-item border-top-1"
 												>
-													Clear Chat
+													Clear local chat
 												</div>
 											</div>
 										</CSSTransition>
