@@ -246,7 +246,7 @@ const Channels = React.memo(props => {
 					<ChannelItem mine popoutChat={popout} {...myChannel} />
 				</div>
 				<hr />
-				<h1>Channels you moderate</h1>
+				<h1>Saved moderate</h1>
 				<div className={`modchannels channel-div ${streamerInfo.CompactChannels ? "compact-channels" : ""}`}>
 					{modChannels ? (
 						modChannels?.map?.(channel => (
