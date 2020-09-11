@@ -105,18 +105,19 @@ const Header = props => {
 		});
 	}, [currentUser]);
 
+    const uid = currentUser?.uid
 	const toggleLiveNotify = useCallback(async () => {
 		setNotifyLive(prev => {
 			const action = prev ? firebase.firestore.FieldValue.arrayRemove : firebase.firestore.FieldValue.arrayUnion;
 			firebase.db
 				.collection("live-notify")
-				.doc(currentUser.uid)
+				.doc(uid)
 				.update({
 					channels: action(viewingUserId),
 				});
 			return !prev;
 		});
-	}, [currentUser.uid, viewingUserId]);
+	}, [uid, viewingUserId]);
 
 	useEffect(() => {
 		setUnreadMessages(!!unreadMessageIds.length);
