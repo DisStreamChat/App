@@ -42,7 +42,7 @@ const App = () => {
 	useEffect(() => {
 		if (!loading && !error) {
 			const LiveNotificationsData = LiveNotifications.data();
-			setNotifyChannels(LiveNotificationsData.channels);
+			setNotifyChannels(LiveNotificationsData?.channels || []);
 		}
 	}, [LiveNotifications, loading, error]);
 
