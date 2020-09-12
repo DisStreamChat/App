@@ -48,7 +48,7 @@ npm run start
 ```
 npm run build
 ```
-2. Go into your project folder using your file explorer. Navigate to the `dist` folder and open it. Then double-click `<your-project-name>`-Setup `<Version>`. Your app should open and there should now be an icon on your desktop for this app.
+2. Go into your project folder using your file explorer. Navigate to the `dist` folder and open it. Then double-click `<your-project-name>-Setup <Version>`. Your app should open and there should now be an icon on your desktop for this app.
 
 
 
