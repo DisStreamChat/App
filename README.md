@@ -4,7 +4,7 @@
     <a href="https://www.disstreamchat.com"><img
        src="https://www.disstreamchat.com/discord.png" width="60" height="60" /></a>
  </p>
-This is the Chat client for DisTwitchChat. This app has many features that the [overlay](https://github.com/DisTwitchChat/Overlay) does not have.
+<h1 align="center"> DisStreamChat App </h1>
 
 ---
 ## Support
