@@ -49,3 +49,7 @@ npm run start
 npm run build
 ```
 2. Go into your project folder using your file explorer. Navigate to the `dist` folder and open it. Then double-click `<your-project-name>` Setup 0.1.0. Your app should open and there should now be an icon on your desktop for this app.
+
+
+
+[![GitHub followers](https://img.shields.io/github/followers/gypsydangerous.svg?label=Follow%20@gypsydangerous&style=social)](https://github.com/gypsydangerous/)  [![Twitter Follow](https://img.shields.io/twitter/follow/disstreamchat?style=social)](https://twitter.com/disstreamchat)
