@@ -1,8 +1,5 @@
 <p align="center">
     <a href="https://www.disstreamchat.com"><img src="https://www.disstreamchat.com/logo.png" width=200/></a>
-    <br>
-    <a href="https://www.disstreamchat.com"><img
-       src="https://www.disstreamchat.com/discord.png" width="60" height="60" /></a>
  </p>
 <h1 align="center"> DisStreamChat App </h1>
 
