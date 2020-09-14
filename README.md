@@ -15,12 +15,15 @@ This project is a part of DisStreamChat. Whether you use this project, another D
 * React
 * Firebase
 
+# Contributing
+All contributions and feature requests are welcome. Feel free to make a pull request or open an issue
+
 # Installation
 
 ## Install for Devolopment
 1. Clone this repository.
 ```
-git clone https://github.com/DisStreamChat/App.git <your-project-name>
+git clone https://github.com/DisStreamChat/App.git
 ```
 2. Install Dependencies
 ```
@@ -31,21 +34,10 @@ npm install
 npm install -g yarn
 ```
 4. Create a .env and add enviromnent variables from `.env.sample`. unless you are using a development version of the backend, the socket url should be set to `https://api.disstreamchat.com/`
-5. Navigate into project root and install dependencies.
-```
-cd <your-project-name> && npm install
-```
 6. Run dev server.
 ```
 npm run start
 ```
-
-## Deploy Development version
-1. Run the build process
-```
-npm run build
-```
-2. Go into your project folder using your file explorer. Navigate to the `dist` folder and open it. Then double-click `<your-project-name>-Setup <Version>`. Your app should open and there should now be an icon on your desktop for this app.
 
 
 
