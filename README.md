@@ -4,10 +4,10 @@
 <h1 align="center"> DisStreamChat App </h1>
 <hr/>
 <p align="center">
-<img src="https://img.shields.io/github/license/disstreamchat/app" alt="Stream chat manager"/>
-<img src="https://img.shields.io/github/last-commit/disstreamchat/app?color=%462b45&style=plastic" alt="Stream chat manager" />
-<img src="https://img.shields.io/github/labels/disstreamchat/app/help%20wanted?color=%462b45&style=plastic" alt="Stream chat manager" />
-<img src="https://img.shields.io/github/issues/disstreamchat/app?color=%462b45&style=plastic" alt="Stream chat manager" />
+<img src="https://img.shields.io/github/license/disstreamchat/app?style=for-the-badge" alt="Stream chat manager"/>
+<img src="https://img.shields.io/github/last-commit/disstreamchat/app?color=%462b45&style=for-the-badge" alt="Stream chat manager" />
+<img src="https://img.shields.io/github/labels/disstreamchat/app/help%20wanted?color=%462b45&style=for-the-badge" alt="Stream chat manager" />
+<img src="https://img.shields.io/github/issues/disstreamchat/app?color=%462b45&style=for-the-badge" alt="Stream chat manager" />
 </p>
 
 <p align="center"><img src="https://media.discordapp.net/attachments/727356806552092675/755062471789641748/unknown.png?width=1923&height=1250"></p>
