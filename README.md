@@ -68,7 +68,6 @@ This project is licensed under the MIT License - see the [LICENSE.md](./LICENSE)
 All contributions and feature requests are welcome. Feel free to make a pull request or open an issue. For more info see the [contributing guide](./CONTRIBUTING.md)
 
 
-
-
-
 [![GitHub followers](https://img.shields.io/github/followers/gypsydangerous.svg?label=Follow%20@gypsydangerous&style=social)](https://github.com/gypsydangerous/)  [![Twitter Follow](https://img.shields.io/twitter/follow/disstreamchat?style=social)](https://twitter.com/disstreamchat)
+
+Made with ♥️ by the [DisStreamChat Team](https://www.disstreamchat.com/#/members) and gracious [contributors](https://github.com/DisStreamChat/Contributors)
