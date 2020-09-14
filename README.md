@@ -58,7 +58,7 @@ This project is a part of DisStreamChat. Whether you use this project, another D
 - [Electron](https://www.electronjs.org/)
 - [SCSS](https://sass-lang.com/documentation/syntax) 
 - [Firebase](https://firebase.google.com/)
-- [Material UI](https://material-ui.com/)
+- [Material UI](https://material-ui.com/) for icons and inputs
 
 ## 📄 License
 
