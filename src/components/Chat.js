@@ -69,7 +69,7 @@ function App() {
 					setIsMod(!!json);
 				}
 			} catch (err) {
-				if(err.message === "The user aborted a request.") return 
+				if (err.message === "The user aborted a request.") return;
 				setIsMod(false);
 			}
 		})();
@@ -360,6 +360,19 @@ function App() {
 
 	useSocketEvent(socketRef.current, "clearchat", () => {
 		setMessages([]);
+	});
+
+	useSocketEvent(socketRef.current, "remove-auto-mod", data => {
+		setMessages(prev => {
+			const copy = [...prev];
+			const idx = copy.findIndex(msg => msg.message_id === data.message_id);
+			if (idx > 0) {
+				copy.splice(idx, 1);
+				return copy;
+			} else {
+				return prev;
+			}
+		});
 	});
 
 	useEffect(() => {
