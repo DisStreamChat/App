@@ -58,8 +58,8 @@ const Header = props => {
 		modChannels,
 		setModChannels,
 		pinnedChannels,
-        setPinnedChannels,
-        isMod
+		setPinnedChannels,
+		isMod,
 	} = useContext(AppContext);
 	const [viewingUserId, setViewingUserId] = useState();
 	const [viewingUserInfo, setViewingUserInfo] = useState();
@@ -105,7 +105,7 @@ const Header = props => {
 		});
 	}, [currentUser]);
 
-    const uid = currentUser?.uid
+	const uid = currentUser?.uid;
 	const toggleLiveNotify = useCallback(async () => {
 		setNotifyLive(prev => {
 			const action = prev ? firebase.firestore.FieldValue.arrayRemove : firebase.firestore.FieldValue.arrayUnion;
@@ -324,7 +324,7 @@ const Header = props => {
 									<ContextMenuTrigger id="channels">
 										<Tooltip arrow title="Channels">
 											{isPopoutOut ? (
-												<div  className="cp">
+												<div className="cp">
 													<HomeIcon />
 												</div>
 											) : (
@@ -336,7 +336,7 @@ const Header = props => {
 									</ContextMenuTrigger>
 									<ContextMenu id="channels">
 										{[{ login: userData.TwitchName, id: userData.twitchId }, ...modChannels].map(channel => (
-											<MenuItem>
+											<MenuItem key={channel.id}>
 												<Link to={`/chat/${channel.id}`}>{channel.login}</Link>
 											</MenuItem>
 										))}
