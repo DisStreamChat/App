@@ -90,9 +90,9 @@ const Auth = React.memo(props => {
 						<img src={`${process.env.PUBLIC_URL}/social-media.svg`} alt="" width="20" className="logo-icon" />
 						Twitch
 					</button>
-					<button className="modal-button youtube" onClick={readTerms ? signInWithGoogle : () => {}}>
-						<YouTubeIcon className="logo-icon yt-icon" />
-						YouTube
+					<button className="modal-button discord" onClick={readTerms ? signInWithGoogle : () => {}}>
+						<img width="24" alt="" src="https://www.disstreamchat.com/discord_logo.png" className="logo-icon yt-icon" />
+						Discord
 					</button>
 					<div className="legal">
 						<input

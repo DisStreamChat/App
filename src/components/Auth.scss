@@ -33,6 +33,7 @@
 
 .logo-icon{
     margin-right: .5rem;
+    filter: grayscale(1) brightness(1000%)
 }
 
 .yt-icon{
@@ -87,6 +88,10 @@
 
 .modal-button:hover{
     filter: brightness(.85)
+}
+
+.modal-button.discord{
+    background: var(--discord-background);
 }
 
 .modal-button.youtube{
