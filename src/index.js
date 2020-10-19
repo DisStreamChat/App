@@ -114,22 +114,25 @@ const App = () => {
 				const profilePicture = await profilePictureResponse.json();
 				const modChannelResponse = await fetch(`${process.env.REACT_APP_SOCKET_URL}/modchannels?user=${TwitchName}`);
 				const removedChannels = userData.removedChannels || [];
-				const NewModChannels = (await modChannelResponse.json()).filter(channel => !removedChannels.includes(channel.id));
+				const NewModChannels = (await modChannelResponse.json()).filter(channel => !removedChannels.includes(channel?.id));
 
 				const ModChannels = await Promise.all(
 					[...NewModChannels, ...(userData.ModChannels || [])]
-						.filter((thing, index, self) => thing.pinned || index === self.findIndex(t => t.id === thing.id))
+						.filter((thing, index, self) => thing?.pinned || index === self.findIndex(t => t?.id === thing?.id))
 						.map(async channel => {
-							const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${channel.id}&platform=twitch&place=channelsindex`;
+							const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/resolveuser?user=${channel?.id}&platform=twitch&place=channelsindex`;
 							const response = await fetch(apiUrl);
 							return { ...channel, ...response.json() };
 						})
 				);
-				await firebase.db.collection("Streamers").doc(currentUser.uid).update({
-					profilePicture,
-					ModChannels,
-					TwitchName,
-				});
+				await firebase.db
+					.collection("Streamers")
+					.doc(currentUser.uid)
+					.update({
+						profilePicture,
+						ModChannels: ModChannels.filter(channel => Object.keys(channel || {}).length),
+						TwitchName,
+					});
 			}
 		})();
 	}, [firebaseInit, currentUser, userData]);
