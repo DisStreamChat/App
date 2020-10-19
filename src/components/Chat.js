@@ -379,11 +379,11 @@ function App() {
 				} else {
 					const { guildId, liveChatId, twitchId } = data;
 					const TwitchName = data.TwitchName;
-					console.log({
-						TwitchName,
-						guildId,
-						liveChatId,
-					});
+					// console.log({
+					// 	TwitchName,
+					// 	guildId,
+					// 	liveChatId,
+					// });
 					setChannel({
 						TwitchName,
 						guildId,

@@ -58,8 +58,8 @@ const Header = props => {
 		modChannels,
 		setModChannels,
 		pinnedChannels,
-        setPinnedChannels,
-        isMod
+		setPinnedChannels,
+		isMod,
 	} = useContext(AppContext);
 	const [viewingUserId, setViewingUserId] = useState();
 	const [viewingUserInfo, setViewingUserInfo] = useState();
@@ -105,7 +105,7 @@ const Header = props => {
 		});
 	}, [currentUser]);
 
-    const uid = currentUser?.uid
+	const uid = currentUser?.uid;
 	const toggleLiveNotify = useCallback(async () => {
 		setNotifyLive(prev => {
 			const action = prev ? firebase.firestore.FieldValue.arrayRemove : firebase.firestore.FieldValue.arrayUnion;
@@ -167,32 +167,37 @@ const Header = props => {
 					setViewingUserInfo(userData);
 				} catch (err) {
 					console.log(err.message);
+					setViewingUserInfo({});
 				}
 			}
 		})();
 	}, [chatHeader, show, viewingUserId]);
 
 	const getStats = useCallback(async () => {
-		if (viewingUserInfo) {
-			const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=${viewingUserInfo?.display_name?.toLowerCase?.()}&new=true`;
-			const response = await fetch(ApiUrl);
-			const data = await response.json();
-			setViewingUserStats(prev => {
-				if (data) {
-					return {
-						name: viewingUserInfo.display_name,
-						viewers: data.viewer_count,
-						isLive: data.isLive,
-					};
-				} else {
-					return {
-						name: viewingUserInfo.display_name,
-						viewers: 0,
-						isLive: false,
-					};
-				}
-			});
-		}
+		try {
+			if (viewingUserInfo) {
+				const ApiUrl = `${process.env.REACT_APP_SOCKET_URL}/stats/twitch/?name=${viewingUserInfo?.display_name?.toLowerCase?.()}&new=true`;
+				const response = await fetch(ApiUrl);
+				const data = await response.json();
+				setViewingUserStats(prev => {
+					if (data) {
+						return {
+							name: viewingUserInfo.display_name,
+							viewers: data.viewer_count,
+							isLive: data.isLive,
+						};
+					} else {
+						return {
+							name: viewingUserInfo.display_name,
+							viewers: 0,
+							isLive: false,
+						};
+					}
+				});
+			}
+		} catch (err) {
+            setViewingUserStats({})
+        }
 	}, [viewingUserInfo]);
 
 	useEffect(() => {
@@ -276,10 +281,12 @@ const Header = props => {
 								<div className={`live-status ${viewingUserStats?.isLive ? "live" : ""}`}></div>
 								{!viewingUserStats ? (
 									<Skeleton variant="text" animation="wave" />
-								) : (
+								) : viewingName && viewingName?.toLowerCase() != "undefined" ? (
 									<a href={`https://twitch.tv/${viewingUserStats?.name?.toLowerCase?.()}`} className="name">
 										{viewingName}
 									</a>
+								) : (
+									userData.displayName
 								)}
 							</div>
 						</>
@@ -287,14 +294,11 @@ const Header = props => {
 					<div className={`all-icons ${!chatHeader ? "channel-icons" : ""}`}>
 						{chatHeader && (
 							<div className="icons icons-left">
-								<Tooltip arrow title={`${following ? "Unfollow" : "Follow"}`}>
-									<div onClick={handleFollow}>{following ? <FavoriteIcon /> : <FavoriteTwoToneIcon />}</div>
-								</Tooltip>
-								{/* <Tooltip arrow title="Channel details">
-									<div>
-										<VisibilityIcon />
-									</div>
-								</Tooltip> */}
+								{userData.twitchAuthenticated && (
+									<Tooltip arrow title={`${following ? "Unfollow" : "Follow"}`}>
+										<div onClick={handleFollow}>{following ? <FavoriteIcon /> : <FavoriteTwoToneIcon />}</div>
+									</Tooltip>
+								)}
 								<Tooltip arrow title={`${unreadMessages ? "Mark as Read" : "No unread Messages"}`}>
 									<div
 										onClick={() => setUnreadMessageIds([])}
@@ -324,7 +328,7 @@ const Header = props => {
 									<ContextMenuTrigger id="channels">
 										<Tooltip arrow title="Channels">
 											{isPopoutOut ? (
-												<div  className="cp">
+												<div className="cp">
 													<HomeIcon />
 												</div>
 											) : (

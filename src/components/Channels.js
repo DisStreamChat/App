@@ -193,7 +193,7 @@ const Channels = React.memo(props => {
 
 	useEffect(() => {
 		const user = userData;
-		setMyChannel({ name: user?.displayName, isMember: true, profilePicture: user?.profilePicture, uid: userData.uid, id: userData.twitchId });
+		setMyChannel({ name: user?.displayName, isMember: true, profilePicture: user?.profilePicture, uid: user.uid, id: user.twitchId || user.discordId });
 	}, [userData]);
 
 	useEffect(() => {
@@ -237,6 +237,8 @@ const Channels = React.memo(props => {
 			document.removeEventListener("focusout", handleKeyUp);
 		};
 	}, []);
+
+    console.log(myChannel)
 
 	return (
 		<>
