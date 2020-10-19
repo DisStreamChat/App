@@ -29,11 +29,22 @@ const A = props => {
 };
 
 const Auth = React.memo(props => {
-    const [readTerms, setReadTerms] = useState(false);
-    
-    const loginWithDiscord = async () => {
+	const [readTerms, setReadTerms] = useState(false);
 
-    }
+	const loginWithDiscord = async () => {
+		const id = uuidv4();
+		const oneTimeCodeRef = firebase.db.collection("oneTimeCodes").doc(id);
+
+		oneTimeCodeRef.onSnapshot(async snapshot => {
+			const data = snapshot.data();
+			if (data) {
+				const token = data.authToken;
+				await firebase.auth.signInWithCustomToken(token);
+				props.history.push("/");
+			}
+		});
+		await remote.shell.openExternal("https://api.disstreamchat.com/oauth/discord/?otc=" + id);
+	};
 
 	const loginWithTwitch = useCallback(async () => {
 		try {
