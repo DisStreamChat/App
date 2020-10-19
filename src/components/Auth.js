@@ -29,24 +29,11 @@ const A = props => {
 };
 
 const Auth = React.memo(props => {
-	const signInWithGoogle = useCallback(async () => {
-		// create a google auth provider provided by firebase
-		const provider = new firebase.app.auth.GoogleAuthProvider();
-		try {
-			// sign in with a google popup and get the resulting user info from google
-			const result = await firebase.auth.signInWithPopup(provider);
-			const user = result.user;
-			const { displayName } = user;
-			firebase.auth.currentUser.updateProfile({
-				displayName,
-			});
+    const [readTerms, setReadTerms] = useState(false);
+    
+    const loginWithDiscord = async () => {
 
-			props.history.push("/");
-		} catch (err) {
-			console.log(err.message);
-		}
-	}, [props.history]);
-	const [readTerms, setReadTerms] = useState(false);
+    }
 
 	const loginWithTwitch = useCallback(async () => {
 		try {
@@ -90,7 +77,7 @@ const Auth = React.memo(props => {
 						<img src={`${process.env.PUBLIC_URL}/social-media.svg`} alt="" width="20" className="logo-icon" />
 						Twitch
 					</button>
-					<button className="modal-button discord" onClick={readTerms ? signInWithGoogle : () => {}}>
+					<button className="modal-button discord" onClick={readTerms ? loginWithDiscord : () => {}}>
 						<img width="24" alt="" src="https://www.disstreamchat.com/discord_logo.png" className="logo-icon yt-icon" />
 						Discord
 					</button>
