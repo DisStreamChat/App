@@ -53,6 +53,7 @@ function App() {
 	const [emoteIndex, setEmoteIndex] = useState(0);
 	const [emotePickerVisible, setEmotePickerVisible] = useState(false);
 
+
 	useEffect(() => {
 		const aborter = new AbortController();
 		const signal = aborter.signal;
@@ -141,20 +142,22 @@ function App() {
 					copy[index].pinned = true;
 					const pinnedMessage = copy.splice(index, 1);
 					setPinnedMessages(prev => [...prev, ...pinnedMessage]);
+                    firebase.db.collection("featured-messages").doc(currentUser.uid).collection("messages").doc(pinnedMessage[0].id).set(pinnedMessage[0])
 					return copy;
-				});
+                });
 			} else {
-				setPinnedMessages(prev => {
-					let copy = [...prev];
+                setPinnedMessages(prev => {
+                    let copy = [...prev];
 					let index = copy.findIndex(msg => msg.id === id);
 					copy[index].pinned = false;
 					const unPinnedMessage = copy.splice(index, 1);
 					setMessages(prev => [...prev, ...unPinnedMessage].sort((a, b) => a.sentAt - b.sentAt));
+                    firebase.db.collection("featured-messages").doc(currentUser.uid).collection("messages").doc(unPinnedMessage[0].id).delete()
 					return copy;
 				});
 			}
 		},
-		[setMessages, setPinnedMessages, messages]
+		[setMessages, setPinnedMessages, messages, currentUser]
 	);
 
 	const ban = useCallback(
