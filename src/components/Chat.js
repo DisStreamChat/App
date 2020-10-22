@@ -53,7 +53,6 @@ function App() {
 	const [emoteIndex, setEmoteIndex] = useState(0);
 	const [emotePickerVisible, setEmotePickerVisible] = useState(false);
 
-
 	useEffect(() => {
 		const aborter = new AbortController();
 		const signal = aborter.signal;
@@ -70,7 +69,7 @@ function App() {
 					setIsMod(!!json);
 				}
 			} catch (err) {
-				if(err.message === "The user aborted a request.") return 
+				if (err.message === "The user aborted a request.") return;
 				setIsMod(false);
 			}
 		})();
@@ -142,17 +141,22 @@ function App() {
 					copy[index].pinned = true;
 					const pinnedMessage = copy.splice(index, 1);
 					setPinnedMessages(prev => [...prev, ...pinnedMessage]);
-                    firebase.db.collection("featured-messages").doc(currentUser.uid).collection("messages").doc(pinnedMessage[0].id).set(pinnedMessage[0])
+					firebase.db
+						.collection("featured-messages")
+						.doc(currentUser.uid)
+						.collection("messages")
+						.doc(pinnedMessage[0].id)
+						.set(pinnedMessage[0]);
 					return copy;
-                });
+				});
 			} else {
-                setPinnedMessages(prev => {
-                    let copy = [...prev];
+				setPinnedMessages(prev => {
+					let copy = [...prev];
 					let index = copy.findIndex(msg => msg.id === id);
 					copy[index].pinned = false;
 					const unPinnedMessage = copy.splice(index, 1);
 					setMessages(prev => [...prev, ...unPinnedMessage].sort((a, b) => a.sentAt - b.sentAt));
-                    firebase.db.collection("featured-messages").doc(currentUser.uid).collection("messages").doc(unPinnedMessage[0].id).delete()
+					firebase.db.collection("featured-messages").doc(currentUser.uid).collection("messages").doc(unPinnedMessage[0].id).delete();
 					return copy;
 				});
 			}
@@ -212,7 +216,7 @@ function App() {
 				return copy;
 			});
 
-			if (isMod) {
+			if (isMod && settings.ShowModOptions) {
 				let modName = userInfo.name;
 				if (!modName) {
 					console.log("attempting to obtain username");
@@ -225,7 +229,7 @@ function App() {
 				}
 			}
 		},
-		[socketRef, isMod, setMessages, userInfo, currentUser]
+		[socketRef, isMod, setMessages, userInfo, currentUser, settings]
 	);
 
 	useSocketEvent(socketRef.current, "auto-mod", msg => {
@@ -745,7 +749,7 @@ function App() {
 				</button>
 			</CSSTransition>
 			<EmotePicker
-				onEmoteSelect={emote => setChatValue(prev => `${prev} ${emote.native||emote.name}`)}
+				onEmoteSelect={emote => setChatValue(prev => `${prev} ${emote.native || emote.name}`)}
 				emotes={userEmotes}
 				onClickAway={() => setEmotePickerVisible(false)}
 				visible={emotePickerVisible && windowFocused}
