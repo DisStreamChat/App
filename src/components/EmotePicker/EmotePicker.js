@@ -46,7 +46,7 @@ const EmotePicker = memo(({ emotes, visible, onClickAway, onEmoteSelect }) => {
 				: emote.ffz
 				? `${emote.name}#emote`
 				: `https://static-cdn.jtvnw.net/emoticons/v1/${emote.id}/1.0`,
-		}));
+		})).sort(emote => emote.customCategory === "Twitch" ? 1 : -1);
 	}, [emotes]);
 
 	return (
@@ -58,16 +58,19 @@ const EmotePicker = memo(({ emotes, visible, onClickAway, onEmoteSelect }) => {
 			>
 				{customEmojis.length ? (
 					<Picker
+						emojiSize={28}
 						custom={customEmojis}
-                        theme="dark"
-                        include={[]}
+						theme="dark"
+						include={[]}
 						style={{ position: "absolute", bottom: "6rem", right: "2rem", zIndex: 100 }}
 						set="twitter"
 						title="Pick your emote…"
 						emoji="point_up"
 						onSelect={onEmoteSelect}
 					/>
-				) : <></>}
+				) : (
+					<></>
+				)}
 			</ClickAwayListener>
 		</CSSTransition>
 	);
