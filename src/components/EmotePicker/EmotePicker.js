@@ -3,7 +3,9 @@ import { CSSTransition } from "react-transition-group";
 import "./EmotePicker.scss";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import { Tooltip } from "@material-ui/core";
-import SearchBox from "../SearchBox"
+import SearchBox from "../SearchBox";
+import "emoji-mart/css/emoji-mart.css";
+import { Picker } from "emoji-mart";
 
 const EmoteItem = ({ name, char, bttv, ffz, onClick, onMouseEnter, onMouseLeave }) => {
 	return (
@@ -28,15 +30,25 @@ const EmoteItem = ({ name, char, bttv, ffz, onClick, onMouseEnter, onMouseLeave 
 	);
 };
 
-const EmotePicker = memo(({ emotes, visible, onClickAway, onEmoteSelect, }) => {
-	const [emoteType, setEmoteType] = useState("twitch");
-	const [hoveredEmote, setHoveredEmote] = useState()
-	const [emoteSearch, setEmoteSearch] = useState("")
-	const displayMotes = useMemo(() => {
-		return emotes.filter(emote => {
-			return emoteType === "twitch" ? !emote.bttv && !emote.ffz : emoteType === "ffz" ? emote.ffz : emoteType === "bttv" ? emote.bttv : true;
-		}).filter(emote => emoteSearch ? emote.code.match(new RegExp(emoteSearch.replace(/[#-.]|[[-^]|[?|{}]/g, '\\$&'), "i")) : true).sort((a, b) => a.code.localeCompare(b.code, "en", {numeric: true}));
-	}, [emotes, emoteType, emoteSearch]);
+const EmotePicker = memo(({ emotes, visible, onClickAway, onEmoteSelect }) => {
+	const customEmojis = useMemo(() => {
+		return emotes.map(emote => ({
+			id: emote.id || emote.code,
+			name: emote.code,
+			text: "",
+			short_names: [emote.code],
+			customCategory: emote.bttv ? "BetterTwitchTv" : emote.ffz ? "FrankerFaceZ" : "Twitch",
+			native: emote.code,
+			emoticons: [],
+			keywords: ["github"],
+			imageUrl: emote.bttv
+				? `https://cdn.betterttv.net/emote/${emote.name}/1x#emote`
+				: emote.ffz
+				? `${emote.name}#emote`
+				: `https://static-cdn.jtvnw.net/emoticons/v1/${emote.id}/1.0`,
+		}));
+	}, [emotes]);
+
 	return (
 		<CSSTransition in={visible} timeout={400} unmountOnExit classNames="emote-picker-node">
 			<ClickAwayListener
@@ -44,30 +56,18 @@ const EmotePicker = memo(({ emotes, visible, onClickAway, onEmoteSelect, }) => {
 					if (onClickAway) onClickAway();
 				}}
 			>
-				<div className="emote-picker">
-					<div className="emote-picker__header">
-						<img onClick={() => setEmoteType("twitch")} src="https://static-cdn.jtvnw.net/emoticons/v1/115847/1.0" alt="" />
-						<img onClick={() => setEmoteType("bttv")} src="https://cdn.betterttv.net/emote/56e9f494fff3cc5c35e5287e/1x" alt="" />
-						<img onClick={() => setEmoteType("ffz")} src="https://cdn.frankerfacez.com/42c1ab2d569b74fd067279096f5ec238.png" alt="" />
-						<SearchBox placeholder="Search Emotes" value={emoteSearch} onChange={setEmoteSearch} type="text" className="emote-picker--searchbar"></SearchBox>
-					</div>
-					<div className="emote-picker__body">
-						{displayMotes?.map(emote => (
-							<EmoteItem key={emote.id} onMouseEnter={() => setHoveredEmote({...emote, name: emote.name || emote.id})} onMouseLeave={() => setHoveredEmote(null)} onClick={onEmoteSelect} {...emote} name={emote.id || emote.name} char={emote.code} />
-						))}
-					</div>
-					<div className="emote-picker__footer">
-						{hoveredEmote ? <>
-							<img src={`${hoveredEmote.bttv
-						? `https://cdn.betterttv.net/emote/${hoveredEmote.name}/1x#emote`
-						: hoveredEmote.ffz
-						? `${hoveredEmote.name}#emote`
-						: `https://static-cdn.jtvnw.net/emoticons/v1/${hoveredEmote.name}/1.0`}`}>
-							</img>
-							<div>{hoveredEmote.code}</div>
-						</> : <></>}
-					</div>
-				</div>
+				{customEmojis.length ? (
+					<Picker
+						custom={customEmojis}
+                        theme="dark"
+                        include={[]}
+						style={{ position: "absolute", bottom: "6rem", right: "2rem", zIndex: 100 }}
+						set="twitter"
+						title="Pick your emote…"
+						emoji="point_up"
+						onSelect={onEmoteSelect}
+					/>
+				) : <></>}
 			</ClickAwayListener>
 		</CSSTransition>
 	);

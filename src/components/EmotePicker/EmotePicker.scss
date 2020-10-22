@@ -74,3 +74,46 @@
 	transform: translateY(10%);
 	transition: 400ms;
 }
+
+.emoji-mart-skin-swatch.selected{
+    width: 12px !important
+}
+
+.emoji-mart-search input{
+    width: 89% !important;
+}
+
+.emoji-mart-search-icon{
+    top: 5px !important;
+}
+
+.emoji-mart{
+    *{
+        outline: none !important;
+        &::-webkit-scrollbar {
+            width: 1rem;
+            border-radius: 100px;
+        }
+        
+        /* Track */
+        &::-webkit-scrollbar-track {
+            background: #24252a;
+        }
+        
+        /* Handle */
+        &::-webkit-scrollbar-thumb {
+            background: #17181b;
+            border-radius: 100px;
+        }
+        
+        /* Handle on hover */
+        &::-webkit-scrollbar-thumb:hover {
+            background: #111;
+        }
+        
+    }
+}
+
+.emoji-mart .emoji-mart-emoji{
+    outline: none !important;
+}

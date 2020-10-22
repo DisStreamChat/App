@@ -375,7 +375,7 @@ function App() {
 					const userData = [...modChannels, { display_name: userInfo.TwitchName, id: userInfo.twitchId }].find(
 						channel => channel.id === id
 					);
-					console.log(userData);
+					// console.log(userData);
 					setChannel({
 						TwitchName: userData?.display_name?.toLowerCase?.(),
 					});
@@ -745,7 +745,7 @@ function App() {
 				</button>
 			</CSSTransition>
 			<EmotePicker
-				onEmoteSelect={emote => setChatValue(prev => `${prev} ${emote}`)}
+				onEmoteSelect={emote => setChatValue(prev => `${prev} ${emote.native||emote.name}`)}
 				emotes={userEmotes}
 				onClickAway={() => setEmotePickerVisible(false)}
 				visible={emotePickerVisible && windowFocused}

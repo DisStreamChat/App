@@ -62,7 +62,7 @@ const Auth = React.memo(props => {
 			await remote.shell.openExternal("https://api.disstreamchat.com/oauth/twitch/?otc=" + id);
 		} catch (err) {
 			async function receiveMessage(event, data) {
-				console.log(data);
+				// console.log(data);
 				const json = data;
 				await firebase.auth.signInWithCustomToken(json.token);
 				props.history.push("/");

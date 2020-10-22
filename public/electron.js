@@ -273,7 +273,7 @@ ipcMain.on("setopacity", (event, data) => {
 });
 
 ipcMain.on("notify-live", (event, {stream}) => {
-    console.log(stream)
+    // console.log(stream)
     notifier.notify(
         {
             appName: "com.disstreamchat.id",
