@@ -7,7 +7,12 @@ const contextMenu = require("electron-context-menu");
 const { autoUpdater } = require("electron-updater");
 
 const notifier = require("node-notifier");
+const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
 
+
+app.whenReady().then(() => {
+    installExtension(REACT_DEVELOPER_TOOLS)
+})
 let updateWindow;
 let mainWindow;
 let loginWindow;
@@ -81,7 +86,8 @@ function windowGenerator({ width = Width, height = Width * 1.5, x, y, small } = 
 	window.setAlwaysOnTop(true, "screen-saver");
 	try {
 		window.setFullScreenable(false);
-	} catch (err) {}
+    } catch (err) {}
+    
 	return window;
 }
 
