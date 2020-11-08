@@ -482,8 +482,7 @@ function App() {
 				}
 			}
 		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[observerRef, setUnreadMessageIds]
+		[observerRef, setUnreadMessageIds, storedMessages]
 	);
 
 	const acceptMessage = useCallback(
