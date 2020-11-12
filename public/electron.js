@@ -5,14 +5,15 @@ const isDev = require("electron-is-dev");
 const windowStateKeeper = require("electron-window-state");
 const contextMenu = require("electron-context-menu");
 const { autoUpdater } = require("electron-updater");
-
 const notifier = require("node-notifier");
-const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
+
+// const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
 
 
-app.whenReady().then(() => {
-    installExtension(REACT_DEVELOPER_TOOLS)
-})
+// app.whenReady().then(() => {
+//     installExtension(REACT_DEVELOPER_TOOLS)
+// })
+
 let updateWindow;
 let mainWindow;
 let loginWindow;
