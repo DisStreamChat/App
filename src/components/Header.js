@@ -196,8 +196,8 @@ const Header = props => {
 				});
 			}
 		} catch (err) {
-            setViewingUserStats({})
-        }
+			setViewingUserStats({});
+		}
 	}, [viewingUserInfo]);
 
 	useEffect(() => {
@@ -402,6 +402,16 @@ const Header = props => {
 													onClick={() => {
 														setMessages([]);
 														setPinnedMessages([]);
+														firebase.db
+															.collection("featured-messages")
+															.doc(currentUser.uid)
+															.collection("messages")
+															.get()
+															.then(res => {
+																res.forEach(element => {
+																	element.ref.delete();
+																});
+															});
 													}}
 													className="menu-item border-top-1"
 												>

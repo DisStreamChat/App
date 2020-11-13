@@ -208,6 +208,15 @@ function App() {
 	// this is used to delete messages, in certain conditions will also send a message to backend tell it to delete the message from the sent platform
 	const removeMessage = useCallback(
 		async (id, platform) => {
+			setPinnedMessages(prev => {
+				let copy = [...prev];
+				let index = copy.findIndex(msg => msg.id === id);
+				if (index === -1) return prev;
+				const unPinnedMessage = copy.splice(index, 1);
+				firebase.db.collection("featured-messages").doc(currentUser.uid).collection("messages").doc(unPinnedMessage[0].id).delete();
+
+				return copy;
+			});
 			setMessages(prev => {
 				let copy = [...prev];
 				let index = copy.findIndex(msg => msg.id === id);
