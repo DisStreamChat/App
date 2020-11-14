@@ -299,7 +299,7 @@ function App() {
 				}
 			}
 		},
-		[socketRef, isMod, setMessages, userInfo, currentUser, settings]
+		[setPinnedMessages, setMessages, isMod, settings.ShowModOptions, currentUser.uid, userInfo.name]
 	);
 
 	useSocketEvent(socketRef.current, "auto-mod", msg => {
