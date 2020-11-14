@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useCallback, useRef, useMemo } from "react";
+import React, {
+	useEffect,
+	useState,
+	useCallback,
+	useRef,
+	useMemo,
+} from "react";
 import firebase from "../firebase";
 import { useParams } from "react-router-dom";
 import openSocket from "socket.io-client";
@@ -43,7 +49,10 @@ function App() {
 	const [search, setSearch] = useState("");
 	const { id } = useParams();
 	const [storedMessages, setStoredMessages] = useLocalStorage(`messages`, {});
-	const [storedPinnedMessages, setStoredPinnedMessages] = useLocalStorage(`pinned messages`, {});
+	const [storedPinnedMessages, setStoredPinnedMessages] = useLocalStorage(
+		`pinned messages`,
+		{}
+	);
 	const [showToTop, setShowToTop] = useState(false);
 	const [showSearch, setShowSearch] = useState(true);
 	const [chatValue, setChatValue] = useState("");
@@ -58,10 +67,15 @@ function App() {
 		const signal = aborter.signal;
 		(async () => {
 			try {
-				if (userInfo?.name?.toLowerCase?.() === channel?.TwitchName?.toLowerCase?.()) {
+				if (
+					userInfo?.name?.toLowerCase?.() ===
+					channel?.TwitchName?.toLowerCase?.()
+				) {
 					return setIsMod(true);
 				} else {
-					const apiUrl = `${process.env.REACT_APP_SOCKET_URL}/checkmod?user=${userInfo?.name?.toLowerCase?.()}&channel=${
+					const apiUrl = `${
+						process.env.REACT_APP_SOCKET_URL
+					}/checkmod?user=${userInfo?.name?.toLowerCase?.()}&channel=${
 						channel?.TwitchName
 					}`;
 					const response = await fetch(apiUrl, { signal });
@@ -88,9 +102,17 @@ function App() {
 	useEffect(() => {
 		if (!settings.DisableLocalStorage && messages && id) {
 			setStoredMessages(prev => {
-				return { ...storedMessages, [id]: messages.slice(-Math.max(settings.MessageLimit || 100, 100)) };
+				return {
+					...storedMessages,
+					[id]: messages.slice(
+						-Math.max(settings.MessageLimit || 100, 100)
+					),
+				};
 			});
-			setStoredPinnedMessages(prev => ({ ...storedPinnedMessages, [id]: pinnedMessages }));
+			setStoredPinnedMessages(prev => ({
+				...storedPinnedMessages,
+				[id]: pinnedMessages,
+			}));
 		}
 	}, [messages, settings, pinnedMessages]);
 
@@ -132,31 +154,40 @@ function App() {
 	// this function is passed into the message and will be used for pinning
 	const pinMessage = useCallback(
 		id => {
-			const pinning = !!messages.find(msg => msg.id === id);
+			const pinning = !!messages?.find?.(msg => msg.id === id);
 			if (pinning) {
 				//move message from messages to pinned messages
 				setMessages(prev => {
 					let copy = [...prev];
-					let index = copy.findIndex(msg => msg.id === id);
+					let index = copy?.findIndex?.(msg => msg?.id === id);
 					copy[index].pinned = true;
-					const pinnedMessage = copy.splice(index, 1);
+					const pinnedMessage = copy?.splice?.(index, 1);
 					setPinnedMessages(prev => [...prev, ...pinnedMessage]);
-					firebase.db
-						.collection("featured-messages")
-						.doc(currentUser.uid)
-						.collection("messages")
-						.doc(pinnedMessage[0].id)
-						.set(pinnedMessage[0]);
+					const _ = firebase.db
+						?.collection?.("featured-messages")
+						?.doc?.(currentUser.uid)
+						?.collection?.("messages")
+						?.doc?.(pinnedMessage[0].id)
+						?.set?.(pinnedMessage[0]);
 					return copy;
 				});
 			} else {
 				setPinnedMessages(prev => {
 					let copy = [...prev];
-					let index = copy.findIndex(msg => msg.id === id);
+					let index = copy?.findIndex?.(msg => msg?.id === id);
 					copy[index].pinned = false;
-					const unPinnedMessage = copy.splice(index, 1);
-					setMessages(prev => [...prev, ...unPinnedMessage].sort((a, b) => a.sentAt - b.sentAt));
-					firebase.db.collection("featured-messages").doc(currentUser.uid).collection("messages").doc(unPinnedMessage[0].id).delete();
+					const unPinnedMessage = copy?.splice?.(index, 1);
+					setMessages(prev =>
+						[...prev, ...unPinnedMessage]?.sort?.(
+							(a, b) => a?.sentAt - b?.sentAt
+						)
+					);
+					const _ = firebase.db
+						?.collection("featured-messages")
+						?.doc(currentUser.uid)
+						?.collection("messages")
+						?.doc(unPinnedMessage[0].id)
+						?.delete();
 					return copy;
 				});
 			}
@@ -170,14 +201,22 @@ function App() {
 				let modName = userInfo.name;
 				if (!modName) {
 					console.log("attempting to obtain username");
-					const UserData = (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data();
+					const UserData = (
+						await firebase.db
+							.collection("Streamers")
+							.doc(currentUser.uid)
+							.get()
+					).data();
 					modName = UserData.name;
 				}
 
 				const banMsg = messages.find(msg => msg.id === id);
 				socketRef.current.emit(`banuser - ${platform}`, {
 					modName,
-					user: banMsg?.[platform === "discord" ? "userId" : "displayName"],
+					user:
+						banMsg?.[
+							platform === "discord" ? "userId" : "displayName"
+						],
 				});
 			}
 		},
@@ -191,10 +230,19 @@ function App() {
 				// on discord we delete by userId and on twitch we delete by username
 				let modName = userInfo.name;
 				if (!modName) {
-					const UserData = (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data();
+					const UserData = (
+						await firebase.db
+							.collection("Streamers")
+							.doc(currentUser.uid)
+							.get()
+					).data();
 					modName = UserData.name;
 				}
-				const user = !banMsg ? id : banMsg?.[platform === "discord" ? "userId" : "displayName"];
+				const user = !banMsg
+					? id
+					: banMsg?.[
+							platform === "discord" ? "userId" : "displayName"
+					  ];
 				socketRef.current.emit(`timeoutuser - ${platform}`, {
 					modName,
 					user,
@@ -213,7 +261,12 @@ function App() {
 				let index = copy.findIndex(msg => msg.id === id);
 				if (index === -1) return prev;
 				const unPinnedMessage = copy.splice(index, 1);
-				firebase.db.collection("featured-messages").doc(currentUser.uid).collection("messages").doc(unPinnedMessage[0].id).delete();
+				firebase.db
+					.collection("featured-messages")
+					.doc(currentUser.uid)
+					.collection("messages")
+					.doc(unPinnedMessage[0].id)
+					.delete();
 
 				return copy;
 			});
@@ -229,12 +282,20 @@ function App() {
 				let modName = userInfo.name;
 				if (!modName) {
 					console.log("attempting to obtain username");
-					const UserData = (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data();
+					const UserData = (
+						await firebase.db
+							.collection("Streamers")
+							.doc(currentUser.uid)
+							.get()
+					).data();
 					modName = UserData.name;
 				}
 
 				if (platform && socketRef.current) {
-					socketRef.current.emit(`deletemsg - ${platform}`, { id, modName });
+					socketRef.current.emit(`deletemsg - ${platform}`, {
+						id,
+						modName,
+					});
 				}
 			}
 		},
@@ -245,7 +306,10 @@ function App() {
 		msg.streamer = channel.TwitchName;
 		msg.autoMod = true;
 		if (settings?.ReverseMessageOrder) {
-			const shouldScroll = Math.abs(bodyRef.current.scrollTop - bodyRef.current.scrollHeight) < 1500;
+			const shouldScroll =
+				Math.abs(
+					bodyRef.current.scrollTop - bodyRef.current.scrollHeight
+				) < 1500;
 			setTimeout(() => {
 				if (shouldScroll) {
 					bodyRef.current.scrollTo({
@@ -260,7 +324,10 @@ function App() {
 		msg.body = `<p style="display: inline-block; width: 100% !important;"><span>Message held from <span style="background: #ff5c826e;">${msg.user}</span> for: <span style="font-weight: bold">${msg.reason}</span></span>\n<span style="background: #ff5c826e; display: inline-block; width: 100% !important;">${msg.body}</span>\n<span id=${msg.id}-accept class="automod-button" style="color: #19ff19 !important">Accept</span>  <span id=${msg.id}-deny class="automod-button" style="color: red !important">Deny</span></p>`;
 
 		setMessages(m => {
-			return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
+			return [
+				...m.slice(-Math.max(settings.MessageLimit, 100)),
+				{ ...msg, read: false },
+			];
 		});
 	});
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
@@ -268,7 +335,10 @@ function App() {
 		try {
 			msg.streamer = channel.TwitchName;
 			if (settings?.ReverseMessageOrder) {
-				const shouldScroll = Math.abs(bodyRef.current.scrollTop - bodyRef.current.scrollHeight) < 1500;
+				const shouldScroll =
+					Math.abs(
+						bodyRef.current.scrollTop - bodyRef.current.scrollHeight
+					) < 1500;
 				setTimeout(() => {
 					if (shouldScroll) {
 						bodyRef.current.scrollTo({
@@ -279,11 +349,16 @@ function App() {
 				}, 200);
 			}
 			// by default we don't ignore messages
-			if (messages.findIndex(message => message.id === msg.id) !== -1) return;
+			if (messages.findIndex(message => message.id === msg.id) !== -1)
+				return;
 			let ignoredMessage = false;
 
 			// check if we should ignore this user
-			if (settings?.IgnoredUsers?.map?.(item => item.value.toLowerCase()).includes(msg.displayName.toLowerCase())) {
+			if (
+				settings?.IgnoredUsers?.map?.(item =>
+					item.value.toLowerCase()
+				).includes(msg.displayName.toLowerCase())
+			) {
 				ignoredMessage = true;
 			}
 
@@ -295,7 +370,8 @@ function App() {
 			});
 
 			// don't allow ignoring of notifications from 'disstreamchat'
-			if (msg.displayName.toLowerCase() === "disstreamchat") ignoredMessage = false;
+			if (msg.displayName.toLowerCase() === "disstreamchat")
+				ignoredMessage = false;
 
 			if (settings?.IgnoreCheers && msg.messageId === "cheer") {
 				ignoredMessage = true;
@@ -303,10 +379,17 @@ function App() {
 			if (settings?.IgnoreFollows && msg.messageId === "follow") {
 				ignoredMessage = true;
 			}
-			if (settings?.IgnoreSubscriptions && msg.messageId === "subscription" && msg.messageType !== "channel-points") {
+			if (
+				settings?.IgnoreSubscriptions &&
+				msg.messageId === "subscription" &&
+				msg.messageType !== "channel-points"
+			) {
 				ignoredMessage = true;
 			}
-			if (settings?.IgnoreChannelPoints && msg.messageType === "channel-points") {
+			if (
+				settings?.IgnoreChannelPoints &&
+				msg.messageType === "channel-points"
+			) {
 				ignoredMessage = true;
 			}
 
@@ -322,24 +405,38 @@ function App() {
 			}
 
 			// add a <p></p> around the message to make formatting work properly also hightlight pings
-			const nameRegex = new RegExp(`(?<=\\s|^)(@?${userInfo?.name})`, "igm");
-			msg.body = `<p>${msg.body.replace(nameRegex, "<span class='ping'>$&</span>")}</p>`;
+			const nameRegex = new RegExp(
+				`(?<=\\s|^)(@?${userInfo?.name})`,
+				"igm"
+			);
+			msg.body = `<p>${msg.body.replace(
+				nameRegex,
+				"<span class='ping'>$&</span>"
+			)}</p>`;
 
 			// check if the message can have mod actions done on it. if the user isn't a mod this will always be false
 			msg.moddable =
-				msg?.displayName?.toLowerCase?.() === userInfo?.name?.toLowerCase?.() ||
-				(!Object.keys(msg.badges).includes("moderator") && !Object.keys(msg.badges).includes("broadcaster"));
+				msg?.displayName?.toLowerCase?.() ===
+					userInfo?.name?.toLowerCase?.() ||
+				(!Object.keys(msg.badges).includes("moderator") &&
+					!Object.keys(msg.badges).includes("broadcaster"));
 
 			if (
 				msg.platform !== "discord" &&
-				msg?.displayName?.toLowerCase?.() !== userInfo?.name?.toLowerCase?.() &&
-				channel?.TwitchName?.toLowerCase?.() === userInfo?.name?.toLowerCase?.()
+				msg?.displayName?.toLowerCase?.() !==
+					userInfo?.name?.toLowerCase?.() &&
+				channel?.TwitchName?.toLowerCase?.() ===
+					userInfo?.name?.toLowerCase?.()
 			)
 				msg.moddable = true;
-			if (msg.displayName.toLowerCase() === "disstreamchat") msg.moddable = false;
+			if (msg.displayName.toLowerCase() === "disstreamchat")
+				msg.moddable = false;
 
 			setMessages(m => {
-				return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
+				return [
+					...m.slice(-Math.max(settings.MessageLimit, 100)),
+					{ ...msg, read: false },
+				];
 			});
 		} catch (err) {}
 	});
@@ -363,15 +460,24 @@ function App() {
 			const copy = [...m];
 			const messageToUpdate = m.find(msg => msg.id === newMessage.id);
 			if (!messageToUpdate) return m;
-			const updatedMessage = { ...messageToUpdate, body: newMessage.body };
-			const messageToUpdateIndex = m.findIndex(msg => msg.id === newMessage.id);
+			const updatedMessage = {
+				...messageToUpdate,
+				body: newMessage.body,
+			};
+			const messageToUpdateIndex = m.findIndex(
+				msg => msg.id === newMessage.id
+			);
 			copy.splice(messageToUpdateIndex, 1, updatedMessage);
 			return copy;
 		});
 	});
 
 	useSocketEvent(socketRef.current, "purgeuser", username => {
-		setMessages(prev => prev.filter(msg => msg.displayName?.toLowerCase() !== username.toLowerCase()));
+		setMessages(prev =>
+			prev.filter(
+				msg => msg.displayName?.toLowerCase() !== username.toLowerCase()
+			)
+		);
 	});
 
 	useSocketEvent(socketRef.current, "clearchat", () => {
@@ -385,9 +491,13 @@ function App() {
 			.onSnapshot(async snapshot => {
 				const data = snapshot.data();
 				if (!data) {
-					const userData = [...modChannels, { display_name: userInfo.TwitchName, id: userInfo.twitchId }].find(
-						channel => channel.id === id
-					);
+					const userData = [
+						...modChannels,
+						{
+							display_name: userInfo.TwitchName,
+							id: userInfo.twitchId,
+						},
+					].find(channel => channel.id === id);
 					// console.log(userData);
 					setChannel({
 						TwitchName: userData?.display_name?.toLowerCase?.(),
@@ -442,7 +552,9 @@ function App() {
 	const scrollTop = useCallback(() => {
 		setUnreadMessageIds([]);
 		bodyRef.current.scrollTo({
-			top: settings?.ReverseMessageOrder ? bodyRef.current.scrollHeight : 0,
+			top: settings?.ReverseMessageOrder
+				? bodyRef.current.scrollHeight
+				: 0,
 			behavior: "smooth",
 		});
 	}, [setUnreadMessageIds, settings]);
@@ -452,7 +564,10 @@ function App() {
 			setShowToTop(prev =>
 				!settings?.ReverseMessageOrder
 					? bodyRef.current.scrollTop > 600
-					: Math.abs(bodyRef.current.scrollTop - bodyRef.current.scrollHeight) > 1500
+					: Math.abs(
+							bodyRef.current.scrollTop -
+								bodyRef.current.scrollHeight
+					  ) > 1500
 			);
 		};
 	}, [settings]);
@@ -461,27 +576,42 @@ function App() {
 		node => {
 			if (!node) return;
 			if (!observerRef.current) {
-				observerRef.current = new IntersectionObserver((entries, observer) => {
-					entries.forEach(entry => {
-						try {
-							const idx = entry.target.dataset.idx;
+				observerRef.current = new IntersectionObserver(
+					(entries, observer) => {
+						entries.forEach(entry => {
 							try {
-								setTimeout(() => {
-									try {
-										entry.target.classList.remove("_1qxYA");
-									} catch (err) {}
-								}, 700);
+								const idx = entry.target.dataset.idx;
+								try {
+									setTimeout(() => {
+										try {
+											entry.target.classList.remove(
+												"_1qxYA"
+											);
+										} catch (err) {}
+									}, 700);
+								} catch (err) {}
+								if (entry.isIntersecting) {
+									setUnreadMessageIds(prev =>
+										prev.filter(id => id !== idx)
+									);
+									const elt = document.querySelector(
+										`div[data-idx="${idx}"]`
+									);
+									observer.unobserve(elt);
+								} else {
+									if (
+										!storedMessages.find(
+											msg => msg.id === idx
+										)
+									)
+										setUnreadMessageIds(prev => [
+											...new Set([...prev, idx]),
+										]);
+								}
 							} catch (err) {}
-							if (entry.isIntersecting) {
-								setUnreadMessageIds(prev => prev.filter(id => id !== idx));
-								const elt = document.querySelector(`div[data-idx="${idx}"]`);
-								observer.unobserve(elt);
-							} else {
-								if (!storedMessages.find(msg => msg.id === idx)) setUnreadMessageIds(prev => [...new Set([...prev, idx])]);
-							}
-						} catch (err) {}
-					});
-				});
+						});
+					}
+				);
 			}
 			if (observerRef.current && node) {
 				try {
@@ -502,9 +632,12 @@ function App() {
 					.doc(currentUser.uid || " ")
 					.get()
 			).data()?.value;
-			await fetch(`${process.env.REACT_APP_SOCKET_URL}/automod/approve?msg_id=${msg.message_id}&otc=${otc}&id=${currentUser.uid}`, {
-				method: "POST",
-			});
+			await fetch(
+				`${process.env.REACT_APP_SOCKET_URL}/automod/approve?msg_id=${msg.message_id}&otc=${otc}&id=${currentUser.uid}`,
+				{
+					method: "POST",
+				}
+			);
 			removeMessage(msg.id);
 		},
 		[currentUser, removeMessage]
@@ -518,9 +651,12 @@ function App() {
 					.doc(currentUser.uid || " ")
 					.get()
 			).data()?.value;
-			await fetch(`${process.env.REACT_APP_SOCKET_URL}/automod/deny?msg_id=${msg.message_id}&otc=${otc}&id=${currentUser.uid}`, {
-				method: "POST",
-			});
+			await fetch(
+				`${process.env.REACT_APP_SOCKET_URL}/automod/deny?msg_id=${msg.message_id}&otc=${otc}&id=${currentUser.uid}`,
+				{
+					method: "POST",
+				}
+			);
 			removeMessage(msg.id);
 		},
 		[currentUser, removeMessage]
@@ -602,13 +738,30 @@ function App() {
 			if (emotes) {
 				let allEmotes = [];
 				for (let [key, value] of Object.entries(emotes)) {
-					allEmotes = [...allEmotes, ...value.map(emote => ({ ...emote, channelId: key }))];
+					allEmotes = [
+						...allEmotes,
+						...value.map(emote => ({ ...emote, channelId: key })),
+					];
 				}
-				for (const [key, value] of Object.entries(customEmotes?.bttv?.bttvEmotes || {})) {
-					allEmotes.push({ code: key, name: value, char: key, bttv: true });
+				for (const [key, value] of Object.entries(
+					customEmotes?.bttv?.bttvEmotes || {}
+				)) {
+					allEmotes.push({
+						code: key,
+						name: value,
+						char: key,
+						bttv: true,
+					});
 				}
-				for (const [key, value] of Object.entries(customEmotes?.ffz?.ffzEmotes || {})) {
-					allEmotes.push({ code: key, name: value, char: key, ffz: true });
+				for (const [key, value] of Object.entries(
+					customEmotes?.ffz?.ffzEmotes || {}
+				)) {
+					allEmotes.push({
+						code: key,
+						name: value,
+						char: key,
+						ffz: true,
+					});
 				}
 				setUserEmotes(allEmotes);
 			}
@@ -617,11 +770,19 @@ function App() {
 
 	const flagMatches = useMemo(
 		() =>
-			handleFlags(showSearch ? search : "", [...messages, ...pinnedMessages])
+			handleFlags(showSearch ? search : "", [
+				...messages,
+				...pinnedMessages,
+			])
 				.filter(msg => !msg.deleted)
-				.filter(msg => (msg.autoMod ? settings.ShowAutomodMessages && isMod : true))
+				.filter(msg =>
+					msg.autoMod ? settings.ShowAutomodMessages && isMod : true
+				)
 				.sort((a, b) => a.sentAt - b.sentAt)
-				.map(message => ({ ...message, moddable: message.moddable && isMod })),
+				.map(message => ({
+					...message,
+					moddable: message.moddable && isMod,
+				})),
 		[messages, search, showSearch, pinnedMessages, isMod, settings]
 	);
 
@@ -636,16 +797,37 @@ function App() {
 
 	return showViewers ? (
 		<span style={{ fontFamily: settings.Font }}>
-			<Viewers ban={ban} timeout={timeout} isMod={isMod} streamer={streamerName} chatterCount={chatterCount} chatterInfo={chatterInfo} />
+			<Viewers
+				ban={ban}
+				timeout={timeout}
+				isMod={isMod}
+				streamer={streamerName}
+				chatterCount={chatterCount}
+				chatterInfo={chatterInfo}
+			/>
 		</span>
 	) : (
 		<div
-			style={{ fontFamily: settings.Font, fontSize: `${settings.FontScaling || 1}rem` }}
+			style={{
+				fontFamily: settings.Font,
+				fontSize: `${settings.FontScaling || 1}rem`,
+			}}
 			ref={bodyRef}
-			className={`overlay-container ${settings.ShowScrollbar && windowFocused ? "scroll-bar" : ""}`}
+			className={`overlay-container ${
+				settings.ShowScrollbar && windowFocused ? "scroll-bar" : ""
+			}`}
 		>
-			<div className={`overlay ${settings?.ReverseMessageOrder ? "reversed" : ""} ${windowFocused ? "focused" : "unfocused"}`}>
-				<CSSTransition unmountOnExit classNames="chat-node" timeout={200} in={windowFocused}>
+			<div
+				className={`overlay ${
+					settings?.ReverseMessageOrder ? "reversed" : ""
+				} ${windowFocused ? "focused" : "unfocused"}`}
+			>
+				<CSSTransition
+					unmountOnExit
+					classNames="chat-node"
+					timeout={200}
+					in={windowFocused}
+				>
 					<div
 						id="chat-input--container"
 						onClick={() => {
@@ -658,11 +840,13 @@ function App() {
 									const name = item?.name;
 									const node = document.getElementById(name);
 									if (node) {
-										const _ = node.parentNode?.parentNode?.parentNode?.scrollTo?.({
-											top: node?.offsetTop,
-											left: 0,
-											behavior: "smooth",
-										});
+										const _ = node.parentNode?.parentNode?.parentNode?.scrollTo?.(
+											{
+												top: node?.offsetTop,
+												left: 0,
+												behavior: "smooth",
+											}
+										);
 									}
 								}, 100);
 							}}
@@ -674,8 +858,13 @@ function App() {
 								"@": {
 									dataProvider: token => {
 										return allChatters
-											.filter(chatter => chatter.startsWith(token))
-											.map(chatter => ({ name: `${chatter}`, char: `@${chatter}` }));
+											.filter(chatter =>
+												chatter.startsWith(token)
+											)
+											.map(chatter => ({
+												name: `${chatter}`,
+												char: `@${chatter}`,
+											}));
 									},
 									component: UserItem,
 									output: (item, trigger) => item.char,
@@ -683,9 +872,17 @@ function App() {
 								":": {
 									dataProvider: token => {
 										return userEmotes
-											.filter(emote => emote?.code?.toLowerCase?.()?.includes?.(token?.toLowerCase?.()))
+											.filter(emote =>
+												emote?.code
+													?.toLowerCase?.()
+													?.includes?.(
+														token?.toLowerCase?.()
+													)
+											)
 											.map(emote => ({
-												name: `${emote.id || emote.name}`,
+												name: `${
+													emote.id || emote.name
+												}`,
 												char: `${emote.code}`,
 												bttv: emote.bttv,
 												ffz: emote.ffz,
@@ -718,7 +915,11 @@ function App() {
 									setEmotePickerVisible(prev => !prev);
 								}}
 								onMouseEnter={() => {
-									setEmoteIndex(Math.floor(Math.random() * displayMotes.length));
+									setEmoteIndex(
+										Math.floor(
+											Math.random() * displayMotes.length
+										)
+									);
 								}}
 								alt=""
 							/>
@@ -736,7 +937,12 @@ function App() {
 					unreadMessageHandler={checkReadMessage}
 					pin={pinMessage}
 				/>
-				<CSSTransition unmountOnExit timeout={200} classNames="search-node" in={showSearch && windowFocused ? true : !!search.length}>
+				<CSSTransition
+					unmountOnExit
+					timeout={200}
+					classNames="search-node"
+					in={showSearch && windowFocused ? true : !!search.length}
+				>
 					<SearchBox
 						onKeyDown={e => {
 							if (e.key === "Escape") {
@@ -751,13 +957,25 @@ function App() {
 				</CSSTransition>
 			</div>
 
-			<CSSTransition unmountOnExit timeout={400} classNames={"to-top-node"} in={showToTop && windowFocused}>
-				<button className="back-to-top-button fade-in" onClick={scrollTop}>
+			<CSSTransition
+				unmountOnExit
+				timeout={400}
+				classNames={"to-top-node"}
+				in={showToTop && windowFocused}
+			>
+				<button
+					className="back-to-top-button fade-in"
+					onClick={scrollTop}
+				>
 					Scroll To {settings?.ReverseMessageOrder ? "Bottom" : "Top"}
 				</button>
 			</CSSTransition>
 			<EmotePicker
-				onEmoteSelect={emote => setChatValue(prev => `${prev} ${emote.native || emote.name}`)}
+				onEmoteSelect={emote =>
+					setChatValue(
+						prev => `${prev} ${emote.native || emote.name}`
+					)
+				}
 				emotes={userEmotes}
 				onClickAway={() => setEmotePickerVisible(false)}
 				visible={emotePickerVisible && windowFocused}
