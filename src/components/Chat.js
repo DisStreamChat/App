@@ -822,7 +822,7 @@ function App() {
 					settings?.ReverseMessageOrder ? "reversed" : ""
 				} ${windowFocused ? "focused" : "unfocused"}`}
 			>
-				<CSSTransition
+				{/* <CSSTransition
 					unmountOnExit
 					classNames="chat-node"
 					timeout={200}
@@ -907,7 +907,6 @@ function App() {
 								setChatValue(e.target.value);
 							}}
 						></ReactTextareaAutocomplete>
-						{/* will be used in the future */}
 						<Tooltip title="Emote Picker" arrow>
 							<img
 								src={displayMotes[emoteIndex]}
@@ -925,7 +924,7 @@ function App() {
 							/>
 						</Tooltip>
 					</div>
-				</CSSTransition>
+				</CSSTransition> */}
 				<Messages
 					deny={denyMessage}
 					accept={acceptMessage}
@@ -941,7 +940,7 @@ function App() {
 					unmountOnExit
 					timeout={200}
 					classNames="search-node"
-					in={showSearch && windowFocused ? true : !!search.length}
+					in={(showSearch && windowFocused ? true : !!search.length)}
 				>
 					<SearchBox
 						onKeyDown={e => {
