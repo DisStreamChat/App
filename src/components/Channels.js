@@ -238,7 +238,7 @@ const Channels = React.memo(props => {
 		};
 	}, []);
 
-    console.log(myChannel)
+    // console.log(myChannel)
 
 	return (
 		<>
