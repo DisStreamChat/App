@@ -28,6 +28,7 @@ import handleFlags from "../utils/flagFunctions";
 import { UserItem, EmoteItem } from "./AutoFillItems";
 import Messages from "./MessageList";
 import { displayMotes } from "../utils/constants";
+import {removeEmpty} from "../utils/functions"
 
 function App() {
 	const socketRef = useRef();
@@ -163,12 +164,18 @@ function App() {
 					copy[index].pinned = true;
 					const pinnedMessage = copy?.splice?.(index, 1);
 					setPinnedMessages(prev => [...prev, ...pinnedMessage]);
+					const message = pinnedMessage[0]
+					message.streamer = message.streamer || "shiffman"
+					removeEmpty(message)
+					console.log({message: message, id: currentUser.uid})
 					const _ = firebase.db
 						?.collection?.("featured-messages")
-						?.doc?.(currentUser.uid)
+						?.doc?.(currentUser.uid || "da8c156ed7b5ce71650ffaf9beb68d5edf7e21ab")
 						?.collection?.("messages")
-						?.doc?.(pinnedMessage[0].id)
-						?.set?.(pinnedMessage[0]);
+						?.doc?.(message.id)
+						?.set?.(message).catch(err => {
+							console.log(err.message)
+						});
 					return copy;
 				});
 			} else {
