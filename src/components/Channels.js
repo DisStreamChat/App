@@ -182,6 +182,10 @@ const Channels = React.memo(props => {
 		ipcRenderer.on("popoutViewers", (event, data) => {
 			props.history.push(`/viewers/${data}?popout=${data}`);
 		});
+		ipcRenderer.on("openSettings", () => {
+			alert("settings")
+			props.history.push("/settings")
+		})
 	}, [props.history]);
 
 	useEffect(() => {

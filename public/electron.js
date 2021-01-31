@@ -73,6 +73,7 @@ function windowGenerator({ width = Width, height = Width * 1.5, x, y, small } = 
 		alwaysOnTop: true, // make is so other windows won't go on top of this one
 		fullScreenable: false,
 		webPreferences: {
+			enableRemoteModule: true,
 			nodeIntegration: true, // integrates the frontend with node, this is used for the custom toolbar
 		},
 	};
@@ -207,6 +208,7 @@ app.on("web-contents-created", (e, contents) => {
 });
 
 app.on("ready", createMainWindow);
+
 app.on("window-all-closed", () => {
 	if (process.platform !== "darwin") {
 		app.quit();
@@ -260,7 +262,7 @@ ipcMain.on("popoutViewers", (event, data) => {
 	}
 	const [width, height] = mainWindow.getSize();
 	let popoutWindow = windowGenerator({ width, height });
-	popoutWindow.loadURL(baseUrl());
+	popoutWindow.loadURL(`${baseUrl()}`);
 	setTimeout(() => {
 		popoutWindow.webContents.send("popoutViewers", data);
 	}, 1000);
@@ -292,6 +294,21 @@ ipcMain.on("notify-live", (event, {stream}) => {
         },
         console.log
     );
+})
+
+ipcMain.on("open-settings", (event, data) => {
+	const key = `settings`;
+	if (windows[key]) {
+		return
+	}
+	const [width, height] = mainWindow.getSize();
+	let popoutWindow = windowGenerator({ width, height });
+	popoutWindow.loadURL(`${baseUrl()}/settings`);
+	setTimeout(() => {
+		popoutWindow.webContents.send("openSettings", data);
+	}, 1000);
+	windows[key] = popoutWindow;
+	popoutWindow.on("closed", () => (windows[key] = null));
 })
 
 function clearHotKeys() {

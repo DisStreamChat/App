@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
-import { HashRouter as Router, Route, Switch, Redirect } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 import firebase from "./firebase";
 import { useLocalStorage } from "react-use";
 
@@ -155,6 +155,8 @@ const App = () => {
 		}
 	}, [border, streamerInfo]);
 
+	console.log(window.location)
+
 	return firebaseInit !== false ? (
 		<AppContext.Provider
 			value={{
@@ -194,6 +196,7 @@ const App = () => {
 						<ProtectedRoute exact path="/chat/:id" component={Chat} />
 						<ProtectedRoute exact path="/viewers/:id" component={Viewers} />
 						<ProtectedRoute path="/channels" component={Channels} />
+						<ProtectedRoute path="/settings" component={() => <div>settings</div>} />
 						<Route path="/login" component={Auth} />
 						<Redirect to="/channels" />
 					</Switch>

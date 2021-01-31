@@ -128,6 +128,8 @@ const Header = props => {
 		return () => ipcRenderer.removeAllListeners("send-platform");
 	}, []);
 
+	console.log(remote)
+
 	useEffect(() => {
 		(async () => {
 			const currentVersion = remote.app.getVersion();
@@ -352,7 +354,10 @@ const Header = props => {
 								</Button>
 							)}
 							<Tooltip arrow title={`${settingsOpen ? "Close" : ""} Settings`}>
-								<button className="clear" onClick={() => setSettingsOpen(o => !o)}>
+								<button className="clear" 
+									onClick={() => ipcRenderer.send("open-settings")}
+								// onClick={() => setSettingsOpen(o => !o)}
+								>
 									{!settingsOpen ? <SettingsTwoToneIcon /> : <ClearIcon />}
 								</button>
 							</Tooltip>
