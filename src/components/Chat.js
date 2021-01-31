@@ -829,11 +829,11 @@ function App() {
 					settings?.ReverseMessageOrder ? "reversed" : ""
 				} ${windowFocused ? "focused" : "unfocused"}`}
 			>
-				{/* <CSSTransition
+				<CSSTransition
 					unmountOnExit
 					classNames="chat-node"
 					timeout={200}
-					in={windowFocused}
+					in={windowFocused || true}
 				>
 					<div
 						id="chat-input--container"
@@ -931,7 +931,7 @@ function App() {
 							/>
 						</Tooltip>
 					</div>
-				</CSSTransition> */}
+				</CSSTransition>
 				<Messages
 					deny={denyMessage}
 					accept={acceptMessage}

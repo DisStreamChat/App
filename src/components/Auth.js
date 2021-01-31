@@ -85,7 +85,7 @@ const Auth = React.memo(props => {
 				<h2 className="modal-subheading">Connect with:</h2>
 				<form onSubmit={e => e.preventDefault()} className="modal-buttons">
 					<button type="submit" onClick={readTerms ? loginWithTwitch : () => {}} className="modal-button twitch">
-						<img src={`${process.env.PUBLIC_URL}/social-media.svg`} alt="" width="20" className="logo-icon" />
+						<img src={`/social-media.svg`} alt="" width="20" className="logo-icon" />
 						Twitch
 					</button>
 					<button className="modal-button discord" onClick={readTerms ? loginWithDiscord : () => {}}>

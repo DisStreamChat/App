@@ -61,7 +61,7 @@
 .focused > div:nth-of-type(1) {
 	display: flex;
 	flex-direction: column-reverse;
-	padding-bottom: 100px;
+	// padding-bottom: 100px;
 }
 
 .reversed.focused > div:nth-of-type(2) {
@@ -119,7 +119,9 @@
 	border-radius: 0.5rem;
 	color: white;
 	// overflow: hidden;
+	outline: solid;
 	display: flex;
+	flex-direction: row;
 	align-items: center;
 	justify-content: space-between;
 }
