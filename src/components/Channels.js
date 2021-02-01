@@ -216,7 +216,7 @@ const Channels = React.memo(props => {
 					data.ModChannels?.sort((a, b) => a.login.localeCompare(b.login))
 						?.sort((a, b) => ((pinnedChannels || []).includes(a.id) ? -1 : 1))
 						?.map(channel => {
-							return { ...channel, pinned: (pinnedChannels || []).includes(channel?.id), modPlatform: "twitch", uid: sha1(channel.id) };
+							return { ...channel, pinned: (pinnedChannels || []).includes(channel?.id), modPlatform: "twitch", uid: sha1(channel.id || "") };
 						})
 				);
 			});

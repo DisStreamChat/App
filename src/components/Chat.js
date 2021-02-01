@@ -494,7 +494,7 @@ function App() {
 	useEffect(() => {
 		const unsub = firebase.db
 			.collection("Streamers")
-			.doc(sha1(id))
+			.doc(sha1(id || ""))
 			.onSnapshot(async snapshot => {
 				const data = snapshot.data();
 				if (!data) {
