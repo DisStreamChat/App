@@ -611,13 +611,20 @@ function App() {
 	);
 
 	const sendMessage = useCallback(() => {
-		if (socketRef.current) {
-			socketRef.current.emit("sendchat", {
-				sender: userInfo?.name?.toLowerCase?.(),
-				message: chatValue,
-			});
-		}
-	}, [socketRef, chatValue, userInfo]);
+		(async () => {
+			const userRef = firebase.db.collection("Streamers").doc(currentUser.uid).collection("twitch").doc("data")
+			const userDoc = await userRef.get()
+			const userData = userDoc.data()
+			console.log(userData)
+			if (socketRef.current) {
+				socketRef.current.emit("sendchat", {
+					sender: userInfo?.name?.toLowerCase?.(),
+					message: chatValue,
+					refreshToken: userData.refresh_token
+				});
+			}
+		})()
+	}, [socketRef, chatValue, userInfo, currentUser]);
 
 	return showViewers ? (
 		<span style={{ fontFamily: settings.Font }}>

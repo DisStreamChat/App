@@ -9,7 +9,7 @@ import ClearIcon from "@material-ui/icons/Clear";
 import { Tooltip } from "@material-ui/core";
 import Loader from "react-loader";
 import sha1 from "sha1";
-import { useLocalStorage  } from "react-use";
+import { useLocalStorage } from "react-use";
 import { useMemo } from "react";
 
 const { ipcRenderer } = window.require("electron");
@@ -211,8 +211,14 @@ const Channels = React.memo(props => {
 				setModChannels(
 					data.ModChannels?.sort((a, b) => a.login.localeCompare(b.login))
 						?.sort((a, b) => ((pinnedChannels || []).includes(a.id) ? -1 : 1))
+						?.filter(channel => channel.id)
 						?.map(channel => {
-							return { ...channel, pinned: (pinnedChannels || []).includes(channel.id), modPlatform: "twitch", uid: sha1(channel.id) };
+							return {
+								...channel,
+								pinned: (pinnedChannels || []).includes(channel.id),
+								modPlatform: "twitch",
+								uid: sha1(channel.id || ""),
+							};
 						})
 				);
 			});
