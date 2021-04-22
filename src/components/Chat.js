@@ -23,6 +23,39 @@ import { UserItem, EmoteItem } from "./AutoFillItems";
 import Messages from "./MessageList";
 import { displayMotes } from "../utils/constants";
 
+class QueueBuffer {
+	constructor(array = []) {
+		// super();
+		this._queue = array;
+		this._timeout = 750;
+		this._timer = null;
+	}
+
+	push(val) {
+		this._queue.push(val);
+	}
+
+	set timeout(val) {
+		this._timeout = val;
+	}
+
+	subscribe(callback) {
+		// callback(this._queue.shift());
+		this._timer = setInterval(() => {
+			const value = this._queue.shift();
+			if (value) {
+				callback(value);
+			}
+		}, this._timeout);
+	}
+
+	unsubscribe() {
+		clearInterval(this._timer);
+	}
+}
+
+const buffer = new QueueBuffer();
+
 function App() {
 	const socketRef = useRef();
 	const {
@@ -69,7 +102,7 @@ function App() {
 					setIsMod(!!json);
 				}
 			} catch (err) {
-				if(err.message === "The user aborted a request.") return 
+				if (err.message === "The user aborted a request.") return;
 				setIsMod(false);
 			}
 		})();
@@ -98,7 +131,8 @@ function App() {
 	useEffect(() => {
 		console.log("reseting");
 		const _ = socketRef?.current?.disconnect?.();
-		socketRef.current = openSocket(process.env.REACT_APP_SOCKET_URL);
+		socketRef.current = openSocket(process.env.REACT_APP_SOCKET_URL, { transports: ["websocket"] });
+		console.log(socketRef.current);
 	}, [id]);
 
 	useEffect(() => {
@@ -211,14 +245,15 @@ function App() {
 
 			if (isMod) {
 				let modName = userInfo.name;
+				const userData = (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data();
+				const modData = (await firebase.db.collection("Streamers").doc(currentUser.uid).collection("twitch").doc("data").get()).data();
 				if (!modName) {
 					console.log("attempting to obtain username");
-					const UserData = (await firebase.db.collection("Streamers").doc(currentUser.uid).get()).data();
-					modName = UserData.name;
+					modName = userData.name;
 				}
-
+				console.log(modData);
 				if (platform && socketRef.current) {
-					socketRef.current.emit(`deletemsg - ${platform}`, { id, modName });
+					socketRef.current.emit(`deletemsg - ${platform}`, { id, modName, refresh_token: modData.refresh_token });
 				}
 			}
 		},
@@ -247,86 +282,96 @@ function App() {
 			return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
 		});
 	});
+
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
 	useSocketEvent(socketRef.current, "chatmessage", msg => {
-		try {
-			msg.streamer = channel.TwitchName;
-			if (settings?.ReverseMessageOrder) {
-				const shouldScroll = Math.abs(bodyRef.current.scrollTop - bodyRef.current.scrollHeight) < 1500;
-				setTimeout(() => {
-					if (shouldScroll) {
-						bodyRef.current.scrollTo({
-							top: bodyRef.current.scrollHeight,
-							behavior: "smooth",
-						});
-					}
-				}, 200);
-			}
-			// by default we don't ignore messages
-			if (messages.findIndex(message => message.id === msg.id) !== -1) return;
-			let ignoredMessage = false;
+		buffer.push(msg);
+		buffer._queue = buffer._queue.sort((a, b) => a.sentAt - b.sentAt);
+	});
 
-			// check if we should ignore this user
-			if (settings?.IgnoredUsers?.map?.(item => item.value.toLowerCase()).includes(msg.displayName.toLowerCase())) {
-				ignoredMessage = true;
-			}
+	useEffect(() => {
+		buffer.subscribe(msg => {
+			try {
+				msg.streamer = channel.TwitchName;
+				if (settings?.ReverseMessageOrder) {
+					const shouldScroll = Math.abs(bodyRef.current.scrollTop - bodyRef.current.scrollHeight) < 1500;
+					setTimeout(() => {
+						if (shouldScroll) {
+							bodyRef.current.scrollTo({
+								top: bodyRef.current.scrollHeight,
+								behavior: "smooth",
+							});
+						}
+					}, 200);
+				}
+				console.log(messages);
+				if (messages.findIndex(message => message.id === msg.id) !== -1) return;
+				// by default we don't ignore messages
+				let ignoredMessage = false;
 
-			// check if the message is a command
-			const _ = settings?.IgnoredCommandPrefixes?.forEach(prefix => {
-				if (msg.body.startsWith(prefix.value)) {
+				// check if we should ignore this user
+				if (settings?.IgnoredUsers?.map?.(item => item.value.toLowerCase()).includes(msg.displayName.toLowerCase())) {
 					ignoredMessage = true;
 				}
-			});
 
-			// don't allow ignoring of notifications from 'disstreamchat'
-			if (msg.displayName.toLowerCase() === "disstreamchat") ignoredMessage = false;
+				// check if the message is a command
+				const _ = settings?.IgnoredCommandPrefixes?.forEach(prefix => {
+					if (msg.body.startsWith(prefix.value)) {
+						ignoredMessage = true;
+					}
+				});
 
-			if (settings?.IgnoreCheers && msg.messageId === "cheer") {
-				ignoredMessage = true;
-			}
-			if (settings?.IgnoreFollows && msg.messageId === "follow") {
-				ignoredMessage = true;
-			}
-			if (settings?.IgnoreSubscriptions && msg.messageId === "subscription" && msg.messageType !== "channel-points") {
-				ignoredMessage = true;
-			}
-			if (settings?.IgnoreChannelPoints && msg.messageType === "channel-points") {
-				ignoredMessage = true;
-			}
+				// don't allow ignoring of notifications from 'disstreamchat'
+				if (msg.displayName.toLowerCase() === "disstreamchat") ignoredMessage = false;
 
-			// if ignored don't add the message
-			if (ignoredMessage) return;
+				if (settings?.IgnoreCheers && msg.messageId === "cheer") {
+					ignoredMessage = true;
+				}
+				if (settings?.IgnoreFollows && msg.messageId === "follow") {
+					ignoredMessage = true;
+				}
+				if (settings?.IgnoreSubscriptions && msg.messageId === "subscription" && msg.messageType !== "channel-points") {
+					ignoredMessage = true;
+				}
+				if (settings?.IgnoreChannelPoints && msg.messageType === "channel-points") {
+					ignoredMessage = true;
+				}
 
-			// if this message was a reply to a previous message
-			if (msg.replyParentDisplayName) {
-				msg.body = `<span class="reply-header">Replying to ${msg.replyParentDisplayName}: ${msg.replyParentMessageBody}</span>${msg.body}`.replace(
-					`@${msg.replyParentDisplayName}`,
-					""
-				);
-			}
+				// if ignored don't add the message
+				if (ignoredMessage) return;
 
-			// add a <p></p> around the message to make formatting work properly also hightlight pings
-			const nameRegex = new RegExp(`(?<=\\s|^)(@?${userInfo?.name})`, "igm");
-			msg.body = `<p>${msg.body.replace(nameRegex, "<span class='ping'>$&</span>")}</p>`;
+				// if this message was a reply to a previous message
+				if (msg.replyParentDisplayName) {
+					msg.body = `<span class="reply-header">Replying to ${msg.replyParentDisplayName}: ${msg.replyParentMessageBody}</span>${msg.body}`.replace(
+						`@${msg.replyParentDisplayName}`,
+						""
+					);
+				}
 
-			// check if the message can have mod actions done on it. if the user isn't a mod this will always be false
-			msg.moddable =
-				msg?.displayName?.toLowerCase?.() === userInfo?.name?.toLowerCase?.() ||
-				(!Object.keys(msg.badges).includes("moderator") && !Object.keys(msg.badges).includes("broadcaster"));
+				// add a <p></p> around the message to make formatting work properly also hightlight pings
+				const nameRegex = new RegExp(`(?<=\\s|^)(@?${userInfo?.name})`, "igm");
+				msg.body = `<p>${msg.body.replace(nameRegex, "<span class='ping'>$&</span>")}</p>`;
 
-			if (
-				msg.platform !== "discord" &&
-				msg?.displayName?.toLowerCase?.() !== userInfo?.name?.toLowerCase?.() &&
-				channel?.TwitchName?.toLowerCase?.() === userInfo?.name?.toLowerCase?.()
-			)
-				msg.moddable = true;
-			if (msg.displayName.toLowerCase() === "disstreamchat") msg.moddable = false;
+				// check if the message can have mod actions done on it. if the user isn't a mod this will always be false
+				msg.moddable =
+					msg?.displayName?.toLowerCase?.() === userInfo?.name?.toLowerCase?.() ||
+					(!Object.keys(msg.badges).includes("moderator") && !Object.keys(msg.badges).includes("broadcaster"));
 
-			setMessages(m => {
-				return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
-			});
-		} catch (err) {}
-	});
+				if (
+					msg.platform !== "discord" &&
+					msg?.displayName?.toLowerCase?.() !== userInfo?.name?.toLowerCase?.() &&
+					channel?.TwitchName?.toLowerCase?.() === userInfo?.name?.toLowerCase?.()
+				)
+					msg.moddable = true;
+				if (msg.displayName.toLowerCase() === "disstreamchat") msg.moddable = false;
+
+				setMessages(m => {
+					return [...m.slice(-Math.max(settings.MessageLimit, 100)), { ...msg, read: false }];
+				});
+			} catch (err) {}
+		});
+		return () => buffer.unsubscribe();
+	}, [channel, messages, setMessages, settings, userInfo]);
 
 	// this is run whenever the socket changes and it sets the chatmessage listener on the socket to listen for new messages from the backend
 	useSocketEvent(socketRef.current, "imConnected", () => {
@@ -612,18 +657,18 @@ function App() {
 
 	const sendMessage = useCallback(() => {
 		(async () => {
-			const userRef = firebase.db.collection("Streamers").doc(currentUser.uid).collection("twitch").doc("data")
-			const userDoc = await userRef.get()
-			const userData = userDoc.data()
-			console.log(userData)
+			const userRef = firebase.db.collection("Streamers").doc(currentUser.uid).collection("twitch").doc("data");
+			const userDoc = await userRef.get();
+			const userData = userDoc.data();
+			console.log(userData);
 			if (socketRef.current) {
 				socketRef.current.emit("sendchat", {
 					sender: userInfo?.name?.toLowerCase?.(),
 					message: chatValue,
-					refreshToken: userData.refresh_token
+					refreshToken: userData.refresh_token,
 				});
 			}
-		})()
+		})();
 	}, [socketRef, chatValue, userInfo, currentUser]);
 
 	return showViewers ? (
