@@ -86,7 +86,7 @@
   },
   "devDependencies": {
     "concurrently": "^5.2.0",
-    "electron": "^9.2.0",
+    "electron": "^15.5.5",
     "electron-builder": "^22.8.1",
     "eslint-plugin-react": "^7.20.0",
     "wait-on": "^3.3.0"
